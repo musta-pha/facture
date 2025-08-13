@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proforma Atelier — Meubles Bois / Aluminium</title>
+  <style>
+:root {
+  --bg: #f4f6f8; /* Softer neutral background */
+  --card: #ffffff; /* Card white */
+  --muted: #6b7280; /* Medium gray text */
+  --text: #1f2937; /* Dark gray text */
+  --accent: #2563eb; /* Primary blue */
+  --accent-hover: #1d4ed8; /* Darker blue hover */
+  --line: #e5e7eb; /* Light border */
+  --btn-bg: #2563eb; /* Button blue */
+  --btn-hover: #1d4ed8; /* Darker blue button hover */
+  --tab-active: #2563eb;
+  --tab-inactive: #e5e7eb;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+header .actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn {
+  background: var(--btn-bg);
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.btn:hover {
+  background: var(--btn-hover);
+}
+
+.btn.primary {
+  background: var(--accent);
+}
+
+.btn.primary:hover {
+  background: var(--accent-hover);
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 14px;
+  padding: 14px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 6px 24px rgba(15,23,42,.05);
+}
+
+.card h2 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+}
+
+label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+input, select, textarea {
+  width: 100%;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid rgba(14,165,233,.35);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border-bottom: 1px dashed var(--line);
+  padding: 6px;
+  font-size: 13px;
+  text-align: left;
+}
+
+th {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+tfoot td {
+  border-top: 1px solid var(--line);
+}
+
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.right { display: flex; justify-content: flex-end; gap: 8px; }
+
+.total {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.muted { color: var(--muted); }
+
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.notice {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.list {
+  max-height: 220px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-bottom: 1px dashed var(--line);
+}
+
+.list-item:last-child { border-bottom: none; }
+
+.tag {
+  font-size: 11px;
+  color: var(--text);
+  background: #e2f3fb;
+  border: 1px solid #bae6fd;
+  border-radius: 999px;
+  padding: 2px 6px;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 12px;
+}
+
+.tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tab.active {
+  border-bottom-color: var(--tab-active);
+  color: var(--tab-active);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+
+@media print {
+  header, .no-print { display: none; }
+  body { background: white; color: black; }
+  .card { border: none; box-shadow: none; }
+  input, select, textarea { border: 1px solid #ccc; color: black; background: white; }
+  .muted { color: #555; }
+  .tab-content:not(.active) { display: none !important; }
+}
+</style>
+
+</head>
+<body>
+  <header>
+    <h1>🧾Ma Cuisine</h1>
+    <div class="actions no-print">
+      <button class="btn" id="exportExcelBtn">Exporter Excel</button>
+      <button class="btn" id="exportJsonBtn">Exporter JSON</button>
+      <button class="btn" id="importJsonBtn">Importer JSON</button>
+      <button class="btn" id="resetBtn" title="Effacer les données locales">Réinitialiser</button>
+      <button class="btn primary" id="printBtn">Imprimer / PDF</button>
+      <span id="testBadge" class="pill">Tests: en cours…</span>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Left Column -->
+    <section class="card" id="productsCard">
+      <div class="tabs">
+        <div class="tab active" data-tab="products">📦 Produits</div>
+        <div class="tab" data-tab="history">🕒 Historique</div>
+        <div class="tab" data-tab="importExport">🔄 Import/Export</div>
+      </div>
+
+      <!-- Products Tab -->
+      <div id="products-tab" class="tab-content active">
+        <h2>Produits <span class="pill" id="prodCount">0</span></h2>
+        <div class="row">
+          <div>
+            <label>Nom</label>
+            <input id="pName" placeholder="ex: Caisson cuisine 60cm" />
+          </div>
+          <div>
+            <label>Catégorie</label>
+            <select id="pCat">
+              <option>Cuisine</option>
+              <option>Chambre</option>
+              <option>Salon</option>
+              <option>Bureau</option>
+              <option>Aluminium</option>
+              <option>Bois</option>
+              <option>Autre</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-3" style="margin-top:8px">
+          <div>
+            <label>Unité</label>
+            <input id="pUnit" placeholder="pcs / ml / m²" />
+          </div>
+          <div>
+            <label>Prix Unitaire</label>
+            <input id="pPrice" type="number" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="right">
+            <button class="btn" id="saveProdBtn">Ajouter / Modifier</button>
+          </div>
+        </div>
+        <div class="notice" style="margin-top:8px">Astuce : cliquez une ligne pour éditer. Données sauvegardées dans le navigateur.</div>
+        <table style="margin-top:10px">
+          <thead>
+            <tr><th>Nom</th><th>Catégorie</th><th>Unité</th><th>Prix</th><th class="no-print"></th></tr>
+          </thead>
+          <tbody id="prodBody"></tbody>
+        </table>
+      </div>
+
+      <!-- History Tab -->
+      <div id="history-tab" class="tab-content">
+        <h2>Proformas récentes (7 jours)</h2>
+        <div class="list" id="recentList"></div>
+      </div>
+
+      <!-- Import/Export Tab -->
+      <div id="importExport-tab" class="tab-content">
+        <h2>Import/Export de données</h2>
+        <div class="notice">Sauvegardez ou restaurez toutes vos données (produits, factures, historique)</div>
+
+        <div style="margin-top: 16px;">
+          <h3>Export</h3>
+          <div class="grid-3" style="margin-top:8px">
+            <div>
+              <button class="btn full-width" id="exportProductsBtn">Produits (JSON)</button>
+            </div>
+            <div>
+              <button class="btn full-width" id="exportInvoicesBtn">Factures (JSON)</button>
+            </div>
+            <div>
+              <button class="btn full-width" id="exportAllBtn">Tout exporter</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <h3>Import</h3>
+          <div class="grid-3" style="margin-top:8px">
+            <div>
+              <button class="btn full-width" id="importProductsBtn">Produits</button>
+            </div>
+            <div>
+              <button class="btn full-width" id="importInvoicesBtn">Factures</button>
+            </div>
+            <div>
+              <button class="btn full-width" id="importAllBtn">Tout importer</button>
+            </div>
+          </div>
+          <div class="notice" style="margin-top:8px">L'import écrasera les données existantes du même type.</div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <h3>Sauvegarde locale</h3>
+          <div class="notice" style="margin-top:8px">Les données sont automatiquement sauvegardées dans votre navigateur.</div>
+          <div style="margin-top:8px">
+            <button class="btn full-width" id="backupNowBtn">Forcer sauvegarde maintenant</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column - Invoice -->
+    <section class="card">
+      <h2>🛠️ Proforma</h2>
+      <div class="row">
+        <div>
+          <label>N°</label>
+          <input id="invNo" />
+        </div>
+        <div>
+          <label>Date</label>
+          <input id="invDate" type="date" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <div>
+          <label>Client</label>
+          <input id="client" placeholder="Nom du client" />
+        </div>
+        <div>
+          <label>Notes</label>
+          <input id="notes" placeholder="Optionnel" />
+        </div>
+      </div>
+
+      <table style="margin-top:10px">
+        <thead>
+          <tr>
+            <th style="width:22%">Produit</th>
+            <th>Description</th>
+            <th style="width:8%">Unité</th>
+            <th style="width:8%">Qté</th>
+            <th style="width:12%">PU</th>
+            <th style="width:8%">TVA %</th>
+            <th style="width:10%">Remise %</th>
+            <th style="width:12%">Total</th>
+            <th class="no-print" style="width:6%"></th>
+          </tr>
+        </thead>
+        <tbody id="lines"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="9" class="no-print">
+              <button class="btn" id="addLineBtn">+ Ligne</button>
+              <button class="btn" id="clearLinesBtn">Vider</button>
+              <button class="btn" id="saveDraftBtn">Enregistrer (brouillon)</button>
+              <button class="btn" id="loadDraftBtn">Charger brouillon</button>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="row" style="margin-top:12px">
+        <div>
+          <div class="muted">Vendeur (Atelier / Entreprise)</div>
+          <textarea id="seller" rows="4" placeholder="Raison sociale / Adresse / Téléphone"></textarea>
+        </div>
+        <div>
+          <table>
+            <tr><td class="muted">Sous-total</td><td class="right mono" id="subtotal">0.00</td></tr>
+            <tr><td class="muted">TVA</td><td class="right mono" id="tax">0.00</td></tr>
+            <tr><td class="muted">Remise</td><td class="right mono" id="discount">0.00</td></tr>
+            <tr><td class="total">Total TTC</td><td class="right total mono" id="grand">0.00</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="notice" style="margin-top:6px">Utilisation atelier : devis/proforma pour fabrication de meubles (bois / aluminium), cuisines, chambres, etc.</div>
+    </section>
+  </div>
+
+  <script>
+    const LS_PROD = 'pf_products_v2';
+    const LS_DRAFT = 'pf_invoice_draft_v2';
+    const LS_HISTORY = 'pf_history_v1'; // liste des factures (7 jours)
+    const AUTOSAVE_MS = 60000; // 1 min
+
+    const $ = (q, root=document) => root.querySelector(q);
+    const $$ = (q, root=document) => [...root.querySelectorAll(q)];
+
+    let products = JSON.parse(localStorage.getItem(LS_PROD) || '[]');
+    let editingIndex = null;
+    let autosaveTimer = null;
+
+    // ===== Tab Navigation =====
+    function setupTabs() {
+      const tabs = $$('.tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // Remove active class from all tabs and contents
+          $$('.tab').forEach(t => t.classList.remove('active'));
+          $$('.tab-content').forEach(c => c.classList.remove('active'));
+
+          // Add active class to clicked tab and corresponding content
+          tab.classList.add('active');
+          $(`#${tab.dataset.tab}-tab`).classList.add('active');
+        });
+      });
+    }
+
+    // ===== Produits =====
+    function saveProducts(){ localStorage.setItem(LS_PROD, JSON.stringify(products)); renderProducts(); refreshProductOptions(); }
+
+    function renderProducts(){
+      const body = $('#prodBody'); body.innerHTML = '';
+      $('#prodCount').textContent = products.length;
+      products.forEach((p, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${p.name}</td><td>${p.cat}</td><td>${p.unit||''}</td><td class="mono">${num(p.price)}</td>
+                        <td class="no-print"><button class="btn" data-edit=${idx}>Modifier</button>
+                        <button class="btn" data-del=${idx}>Suppr</button></td>`;
+        tr.addEventListener('click', (e)=>{
+          if(e.target.dataset.edit!==undefined){ fillEditor(idx); }
+          if(e.target.dataset.del!==undefined){ products.splice(idx,1); saveProducts(); }
+        });
+        body.appendChild(tr);
+      });
+      renderHistory();
+    }
+
+    function fillEditor(idx){
+      const p = products[idx];
+      $('#pName').value = p.name; $('#pCat').value = p.cat; $('#pUnit').value = p.unit||''; $('#pPrice').value = p.price; editingIndex = idx;
+    }
+
+    $('#saveProdBtn').addEventListener('click', ()=>{
+      const name=$('#pName').value.trim(); if(!name) return alert('Nom requis');
+      const prod = { name, cat: $('#pCat').value, unit: $('#pUnit').value.trim(), price: parseFloat($('#pPrice').value||'0') };
+      if(editingIndex==null){ products.push(prod); } else { products[editingIndex]=prod; editingIndex=null; }
+      $('#pName').value=''; $('#pUnit').value=''; $('#pPrice').value=''; saveProducts();
+    });
+
+    // ===== Lignes proforma =====
+    function addLine(data={}){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><select class="prodSel"></select></td>
+        <td><input class="desc" placeholder="Détails (dimensions, finition...)" value="${data.desc||''}" /></td>
+        <td><input class="unit" placeholder="pcs" value="${data.unit||''}" /></td>
+        <td><input class="qty" type="number" step="0.01" value="${data.qty??1}" /></td>
+        <td><input class="price" type="number" step="0.01" value="${data.price??0}" /></td>
+        <td><input class="tax" type="number" step="0.01" value="${data.tax??0}" /></td>
+        <td><input class="disc" type="number" step="0.01" value="${data.disc??0}" /></td>
+        <td class="mono lineTotal">0.00</td>
+        <td class="no-print"><button class="btn del">✕</button></td>`;
+
+      const sel = $('.prodSel', tr);
+      refreshProductOptions(sel);
+      if(data.product){ sel.value = data.product; }
+      sel.addEventListener('change', ()=>{
+        const p = products.find(x=>x.name===sel.value);
+        if(p){ $('.price', tr).value = p.price; $('.unit', tr).value = p.unit||''; if(!$('.desc', tr).value){ $('.desc', tr).value = p.cat; } calc(); scheduleAutosave(); }
+      });
+      tr.addEventListener('input', ()=> { calc(); scheduleAutosave(); });
+      $('.del', tr).addEventListener('click', ()=>{ tr.remove(); calc(); scheduleAutosave(); });
+      $('#lines').appendChild(tr);
+      calc();
+    }
+
+    function refreshProductOptions(selectEl){
+      const options = products.map(p=>`<option>${p.name}</option>`).join('');
+      if(selectEl){ selectEl.innerHTML = `<option value="">—</option>` + options; }
+      else { $$('#lines .prodSel').forEach(s=> s.innerHTML = `<option value="">—</option>` + options ); }
+    }
+
+    function num(n){ return (Number(n||0)).toFixed(2); }
+
+    function calc(){
+      let subtotal=0, tax=0, disc=0;
+      $$('#lines tr').forEach(tr=>{
+        const q=Number($('.qty',tr).value||0); const up=Number($('.price',tr).value||0);
+        const tx=Number($('.tax',tr).value||0)/100; const dc=Number($('.disc',tr).value||0)/100;
+        const lineSub = q*up; const lineTax = lineSub*tx; const lineDisc = lineSub*dc; const total = lineSub + lineTax - lineDisc;
+        $('.lineTotal', tr).textContent = num(total);
+        subtotal += lineSub; tax += lineTax; disc += lineDisc;
+      });
+      $('#subtotal').textContent = num(subtotal);
+      $('#tax').textContent = num(tax);
+      $('#discount').textContent = num(disc);
+      $('#grand').textContent = num(subtotal + tax - disc);
+    }
+
+    // ===== Brouillon (manuel + autosave 1 min) =====
+    function getDraft(){
+      const lines = $$('#lines tr').map(tr=>({
+        product: $('.prodSel',tr).value,
+        desc: $('.desc',tr).value,
+        unit: $('.unit',tr).value,
+        qty: Number($('.qty',tr).value||0),
+        price: Number($('.price',tr).value||0),
+        tax: Number($('.tax',tr).value||0),
+        disc: Number($('.disc',tr).value||0)
+      }));
+      return { invNo: $('#invNo').value, invDate: $('#invDate').value, client: $('#client').value, notes: $('#notes').value, seller: $('#seller').value, lines };
+    }
+
+    function saveDraft(manual=false){
+      const draft = getDraft();
+      localStorage.setItem(LS_DRAFT, JSON.stringify(draft));
+      // push to history with timestamp
+      pushHistory({ ...draft, ts: Date.now() });
+      if(manual) alert('Brouillon enregistré');
+    }
+
+    function loadDraft(){
+      const data = JSON.parse(localStorage.getItem(LS_DRAFT)||'null');
+      if(!data) return alert('Aucun brouillon');
+      $('#invNo').value=data.invNo||''; $('#invDate').value=data.invDate||today(); $('#client').value=data.client||''; $('#notes').value=data.notes||''; $('#seller').value=data.seller||'';
+      $('#lines').innerHTML=''; (data.lines||[]).forEach(addLine); calc();
+    }
+
+    function scheduleAutosave(){
+      clearTimeout(autosaveTimer);
+      autosaveTimer = setTimeout(()=> saveDraft(false), AUTOSAVE_MS);
+    }
+
+    $('#saveDraftBtn').addEventListener('click', ()=> saveDraft(true));
+    $('#loadDraftBtn').addEventListener('click', loadDraft);
+
+    // ===== Historique (7 jours) =====
+    function pushHistory(item){
+      const list = JSON.parse(localStorage.getItem(LS_HISTORY)||'[]');
+      list.unshift(item);
+      // garder 200 derniers, puis purge 7 jours
+      const seven = 7*24*60*60*1000;
+      const now = Date.now();
+      const kept = list.filter(x=> now - (x.ts||now) <= seven).slice(0,200);
+      localStorage.setItem(LS_HISTORY, JSON.stringify(kept));
+      renderHistory();
+    }
+
+    function renderHistory(){
+      const box = $('#recentList'); box.innerHTML = '';
+      const list = JSON.parse(localStorage.getItem(LS_HISTORY)||'[]');
+      if(list.length===0){ box.innerHTML = '<div class="list-item muted">Aucune proforma récente</div>'; return; }
+      list.forEach((x, i)=>{
+        const d = new Date(x.ts||Date.now());
+        const div = document.createElement('div');
+        div.className='list-item';
+        div.innerHTML = `<div>
+            <div class="mono">${x.invNo||'—'} <span class="tag">${(x.client||'Sans client')}</span></div>
+            <div class="muted" style="font-size:11px">${d.toLocaleString()}</div>
+          </div>
+          <div>
+            <button class="btn" data-load=${i}>Charger</button>
+            <button class="btn" data-del=${i}>Suppr</button>
+          </div>`;
+        div.addEventListener('click', (e)=>{
+          if(e.target.dataset.load!==undefined){
+            const item = list[Number(e.target.dataset.load)];
+            localStorage.setItem(LS_DRAFT, JSON.stringify(item));
+            loadDraft();
+            // Switch back to invoice tab
+            $$('.tab').forEach(t => t.classList.remove('active'));
+            $$('.tab-content').forEach(c => c.classList.remove('active'));
+            $('.tab[data-tab="products"]').classList.add('active');
+            $('#products-tab').classList.add('active');
+          }
+          if(e.target.dataset.del!==undefined){
+            list.splice(Number(e.target.dataset.del),1);
+            localStorage.setItem(LS_HISTORY, JSON.stringify(list));
+            renderHistory();
+          }
+        });
+        box.appendChild(div);
+      });
+    }
+
+    // ===== Export Excel (HTML .xls compatible) =====
+    function buildExcelHTML(draft, totals){
+      const rows = draft.lines.map((l,idx)=>`<tr>
+        <td>${idx+1}</td>
+        <td>${esc(l.product||'')}</td>
+        <td>${esc(l.desc||'')}</td>
+        <td>${esc(l.unit||'')}</td>
+        <td>${l.qty||0}</td>
+        <td>${l.price||0}</td>
+        <td>${l.tax||0}</td>
+        <td>${l.disc||0}</td>
+        <td>${((l.qty||0)*(l.price||0)*(1+(l.tax||0)/100) - ((l.qty||0)*(l.price||0)*(l.disc||0)/100)).toFixed(2)}</td>
+      </tr>`).join('');
+
+      const sellerFlat = (draft.seller||'').replace(/\n/g,' / ');
+
+      return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
+        <table border="1">
+          <tr><th colspan="9">Proforma — ${esc(draft.invNo||'')}</th></tr>
+          <tr><td colspan="9">Date: ${esc(draft.invDate||'')} &nbsp; Client: ${esc(draft.client||'')}</td></tr>
+          <tr><td colspan="9">Vendeur: ${esc(sellerFlat)}</td></tr>
+          <tr><th>#</th><th>Produit</th><th>Description</th><th>Unité</th><th>Qté</th><th>PU</th><th>TVA %</th><th>Remise %</th><th>Total</th></tr>
+          ${rows}
+          <tr><td colspan="8" align="right"><b>Sous-total</b></td><td>${totals.subtotal}</td></tr>
+          <tr><td colspan="8" align="right"><b>TVA</b></td><td>${totals.tax}</td></tr>
+          <tr><td colspan="8" align="right"><b>Remise</b></td><td>${totals.discount}</td></tr>
+          <tr><td colspan="8" align="right"><b>Total TTC</b></td><td>${totals.grand}</td></tr>
+        </table>
+      </body></html>`;
+    }
+
+    function exportExcel(){
+      const draft = getDraft();
+      const totals = { subtotal: $('#subtotal').textContent, tax: $('#tax').textContent, discount: $('#discount').textContent, grand: $('#grand').textContent };
+      const html = buildExcelHTML(draft, totals);
+      const blob = new Blob([html], {type:'application/vnd.ms-excel'});
+      downloadBlob(blob, (draft.invNo||'proforma') + '.xls');
+    }
+
+    function esc(s){ return String(s).replace(/[&<>]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+    function downloadBlob(blob, filename){
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+    }
+
+    // ===== Impression =====
+    $('#printBtn').addEventListener('click', ()=>{ window.print(); });
+
+    // ===== Enhanced JSON import/export =====
+    function exportData(type) {
+      let data, filename;
+      switch(type) {
+        case 'products':
+          data = {products};
+          filename = 'proforma-products.json';
+          break;
+        case 'invoices':
+          data = {
+            draft: JSON.parse(localStorage.getItem(LS_DRAFT)||'{}'),
+            history: JSON.parse(localStorage.getItem(LS_HISTORY)||'[]')
+          };
+          filename = 'proforma-invoices.json';
+          break;
+        case 'all':
+          data = {
+            products,
+            draft: JSON.parse(localStorage.getItem(LS_DRAFT)||'{}'),
+            history: JSON.parse(localStorage.getItem(LS_HISTORY)||'[]')
+          };
+          filename = 'proforma-all-data.json';
+          break;
+        default:
+          return;
+      }
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+      downloadBlob(blob, filename);
+    }
+
+    function importData(type, file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+
+          switch(type) {
+            case 'products':
+              if(data.products) {
+                products = data.products;
+                saveProducts();
+                alert(`${data.products.length} produits importés avec succès`);
+              } else {
+                alert('Fichier ne contient pas de données produits valides');
+              }
+              break;
+
+            case 'invoices':
+              if(data.draft || data.history) {
+                if(data.draft) localStorage.setItem(LS_DRAFT, JSON.stringify(data.draft));
+                if(data.history) localStorage.setItem(LS_HISTORY, JSON.stringify(data.history));
+                alert('Données factures importées avec succès');
+                renderHistory();
+                loadDraft();
+              } else {
+                alert('Fichier ne contient pas de données factures valides');
+              }
+              break;
+
+            case 'all':
+              if(data.products) {
+                products = data.products;
+                saveProducts();
+              }
+              if(data.draft) localStorage.setItem(LS_DRAFT, JSON.stringify(data.draft));
+              if(data.history) localStorage.setItem(LS_HISTORY, JSON.stringify(data.history));
+              alert('Toutes données importées avec succès');
+              renderHistory();
+              loadDraft();
+              break;
+          }
+        } catch(e) {
+          alert('Erreur lors de la lecture du fichier JSON');
+          console.error(e);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function setupImportExportButtons() {
+      // Export buttons
+      $('#exportProductsBtn').addEventListener('click', () => exportData('products'));
+      $('#exportInvoicesBtn').addEventListener('click', () => exportData('invoices'));
+      $('#exportAllBtn').addEventListener('click', () => exportData('all'));
+
+      // Import buttons
+      function createImportHandler(type) {
+        return () => {
+          const inp = document.createElement('input');
+          inp.type = 'file';
+          inp.accept = '.json,application/json';
+          inp.onchange = () => {
+            if(inp.files && inp.files[0]) {
+              if(confirm(`Êtes-vous sûr de vouloir importer des données ${type}? Cela écrasera les données existantes.`)) {
+                importData(type, inp.files[0]);
+              }
+            }
+          };
+          inp.click();
+        };
+      }
+
+      $('#importProductsBtn').addEventListener('click', createImportHandler('products'));
+      $('#importInvoicesBtn').addEventListener('click', createImportHandler('invoices'));
+      $('#importAllBtn').addEventListener('click', createImportHandler('all'));
+
+      // Backup now button
+      $('#backupNowBtn').addEventListener('click', () => {
+        saveProducts();
+        saveDraft(true);
+        alert('Sauvegarde locale effectuée');
+      });
+    }
+
+    // ===== Main buttons =====
+    $('#exportExcelBtn').addEventListener('click', exportExcel);
+    $('#addLineBtn').addEventListener('click', ()=> { addLine(); scheduleAutosave(); });
+    $('#clearLinesBtn').addEventListener('click', ()=>{ $('#lines').innerHTML=''; calc(); scheduleAutosave(); });
+    $('#resetBtn').addEventListener('click', ()=>{
+      if(confirm('Effacer TOUTES les données locales ?')){
+        localStorage.removeItem(LS_PROD); localStorage.removeItem(LS_DRAFT); localStorage.removeItem(LS_HISTORY);
+        products=[]; renderProducts(); refreshProductOptions(); $('#lines').innerHTML=''; calc();
+      }
+    });
+
+    function today(){ return new Date().toISOString().slice(0,10); }
+
+    // ===== Auto-tests (unit tests simples) =====
+    function assert(name, cond){ return {name, ok: !!cond}; }
+    function runSelfTests(){
+      const results = [];
+      // Test 1: encodage esc
+      results.push(assert('esc encode <>&', esc('<>&') === '&lt;&gt;&amp;'));
+      // Test 2: remplacement \n -> " / " dans export Excel
+      const htmlTest = buildExcelHTML({invNo:'TST', invDate:'2025-08-13', client:'C', seller:'A\nB', lines:[]}, {subtotal:'0.00', tax:'0.00', discount:'0.00', grand:'0.00'});
+      results.push(assert('seller newline → slash', htmlTest.includes('A / B')));
+      // Test 3: autosave planifié
+      scheduleAutosave();
+      results.push(assert('autosave timer set', autosaveTimer !== null));
+
+      const ok = results.filter(r=>r.ok).length;
+      const badge = document.getElementById('testBadge');
+      if(badge){ badge.textContent = `SAVED: ${ok}/${results.length} OK`; badge.style.borderColor = ok===results.length ? '#86efac' : '#fca5a5'; badge.style.background = ok===results.length ? '#ecfdf5' : '#fff1f2'; }
+      if(ok!==results.length){ console.group('Self-tests'); results.forEach(r=> console[r.ok?'log':'error'](`${r.ok?'OK':'FAIL'} — ${r.name}`)); console.groupEnd(); }
+    }
+
+    // ===== Init =====
+    (function init(){
+      setupTabs();
+      setupImportExportButtons();
+      renderProducts(); refreshProductOptions();
+      document.getElementById('invDate').value = today();
+      document.getElementById('invNo').value = 'PF-' + Date.now().toString().slice(-6);
+      // données exemple si vide
+      if(products.length===0){
+        products = [
+          { name:'Caisson cuisine 60cm', cat:'Cuisine', unit:'pcs', price: 18000 },
+          { name:'Armoire 2 portes', cat:'Chambre', unit:'pcs', price: 42000 },
+          { name:'Meuble TV 140cm', cat:'Salon', unit:'pcs', price: 32000 },
+          { name:'Plan de travail (ml)', cat:'Cuisine', unit:'ml', price: 9000 },
+          { name:'Profilé aluminium 3m', cat:'Aluminium', unit:'pcs', price: 4500 }
+        ];
+        saveProducts();
+      }
+      addLine();
+      loadDraft(); // charger dernier brouillon si présent
+      // autosave initial
+      scheduleAutosave();
+      // lancer tests
+      runSelfTests();
+    })();
+  </script>
+</body>
+</html>
