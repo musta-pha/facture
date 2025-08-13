@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Proforma Atelier — Meubles Bois / Aluminium</title>
+  <title>Proforma   — Ma Cuisine</title>
   <style>
 :root {
   --bg: #f8fafc;
@@ -57,6 +57,35 @@ header h1 {
   align-items: center;
   gap: 8px;
 }
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.modal-close {
+  color: #aaa;
+  float: right;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.modal-close:hover { color: #000; }
+.modal h2 { margin-top: 0; }
+.modal ul { padding-left: 20px; }
 
 header .actions {
   display: flex;
@@ -394,7 +423,7 @@ tfoot td {
         <line x1="16" y1="17" x2="8" y2="17"></line>
         <polyline points="10 9 9 9 8 9"></polyline>
       </svg>
-      <span>Proforma Atelier</span>
+      <span>Proforma | Ma Cuisine</span>
     </h1>
     <div class="actions no-print">
       <button class="btn" id="exportExcelBtn">
@@ -438,6 +467,24 @@ tfoot td {
         </svg>
         Imprimer
       </button>
+      <button class="btn" id="helpBtn">
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"></circle>
+    <line x1="12" y1="8" x2="12" y2="12"></line>
+    <line x1="12" y1="16" x2="12" y2="16"></line>
+  </svg>
+  Aide
+</button>
+
+<button class="btn" id="aboutBtn">
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"></circle>
+    <path d="M12 16v-4"></path>
+    <path d="M12 8h.01"></path>
+  </svg>
+  À propos
+</button>
+
       <span id="testBadge" class="badge badge-success">✓ Tests OK</span>
     </div>
   </header>
@@ -773,6 +820,44 @@ tfoot td {
       </div>
     </section>
   </div>
+
+  <!-- Guide d'utilisation Modal -->
+<div id="helpModal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close" data-close="helpModal">&times;</span>
+    <h2>Guide d’utilisation</h2>
+    <p>Ce logiciel permet de créer, gérer et exporter des devis/proformas pour un atelier de meubles en bois ou aluminium.</p>
+    <h3>Fonctionnalités principales</h3>
+    <ul>
+      <li><strong>Produits :</strong> Ajoutez, modifiez ou supprimez des produits avec nom, catégorie, unité et prix.</li>
+      <li><strong>Création Proforma :</strong> Remplissez les informations client, date et ajoutez des lignes d’articles.</li>
+      <li><strong>Calcul automatique :</strong> Les totaux sont calculés automatiquement avec TVA et remises.</li>
+      <li><strong>Historique :</strong> Consultez les proformas créées dans les 7 derniers jours.</li>
+      <li><strong>Import/Export :</strong> Sauvegardez ou restaurez vos données (JSON ou Excel).</li>
+      <li><strong>Impression :</strong> Imprimez directement la proforma prête à remettre au client.</li>
+      <li><strong>Sauvegarde locale :</strong> Les données sont stockées dans votre navigateur, même après fermeture.</li>
+    </ul>
+    <h3>Conseils d’utilisation</h3>
+    <ul>
+      <li>Utilisez le bouton <em>Enregistrer</em> pour sauvegarder un brouillon de proforma.</li>
+      <li>Vérifiez vos données avant export ou impression.</li>
+      <li>Utilisez l’onglet Import/Export pour transférer vos données sur un autre appareil.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- À propos Modal -->
+<div id="aboutModal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close" data-close="aboutModal">&times;</span>
+    <h2>À propos</h2>
+    <p><strong>Nom :</strong> Proforma   — Ma Cuisine</p>
+    <p><strong>Version :</strong> 1.0.0</p>
+    <p><strong>Description :</strong> Application locale pour la gestion et l’édition de devis/proformas d’atelier. Conçue pour une utilisation simple, rapide et efficace, sans connexion internet.</p>
+    <p><strong>Auteur :</strong> Mustapha Salhi</p>
+  </div>
+</div>
+
 
   <script>
     const LS_PROD = 'pf_products_v2';
@@ -1490,6 +1575,24 @@ tfoot td {
       }
     }
 
+// ===== Modals =====
+document.addEventListener('DOMContentLoaded', () => {
+  function setupModal(btnId, modalId) {
+    const btn = document.getElementById(btnId);
+    const modal = document.getElementById(modalId);
+    if (!btn || !modal) return;
+    const close = modal.querySelector('.modal-close');
+    btn.addEventListener('click', () => modal.style.display = 'block');
+    if (close) close.addEventListener('click', () => modal.style.display = 'none');
+  }
+
+  setupModal('helpBtn', 'helpModal');
+  setupModal('aboutBtn', 'aboutModal');
+
+  window.addEventListener('click', (e) => {
+    if (e.target.classList && e.target.classList.contains('modal')) e.target.style.display = 'none';
+  });
+});
     // ===== Init =====
     (function init() {
       setupTabs();
