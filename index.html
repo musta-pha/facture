@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proforma Atelier — Meubles Bois / Aluminium</title>
+  <style>
+:root {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --muted: #64748b;
+  --text: #1e293b;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --line: #e2e8f0;
+  --btn-bg: #3b82f6;
+  --btn-hover: #2563eb;
+  --tab-active: #3b82f6;
+  --tab-inactive: #e2e8f0;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --success-bg: #ecfdf5;
+  --warning-bg: #fffbeb;
+  --danger-bg: #fef2f2;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+header .actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn {
+  background: var(--btn-bg);
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn:hover {
+  background: var(--btn-hover);
+  transform: translateY(-1px);
+}
+
+.btn.primary {
+  background: var(--accent);
+}
+
+.btn.primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn.success {
+  background: var(--success);
+}
+
+.btn.warning {
+  background: var(--warning);
+}
+
+.btn.danger {
+  background: var(--danger);
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 16px;
+  padding: 16px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+}
+
+.card h2 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+label {
+  font-size: 12px;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+input, select, textarea {
+  width: 100%;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+}
+
+th, td {
+  border-bottom: 1px dashed var(--line);
+  padding: 8px;
+  font-size: 13px;
+  text-align: left;
+}
+
+th {
+  color: var(--muted);
+  font-weight: 600;
+  background: rgba(226, 232, 240, 0.3);
+  position: sticky;
+  top: 0;
+}
+
+tfoot td {
+  border-top: 1px solid var(--line);
+  font-weight: 500;
+}
+
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.right { display: flex; justify-content: flex-end; gap: 8px; }
+
+.total {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.muted { color: var(--muted); }
+
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.notice {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 8px;
+  background: rgba(226, 232, 240, 0.3);
+  border-radius: 6px;
+  margin: 8px 0;
+}
+
+.list {
+  max-height: 220px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px dashed var(--line);
+  transition: background 0.2s ease;
+}
+
+.list-item:hover {
+  background: rgba(226, 232, 240, 0.3);
+}
+
+.list-item:last-child { border-bottom: none; }
+
+.tag {
+  font-size: 11px;
+  color: var(--text);
+  background: #e2f3fb;
+  border: 1px solid #bae6fd;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-weight: 500;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 12px;
+}
+
+.tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.tab.active {
+  border-bottom-color: var(--tab-active);
+  color: var(--tab-active);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.preview-pane {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.preview-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-success {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.status-warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.status-danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--line);
+}
+
+.badge-success {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.badge-danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+@media (max-width: 900px) {
+  .container { grid-template-columns: 1fr; }
+  header .actions { justify-content: flex-end; }
+}
+
+@media print {
+  header, .no-print { display: none; }
+  body { background: white; color: black; }
+  .card { border: none; box-shadow: none; }
+  input, select, textarea { border: 1px solid #ccc; color: black; background: white; }
+  .muted { color: #555; }
+  .tab-content:not(.active) { display: none !important; }
+  .container { grid-template-columns: 1fr; padding: 0; gap: 0; }
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <h1>
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+      <span>Proforma Atelier</span>
+    </h1>
+    <div class="actions no-print">
+      <button class="btn" id="exportExcelBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Excel
+      </button>
+      <button class="btn" id="exportJsonBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        JSON
+      </button>
+      <button class="btn" id="importJsonBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"></path>
+          <polyline points="16 5 22 5 22 11"></polyline>
+          <line x1="21" y1="3" x2="12" y2="12"></line>
+        </svg>
+        Importer
+      </button>
+      <button class="btn danger" id="resetBtn" title="Effacer les données locales">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+        Réinitialiser
+      </button>
+      <button class="btn primary" id="printBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 6 2 18 2 18 9"></polyline>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+          <rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+        Imprimer
+      </button>
+      <span id="testBadge" class="badge badge-success">✓ Tests OK</span>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Left Column -->
+    <section class="card" id="productsCard">
+      <div class="tabs">
+        <div class="tab active" data-tab="products">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          Produits
+        </div>
+        <div class="tab" data-tab="history">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Historique
+        </div>
+        <div class="tab" data-tab="importExport">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          Import/Export
+        </div>
+      </div>
+
+      <!-- Products Tab -->
+      <div id="products-tab" class="tab-content active">
+        <h2>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          Produits <span class="pill" id="prodCount">0</span>
+        </h2>
+        <div class="row">
+          <div>
+            <label>Nom</label>
+            <input id="pName" placeholder="ex: Caisson cuisine 60cm" />
+          </div>
+          <div>
+            <label>Catégorie</label>
+            <select id="pCat">
+              <option>Cuisine</option>
+              <option>Chambre</option>
+              <option>Salon</option>
+              <option>Bureau</option>
+              <option>Aluminium</option>
+              <option>Bois</option>
+              <option>Autre</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-3" style="margin-top:8px">
+          <div>
+            <label>Unité</label>
+            <input id="pUnit" placeholder="pcs / ml / m²" />
+          </div>
+          <div>
+            <label>Prix Unitaire</label>
+            <input id="pPrice" type="number" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="right">
+            <button class="btn" id="saveProdBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              Ajouter
+            </button>
+          </div>
+        </div>
+        <div class="notice" style="margin-top:8px">Astuce : cliquez une ligne pour éditer. Données sauvegardées dans le navigateur.</div>
+        <table style="margin-top:10px">
+          <thead>
+            <tr><th>Nom</th><th>Catégorie</th><th>Unité</th><th>Prix</th><th class="no-print"></th></tr>
+          </thead>
+          <tbody id="prodBody"></tbody>
+        </table>
+
+        <div class="preview-pane no-print">
+          <div class="preview-header">
+            <div class="preview-title">Aperçu du produit sélectionné</div>
+          </div>
+          <div id="productPreview">
+            <div class="notice">Aucun produit sélectionné</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Tab -->
+      <div id="history-tab" class="tab-content">
+        <h2>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Proformas récentes (7 jours)
+        </h2>
+        <div class="list" id="recentList"></div>
+      </div>
+
+      <!-- Import/Export Tab -->
+      <div id="importExport-tab" class="tab-content">
+        <h2>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          Import/Export de données
+        </h2>
+        <div class="notice">Sauvegardez ou restaurez toutes vos données (produits, factures, historique)</div>
+
+        <div style="margin-top: 16px;">
+          <h3>Export</h3>
+          <div class="grid-3" style="margin-top:8px">
+            <div>
+              <button class="btn full-width" id="exportProductsBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Produits (JSON)
+              </button>
+            </div>
+            <div>
+              <button class="btn full-width" id="exportInvoicesBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Factures (JSON)
+              </button>
+            </div>
+            <div>
+              <button class="btn full-width" id="exportAllBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Tout exporter
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <h3>Import</h3>
+          <div class="grid-3" style="margin-top:8px">
+            <div>
+              <button class="btn full-width" id="importProductsBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"></path>
+                  <polyline points="16 5 22 5 22 11"></polyline>
+                  <line x1="21" y1="3" x2="12" y2="12"></line>
+                </svg>
+                Produits
+              </button>
+            </div>
+            <div>
+              <button class="btn full-width" id="importInvoicesBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"></path>
+                  <polyline points="16 5 22 5 22 11"></polyline>
+                  <line x1="21" y1="3" x2="12" y2="12"></line>
+                </svg>
+                Factures
+              </button>
+            </div>
+            <div>
+              <button class="btn full-width" id="importAllBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"></path>
+                  <polyline points="16 5 22 5 22 11"></polyline>
+                  <line x1="21" y1="3" x2="12" y2="12"></line>
+                </svg>
+                Tout importer
+              </button>
+            </div>
+          </div>
+          <div class="notice" style="margin-top:8px">L'import écrasera les données existantes du même type.</div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <h3>Sauvegarde locale</h3>
+          <div class="notice" style="margin-top:8px">Les données sont automatiquement sauvegardées dans votre navigateur.</div>
+          <div style="margin-top:8px">
+            <button class="btn full-width" id="backupNowBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              Forcer sauvegarde maintenant
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column - Invoice -->
+    <section class="card">
+      <h2>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        Proforma
+      </h2>
+      <div class="row">
+        <div>
+          <label>N°</label>
+          <input id="invNo" />
+        </div>
+        <div>
+          <label>Date</label>
+          <input id="invDate" type="date" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <div>
+          <label>Client</label>
+          <input id="client" placeholder="Nom du client" />
+        </div>
+        <div>
+          <label>Notes</label>
+          <input id="notes" placeholder="Optionnel" />
+        </div>
+      </div>
+
+      <table style="margin-top:10px">
+        <thead>
+          <tr>
+            <th style="width:22%">Produit</th>
+            <th>Description</th>
+            <th style="width:8%">Unité</th>
+            <th style="width:8%">Qté</th>
+            <th style="width:12%">PU</th>
+            <th style="width:8%">TVA %</th>
+            <th style="width:10%">Remise %</th>
+            <th style="width:12%">Total</th>
+            <th class="no-print" style="width:6%"></th>
+          </tr>
+        </thead>
+        <tbody id="lines"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="9" class="no-print">
+              <button class="btn" id="addLineBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Ligne
+              </button>
+              <button class="btn" id="clearLinesBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Vider
+              </button>
+              <button class="btn" id="saveDraftBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                  <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Enregistrer
+              </button>
+              <button class="btn" id="loadDraftBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Charger
+              </button>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="row" style="margin-top:12px">
+        <div>
+          <div class="muted">Vendeur (Atelier / Entreprise)</div>
+          <textarea id="seller" rows="4" placeholder="Raison sociale / Adresse / Téléphone"></textarea>
+        </div>
+        <div>
+          <table>
+            <tr><td class="muted">Sous-total</td><td class="right mono" id="subtotal">0.00</td></tr>
+            <tr><td class="muted">TVA</td><td class="right mono" id="tax">0.00</td></tr>
+            <tr><td class="muted">Remise</td><td class="right mono" id="discount">0.00</td></tr>
+            <tr><td class="total">Total TTC</td><td class="right total mono" id="grand">0.00</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="notice" style="margin-top:6px">Utilisation atelier : devis/proforma pour fabrication de meubles (bois / aluminium), cuisines, chambres, etc.</div>
+
+      <div class="preview-pane no-print">
+        <div class="preview-header">
+          <div class="preview-title">Aperçu de la proforma</div>
+          <div class="preview-actions">
+            <button class="btn" id="refreshPreviewBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              Actualiser
+            </button>
+          </div>
+        </div>
+        <div id="invoicePreview">
+          <div class="notice">Aperçu de la proforma sera affiché ici</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const LS_PROD = 'pf_products_v2';
+    const LS_DRAFT = 'pf_invoice_draft_v2';
+    const LS_HISTORY = 'pf_history_v1';
+    const AUTOSAVE_MS = 60000;
+
+    const $ = (q, root=document) => root.querySelector(q);
+    const $$ = (q, root=document) => [...root.querySelectorAll(q)];
+
+    let products = JSON.parse(localStorage.getItem(LS_PROD)) || [];
+    let editingIndex = null;
+    let autosaveTimer = null;
+    let selectedProductId = null;
+
+    // ===== Tab Navigation =====
+    function setupTabs() {
+      const tabs = $$('.tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          $$('.tab').forEach(t => t.classList.remove('active'));
+          $$('.tab-content').forEach(c => c.classList.remove('active'));
+
+          tab.classList.add('active');
+          $(`#${tab.dataset.tab}-tab`).classList.add('active');
+        });
+      });
+    }
+
+    // ===== Produits =====
+    function saveProducts() {
+      localStorage.setItem(LS_PROD, JSON.stringify(products));
+      renderProducts();
+      refreshProductOptions();
+    }
+
+    function renderProducts() {
+      const body = $('#prodBody');
+      body.innerHTML = '';
+      $('#prodCount').textContent = products.length;
+
+      products.forEach((p, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${p.name}</td>
+          <td>${p.cat}</td>
+          <td>${p.unit||''}</td>
+          <td class="mono">${num(p.price)}</td>
+          <td class="no-print">
+            <button class="btn" data-edit=${idx}>Modifier</button>
+            <button class="btn danger" data-del=${idx}>Suppr</button>
+          </td>`;
+
+        tr.addEventListener('click', (e) => {
+          if(e.target.dataset.edit !== undefined) {
+            fillEditor(idx);
+            selectedProductId = idx;
+            renderProductPreview();
+          }
+          if(e.target.dataset.del !== undefined) {
+            if(confirm(`Supprimer le produit "${p.name}" ?`)) {
+              products.splice(idx, 1);
+              saveProducts();
+              selectedProductId = null;
+              renderProductPreview();
+            }
+          }
+        });
+
+        if(selectedProductId === idx) {
+          tr.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+        }
+
+        body.appendChild(tr);
+      });
+      renderHistory();
+    }
+
+    function fillEditor(idx) {
+      const p = products[idx];
+      $('#pName').value = p.name;
+      $('#pCat').value = p.cat;
+      $('#pUnit').value = p.unit || '';
+      $('#pPrice').value = p.price;
+      editingIndex = idx;
+    }
+
+    function renderProductPreview() {
+      const preview = $('#productPreview');
+      if(selectedProductId === null || !products[selectedProductId]) {
+        preview.innerHTML = '<div class="notice">Aucun produit sélectionné</div>';
+        return;
+      }
+
+      const p = products[selectedProductId];
+      preview.innerHTML = `
+        <div style="margin-bottom: 8px;">
+          <div style="font-weight: 600; font-size: 14px;">${p.name}</div>
+          <div style="font-size: 12px; color: var(--muted);">${p.cat}</div>
+        </div>
+        <table>
+          <tr>
+            <td class="muted">Unité:</td>
+            <td>${p.unit || '—'}</td>
+          </tr>
+          <tr>
+            <td class="muted">Prix:</td>
+            <td class="mono">${num(p.price)}</td>
+          </tr>
+        </table>
+      `;
+    }
+
+    $('#saveProdBtn').addEventListener('click', () => {
+      const name = $('#pName').value.trim();
+      if(!name) return alert('Nom requis');
+
+      const prod = {
+        name,
+        cat: $('#pCat').value,
+        unit: $('#pUnit').value.trim(),
+        price: parseFloat($('#pPrice').value || '0')
+      };
+
+      if(editingIndex == null) {
+        products.push(prod);
+        selectedProductId = products.length - 1;
+      } else {
+        products[editingIndex] = prod;
+        selectedProductId = editingIndex;
+        editingIndex = null;
+      }
+
+      $('#pName').value = '';
+      $('#pUnit').value = '';
+      $('#pPrice').value = '';
+
+      saveProducts();
+      renderProductPreview();
+    });
+
+    // ===== Lignes proforma =====
+    function addLine(data = {}) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><select class="prodSel"></select></td>
+        <td><input class="desc" placeholder="Détails (dimensions, finition...)" value="${data.desc||''}" /></td>
+        <td><input class="unit" placeholder="pcs" value="${data.unit||''}" /></td>
+        <td><input class="qty" type="number" step="0.01" value="${data.qty??1}" /></td>
+        <td><input class="price" type="number" step="0.01" value="${data.price??0}" /></td>
+        <td><input class="tax" type="number" step="0.01" value="${data.tax??0}" /></td>
+        <td><input class="disc" type="number" step="0.01" value="${data.disc??0}" /></td>
+        <td class="mono lineTotal">0.00</td>
+        <td class="no-print"><button class="btn danger del">✕</button></td>`;
+
+      const sel = $('.prodSel', tr);
+      refreshProductOptions(sel);
+
+      if(data.product) {
+        sel.value = data.product;
+        const p = products.find(x => x.name === data.product);
+        if(p) {
+          $('.price', tr).value = p.price;
+          $('.unit', tr).value = p.unit || '';
+          if(!$('.desc', tr).value) $('.desc', tr).value = p.cat;
+        }
+      }
+
+      sel.addEventListener('change', () => {
+        const p = products.find(x => x.name === sel.value);
+        if(p) {
+          $('.price', tr).value = p.price;
+          $('.unit', tr).value = p.unit || '';
+          if(!$('.desc', tr).value) $('.desc', tr).value = p.cat;
+          calc();
+          scheduleAutosave();
+          renderInvoicePreview();
+        }
+      });
+
+      tr.addEventListener('input', () => {
+        calc();
+        scheduleAutosave();
+        renderInvoicePreview();
+      });
+
+      $('.del', tr).addEventListener('click', () => {
+        tr.remove();
+        calc();
+        scheduleAutosave();
+        renderInvoicePreview();
+      });
+
+      $('#lines').appendChild(tr);
+      calc();
+      renderInvoicePreview();
+    }
+
+    function refreshProductOptions(selectEl) {
+      const options = products.map(p => `<option>${p.name}</option>`).join('');
+      if(selectEl) {
+        selectEl.innerHTML = `<option value="">—</option>` + options;
+      } else {
+        $$('#lines .prodSel').forEach(s => s.innerHTML = `<option value="">—</option>` + options);
+      }
+    }
+
+    function num(n) {
+      return (Number(n || 0)).toFixed(2);
+    }
+
+    function calc() {
+      let subtotal = 0, tax = 0, disc = 0;
+
+      $$('#lines tr').forEach(tr => {
+        const q = Number($('.qty', tr).value || 0);
+        const up = Number($('.price', tr).value || 0);
+        const tx = Number($('.tax', tr).value || 0) / 100;
+        const dc = Number($('.disc', tr).value || 0) / 100;
+
+        const lineSub = q * up;
+        const lineTax = lineSub * tx;
+        const lineDisc = lineSub * dc;
+        const total = lineSub + lineTax - lineDisc;
+
+        $('.lineTotal', tr).textContent = num(total);
+        subtotal += lineSub;
+        tax += lineTax;
+        disc += lineDisc;
+      });
+
+      $('#subtotal').textContent = num(subtotal);
+      $('#tax').textContent = num(tax);
+      $('#discount').textContent = num(disc);
+      $('#grand').textContent = num(subtotal + tax - disc);
+    }
+
+    // ===== Brouillon =====
+    function getDraft() {
+      const lines = $$('#lines tr').map(tr => ({
+        product: $('.prodSel', tr).value,
+        desc: $('.desc', tr).value,
+        unit: $('.unit', tr).value,
+        qty: Number($('.qty', tr).value || 0),
+        price: Number($('.price', tr).value || 0),
+        tax: Number($('.tax', tr).value || 0),
+        disc: Number($('.disc', tr).value || 0)
+      }));
+
+      return {
+        invNo: $('#invNo').value,
+        invDate: $('#invDate').value,
+        client: $('#client').value,
+        notes: $('#notes').value,
+        seller: $('#seller').value,
+        lines
+      };
+    }
+
+    function saveDraft(manual = false) {
+      const draft = getDraft();
+      localStorage.setItem(LS_DRAFT, JSON.stringify(draft));
+      pushHistory({ ...draft, ts: Date.now() });
+
+      if(manual) {
+        const badge = $('#testBadge');
+        badge.textContent = '✓ Enregistré';
+        badge.className = 'badge badge-success';
+        setTimeout(() => {
+          if(badge.textContent === '✓ Enregistré') {
+            badge.textContent = '✓ Tests OK';
+          }
+        }, 2000);
+      }
+
+      renderInvoicePreview();
+    }
+
+    function loadDraft() {
+      const data = JSON.parse(localStorage.getItem(LS_DRAFT) || null);
+      if(!data) return alert('Aucun brouillon');
+
+      $('#invNo').value = data.invNo || '';
+      $('#invDate').value = data.invDate || today();
+      $('#client').value = data.client || '';
+      $('#notes').value = data.notes || '';
+      $('#seller').value = data.seller || '';
+
+      $('#lines').innerHTML = '';
+      (data.lines || []).forEach(addLine);
+      calc();
+      renderInvoicePreview();
+    }
+
+    function scheduleAutosave() {
+      clearTimeout(autosaveTimer);
+      autosaveTimer = setTimeout(() => saveDraft(false), AUTOSAVE_MS);
+    }
+
+    $('#saveDraftBtn').addEventListener('click', () => saveDraft(true));
+    $('#loadDraftBtn').addEventListener('click', loadDraft);
+
+    // ===== Historique =====
+    function pushHistory(item) {
+      const list = JSON.parse(localStorage.getItem(LS_HISTORY) || []);
+      list.unshift(item);
+
+      const seven = 7 * 24 * 60 * 60 * 1000;
+      const now = Date.now();
+      const kept = list.filter(x => now - (x.ts || now) <= seven).slice(0, 200);
+
+      localStorage.setItem(LS_HISTORY, JSON.stringify(kept));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const box = $('#recentList');
+      box.innerHTML = '';
+      const list = JSON.parse(localStorage.getItem(LS_HISTORY) || []);
+
+      if(list.length === 0) {
+        box.innerHTML = '<div class="list-item muted">Aucune proforma récente</div>';
+        return;
+      }
+
+      list.forEach((x, i) => {
+        const d = new Date(x.ts || Date.now());
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = `
+          <div>
+            <div class="mono">${x.invNo || '—'} <span class="tag">${(x.client || 'Sans client')}</span></div>
+            <div class="muted" style="font-size:11px">${d.toLocaleString()}</div>
+            <div class="muted" style="font-size:11px; margin-top:4px;">
+              ${x.lines.length} articles • Total: ${x.lines.reduce((sum, line) => {
+                const q = line.qty || 0;
+                const up = line.price || 0;
+                const tx = (line.tax || 0) / 100;
+                const dc = (line.disc || 0) / 100;
+                return sum + (q * up * (1 + tx) - (q * up * dc));
+              }, 0).toFixed(2)}
+            </div>
+          </div>
+          <div>
+            <button class="btn" data-load=${i}>Charger</button>
+            <button class="btn danger" data-del=${i}>Suppr</button>
+          </div>`;
+
+        div.addEventListener('click', (e) => {
+          if(e.target.dataset.load !== undefined) {
+            const item = list[Number(e.target.dataset.load)];
+            localStorage.setItem(LS_DRAFT, JSON.stringify(item));
+            loadDraft();
+
+            $$('.tab').forEach(t => t.classList.remove('active'));
+            $$('.tab-content').forEach(c => c.classList.remove('active'));
+            $('.tab[data-tab="products"]').classList.add('active');
+            $('#products-tab').classList.add('active');
+          }
+
+          if(e.target.dataset.del !== undefined) {
+            if(confirm('Supprimer cette proforma de l\'historique ?')) {
+              list.splice(Number(e.target.dataset.del), 1);
+              localStorage.setItem(LS_HISTORY, JSON.stringify(list));
+              renderHistory();
+            }
+          }
+        });
+
+        box.appendChild(div);
+      });
+    }
+
+    // ===== Invoice Preview =====
+    function renderInvoicePreview() {
+      const preview = $('#invoicePreview');
+      const draft = getDraft();
+
+      if(!draft.invNo && !draft.client && (!draft.lines || draft.lines.length === 0)) {
+        preview.innerHTML = '<div class="notice">Aperçu de la proforma sera affiché ici</div>';
+        return;
+      }
+
+      let html = `
+        <div style="margin-bottom: 12px;">
+          <div style="font-weight: 600; font-size: 16px;">Proforma ${draft.invNo || '—'}</div>
+          <div style="font-size: 13px; color: var(--muted);">${draft.client || 'Sans client'} • ${draft.invDate || today()}</div>
+        </div>
+      `;
+
+      if(draft.lines && draft.lines.length > 0) {
+        html += `<table style="width: 100%; font-size: 13px;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--line);">
+              <th style="text-align: left; padding: 4px 0;">Produit</th>
+              <th style="text-align: right; padding: 4px 0;">Qté</th>
+              <th style="text-align: right; padding: 4px 0;">PU</th>
+              <th style="text-align: right; padding: 4px 0;">Total</th>
+            </tr>
+          </thead>
+          <tbody>`;
+
+        draft.lines.forEach(line => {
+          const qty = line.qty || 0;
+          const price = line.price || 0;
+          const tax = (line.tax || 0) / 100;
+          const disc = (line.disc || 0) / 100;
+          const total = (qty * price * (1 + tax)) - (qty * price * disc);
+
+          html += `
+            <tr style="border-bottom: 1px dashed var(--line);">
+              <td style="padding: 6px 0;">
+                <div style="font-weight: 500;">${line.product || '—'}</div>
+                <div style="font-size: 12px; color: var(--muted);">${line.desc || ''}</div>
+              </td>
+              <td style="text-align: right; padding: 6px 0;">${qty} ${line.unit || ''}</td>
+              <td style="text-align: right; padding: 6px 0;" class="mono">${num(price)}</td>
+              <td style="text-align: right; padding: 6px 0;" class="mono">${num(total)}</td>
+            </tr>`;
+        });
+
+        const subtotal = draft.lines.reduce((sum, line) => sum + ((line.qty || 0) * (line.price || 0)), 0);
+        const tax = draft.lines.reduce((sum, line) => sum + ((line.qty || 0) * (line.price || 0) * ((line.tax || 0) / 100)), 0);
+        const disc = draft.lines.reduce((sum, line) => sum + ((line.qty || 0) * (line.price || 0) * ((line.disc || 0) / 100)), 0);
+        const grand = subtotal + tax - disc;
+
+        html += `</tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" style="text-align: right; padding: 6px 0; font-weight: 500;">Sous-total:</td>
+              <td style="text-align: right; padding: 6px 0;" class="mono">${num(subtotal)}</td>
+            </tr>
+            <tr>
+              <td colspan="3" style="text-align: right; padding: 6px 0; font-weight: 500;">TVA:</td>
+              <td style="text-align: right; padding: 6px 0;" class="mono">${num(tax)}</td>
+            </tr>
+            <tr>
+              <td colspan="3" style="text-align: right; padding: 6px 0; font-weight: 500;">Remise:</td>
+              <td style="text-align: right; padding: 6px 0;" class="mono">${num(disc)}</td>
+            </tr>
+            <tr>
+              <td colspan="3" style="text-align: right; padding: 6px 0; font-weight: 600;">Total TTC:</td>
+              <td style="text-align: right; padding: 6px 0; font-weight: 600;" class="mono">${num(grand)}</td>
+            </tr>
+          </tfoot>
+        </table>`;
+      } else {
+        html += '<div class="notice">Aucun article ajouté</div>';
+      }
+
+      preview.innerHTML = html;
+    }
+
+    $('#refreshPreviewBtn').addEventListener('click', renderInvoicePreview);
+
+    // ===== Export Excel =====
+    function buildExcelHTML(draft, totals) {
+      const rows = draft.lines.map((l, idx) => `<tr>
+        <td>${idx+1}</td>
+        <td>${esc(l.product||'')}</td>
+        <td>${esc(l.desc||'')}</td>
+        <td>${esc(l.unit||'')}</td>
+        <td>${l.qty||0}</td>
+        <td>${l.price||0}</td>
+        <td>${l.tax||0}</td>
+        <td>${l.disc||0}</td>
+        <td>${((l.qty||0)*(l.price||0)*(1+(l.tax||0)/100) - ((l.qty||0)*(l.price||0)*(l.disc||0)/100)).toFixed(2)}</td>
+      </tr>`).join('');
+
+      const sellerFlat = (draft.seller||'').replace(/\n/g,' / ');
+
+      return `<!DOCTYPE html><html><head>
+        <meta charset="UTF-8">
+        <style>
+          body { font-family: Arial, sans-serif; }
+          table { border-collapse: collapse; width: 100%; }
+          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          th { background-color: #f2f2f2; }
+          .mono { font-family: monospace; }
+          .right { text-align: right; }
+        </style>
+      </head><body>
+        <table>
+          <tr><th colspan="9">Proforma — ${esc(draft.invNo||'')}</th></tr>
+          <tr><td colspan="9">Date: ${esc(draft.invDate||'')} &nbsp; Client: ${esc(draft.client||'')}</td></tr>
+          <tr><td colspan="9">Notes: ${esc(draft.notes||'')}</td></tr>
+          <tr><td colspan="9">Vendeur: ${esc(sellerFlat)}</td></tr>
+          <tr><th>#</th><th>Produit</th><th>Description</th><th>Unité</th><th>Qté</th><th>PU</th><th>TVA %</th><th>Remise %</th><th>Total</th></tr>
+          ${rows}
+          <tr><td colspan="8" align="right"><b>Sous-total</b></td><td class="mono">${totals.subtotal}</td></tr>
+          <tr><td colspan="8" align="right"><b>TVA</b></td><td class="mono">${totals.tax}</td></tr>
+          <tr><td colspan="8" align="right"><b>Remise</b></td><td class="mono">${totals.discount}</td></tr>
+          <tr><td colspan="8" align="right"><b>Total TTC</b></td><td class="mono">${totals.grand}</td></tr>
+        </table>
+      </body></html>`;
+    }
+
+    function exportExcel() {
+      const draft = getDraft();
+      const totals = {
+        subtotal: $('#subtotal').textContent,
+        tax: $('#tax').textContent,
+        discount: $('#discount').textContent,
+        grand: $('#grand').textContent
+      };
+      const html = buildExcelHTML(draft, totals);
+      const blob = new Blob([html], {type:'application/vnd.ms-excel'});
+      downloadBlob(blob, (draft.invNo||'proforma') + '.xls');
+    }
+
+    function esc(s) {
+      return String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+    }
+
+    function downloadBlob(blob, filename) {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+
+    // ===== Impression =====
+    $('#printBtn').addEventListener('click', () => { window.print(); });
+
+    // ===== Enhanced JSON import/export =====
+    function exportData(type) {
+      let data, filename;
+      switch(type) {
+        case 'products':
+          data = {products};
+          filename = 'proforma-products.json';
+          break;
+        case 'invoices':
+          data = {
+            draft: JSON.parse(localStorage.getItem(LS_DRAFT)||'{}'),
+            history: JSON.parse(localStorage.getItem(LS_HISTORY)||'[]')
+          };
+          filename = 'proforma-invoices.json';
+          break;
+        case 'all':
+          data = {
+            products,
+            draft: JSON.parse(localStorage.getItem(LS_DRAFT)||'{}'),
+            history: JSON.parse(localStorage.getItem(LS_HISTORY)||'[]')
+          };
+          filename = 'proforma-all-data.json';
+          break;
+        default:
+          return;
+      }
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+      downloadBlob(blob, filename);
+    }
+
+    function importData(type, file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+
+          switch(type) {
+            case 'products':
+              if(data.products) {
+                products = data.products;
+                saveProducts();
+                alert(`${data.products.length} produits importés avec succès`);
+              } else {
+                alert('Fichier ne contient pas de données produits valides');
+              }
+              break;
+
+            case 'invoices':
+              if(data.draft || data.history) {
+                if(data.draft) localStorage.setItem(LS_DRAFT, JSON.stringify(data.draft));
+                if(data.history) localStorage.setItem(LS_HISTORY, JSON.stringify(data.history));
+                alert('Données factures importées avec succès');
+                renderHistory();
+                loadDraft();
+              } else {
+                alert('Fichier ne contient pas de données factures valides');
+              }
+              break;
+
+            case 'all':
+              if(data.products) {
+                products = data.products;
+                saveProducts();
+              }
+              if(data.draft) localStorage.setItem(LS_DRAFT, JSON.stringify(data.draft));
+              if(data.history) localStorage.setItem(LS_HISTORY, JSON.stringify(data.history));
+              alert('Toutes données importées avec succès');
+              renderHistory();
+              loadDraft();
+              break;
+          }
+        } catch(e) {
+          alert('Erreur lors de la lecture du fichier JSON');
+          console.error(e);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function setupImportExportButtons() {
+      // Export buttons
+      $('#exportProductsBtn').addEventListener('click', () => exportData('products'));
+      $('#exportInvoicesBtn').addEventListener('click', () => exportData('invoices'));
+      $('#exportAllBtn').addEventListener('click', () => exportData('all'));
+
+      // Import buttons
+      function createImportHandler(type) {
+        return () => {
+          const inp = document.createElement('input');
+          inp.type = 'file';
+          inp.accept = '.json,application/json';
+          inp.onchange = () => {
+            if(inp.files && inp.files[0]) {
+              if(confirm(`Êtes-vous sûr de vouloir importer des données ${type}? Cela écrasera les données existantes.`)) {
+                importData(type, inp.files[0]);
+              }
+            }
+          };
+          inp.click();
+        };
+      }
+
+      $('#importProductsBtn').addEventListener('click', createImportHandler('products'));
+      $('#importInvoicesBtn').addEventListener('click', createImportHandler('invoices'));
+      $('#importAllBtn').addEventListener('click', createImportHandler('all'));
+
+      // Backup now button
+      $('#backupNowBtn').addEventListener('click', () => {
+        saveProducts();
+        saveDraft(true);
+        alert('Sauvegarde locale effectuée');
+      });
+    }
+
+    // ===== Main buttons =====
+    $('#exportExcelBtn').addEventListener('click', exportExcel);
+    $('#addLineBtn').addEventListener('click', () => {
+      addLine();
+      scheduleAutosave();
+    });
+
+    $('#clearLinesBtn').addEventListener('click', () => {
+      if(confirm('Vider toutes les lignes de la proforma ?')) {
+        $('#lines').innerHTML = '';
+        calc();
+        scheduleAutosave();
+        renderInvoicePreview();
+      }
+    });
+
+    $('#resetBtn').addEventListener('click', () => {
+      if(confirm('Effacer TOUTES les données locales ?')) {
+        localStorage.removeItem(LS_PROD);
+        localStorage.removeItem(LS_DRAFT);
+        localStorage.removeItem(LS_HISTORY);
+        products = [];
+        renderProducts();
+        refreshProductOptions();
+        $('#lines').innerHTML = '';
+        calc();
+        renderInvoicePreview();
+        renderProductPreview();
+      }
+    });
+
+    function today() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    // ===== Auto-tests =====
+    function assert(name, cond) {
+      return {name, ok: !!cond};
+    }
+
+    function runSelfTests() {
+      const results = [];
+      results.push(assert('esc encode <>&', esc('<>&') === '&lt;&gt;&amp;'));
+
+      const htmlTest = buildExcelHTML({
+        invNo:'TST',
+        invDate:'2025-08-13',
+        client:'C',
+        seller:'A\nB',
+        lines:[]
+      }, {
+        subtotal:'0.00',
+        tax:'0.00',
+        discount:'0.00',
+        grand:'0.00'
+      });
+
+      results.push(assert('seller newline → slash', htmlTest.includes('A / B')));
+
+      scheduleAutosave();
+      results.push(assert('autosave timer set', autosaveTimer !== null));
+
+      const ok = results.filter(r => r.ok).length;
+      const badge = document.getElementById('testBadge');
+
+      if(badge) {
+        badge.textContent = `SAVED: ${ok}/${results.length} OK`;
+        badge.className = ok === results.length ? 'badge badge-success' : 'badge badge-danger';
+      }
+
+      if(ok !== results.length) {
+        console.group('Self-tests');
+        results.forEach(r => console[r.ok?'log':'error'](`${r.ok?'OK':'FAIL'} — ${r.name}`));
+        console.groupEnd();
+      }
+    }
+
+    // ===== Init =====
+    (function init() {
+      setupTabs();
+      setupImportExportButtons();
+      renderProducts();
+      refreshProductOptions();
+      document.getElementById('invDate').value = today();
+      document.getElementById('invNo').value = 'PF-' + Date.now().toString().slice(-6);
+
+      if(products.length === 0) {
+        products = [
+          { name:'Caisson cuisine 60cm', cat:'Cuisine', unit:'pcs', price: 18000 },
+          { name:'Armoire 2 portes', cat:'Chambre', unit:'pcs', price: 42000 },
+          { name:'Meuble TV 140cm', cat:'Salon', unit:'pcs', price: 32000 },
+          { name:'Plan de travail (ml)', cat:'Cuisine', unit:'ml', price: 9000 },
+          { name:'Profilé aluminium 3m', cat:'Aluminium', unit:'pcs', price: 4500 }
+        ];
+        saveProducts();
+      }
+
+      addLine();
+      loadDraft();
+      scheduleAutosave();
+      runSelfTests();
+      renderInvoicePreview();
+      renderProductPreview();
+    })();
+  </script>
+</body>
+</html>
