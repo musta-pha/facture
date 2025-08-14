@@ -1,1625 +1,3173 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Proforma   — Ma Cuisine</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proforma Ma Cuisine | SaaS App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-:root {
-  --bg: #f8fafc;
-  --card: #ffffff;
-  --muted: #64748b;
-  --text: #1e293b;
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
-  --line: #e2e8f0;
-  --btn-bg: #3b82f6;
-  --btn-hover: #2563eb;
-  --tab-active: #3b82f6;
-  --tab-inactive: #e2e8f0;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --success-bg: #ecfdf5;
-  --warning-bg: #fffbeb;
-  --danger-bg: #fef2f2;
+    :root {
+      --primary: #1877f2;
+      --primary-dark: #166fe5;
+      --secondary: #42b72a;
+      --dark: #1c1e21;
+      --dark-light: #242526;
+      --darker: #18191a;
+      --text: #e4e6eb;
+      --text-secondary: #b0b3b8;
+      --card-bg: #242526;
+      --card-border: #3a3b3c;
+      --success: #31a24c;
+      --warning: #f7b928;
+      --danger: #f02849;
+      --online: #31a24c;
+      --offline: #b0b3b8;
+      --sidebar-width: 250px;
+      --header-height: 60px;
+      --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    }
+
+    [data-theme="light"] {
+      --dark: #f0f2f5;
+      --dark-light: #ffffff;
+      --darker: #e4e6eb;
+      --text: #050505;
+      --text-secondary: #65676b;
+      --card-bg: #ffffff;
+      --card-border: #dddfe2;
+    }
+
+    [dir="rtl"] {
+      direction: rtl;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* View Invoice Modal */
+#view-invoice-modal .modal-content {
+  max-width: 800px;
 }
 
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.5;
-}
-
-header {
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--line);
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-
-header h1 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.4);
-}
-.modal-content {
-  background-color: #fff;
-  margin: 10% auto;
-  padding: 20px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  width: 80%;
-  max-width: 600px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-.modal-close {
-  color: #aaa;
-  float: right;
-  font-size: 24px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.modal-close:hover { color: #000; }
-.modal h2 { margin-top: 0; }
-.modal ul { padding-left: 20px; }
-
-header .actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.btn {
-  background: var(--btn-bg);
-  color: #fff;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  font-size: 13px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.btn:hover {
-  background: var(--btn-hover);
-  transform: translateY(-1px);
-}
-
-.btn.primary {
-  background: var(--accent);
-}
-
-.btn.primary:hover {
-  background: var(--accent-hover);
-}
-
-.btn.success {
-  background: var(--success);
-}
-
-.btn.warning {
-  background: var(--warning);
-}
-
-.btn.danger {
-  background: var(--danger);
-}
-
-.container {
-  display: grid;
-  grid-template-columns: 380px 1fr;
-  gap: 16px;
-  padding: 16px;
-  max-width: 1600px;
-  margin: 0 auto;
-}
-
-.card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.03);
-  transition: box-shadow 0.2s ease;
-}
-
-.card:hover {
-  box-shadow: 0 10px 15px rgba(0,0,0,0.05);
-}
-
-.card h2 {
-  margin: 0 0 12px 0;
-  font-size: 16px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-label {
-  font-size: 12px;
-  color: var(--muted);
-  display: block;
-  margin-bottom: 4px;
-  font-weight: 500;
-}
-
-input, select, textarea {
-  width: 100%;
-  background: #fff;
-  border: 1px solid var(--line);
-  color: var(--text);
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 12px 0;
-}
-
-th, td {
-  border-bottom: 1px dashed var(--line);
-  padding: 8px;
-  font-size: 13px;
-  text-align: left;
-}
-
-th {
-  color: var(--muted);
-  font-weight: 600;
-  background: rgba(226, 232, 240, 0.3);
-  position: sticky;
-  top: 0;
-}
-
-tfoot td {
-  border-top: 1px solid var(--line);
-  font-weight: 500;
-}
-
-.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.right { display: flex; justify-content: flex-end; gap: 8px; }
-
-.total {
-  font-size: 18px;
-  font-weight: 800;
-}
-
-.muted { color: var(--muted); }
-
-.pill {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: #fff;
-  border: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-}
-
-.notice {
-  font-size: 12px;
-  color: var(--muted);
-  padding: 8px;
-  background: rgba(226, 232, 240, 0.3);
-  border-radius: 6px;
-  margin: 8px 0;
-}
-
-.list {
-  max-height: 220px;
-  overflow: auto;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: #fff;
-}
-
-.list-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 12px;
-  border-bottom: 1px dashed var(--line);
-  transition: background 0.2s ease;
-}
-
-.list-item:hover {
-  background: rgba(226, 232, 240, 0.3);
-}
-
-.list-item:last-child { border-bottom: none; }
-
-.tag {
-  font-size: 11px;
-  color: var(--text);
-  background: #e2f3fb;
-  border: 1px solid #bae6fd;
-  border-radius: 999px;
-  padding: 2px 8px;
-  font-weight: 500;
-}
-
-.tabs {
-  display: flex;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 12px;
-}
-
-.tab {
-  padding: 8px 16px;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  font-size: 14px;
-  color: var(--muted);
-}
-
-.tab.active {
-  border-bottom-color: var(--tab-active);
-  color: var(--tab-active);
-}
-
-.tab-content {
-  display: none;
-}
-
-.tab-content.active {
-  display: block;
-}
-
-.full-width {
-  grid-column: 1 / -1;
-}
-
-.preview-pane {
-  background: #f8fafc;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 16px;
-  margin-top: 16px;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.preview-header {
+.invoice-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
 }
 
-.preview-title {
-  font-weight: 600;
-  font-size: 14px;
+.invoice-info {
+  background: var(--darker);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
 }
 
-.preview-actions {
-  display: flex;
-  gap: 8px;
+.invoice-info div {
+  margin-bottom: 8px;
 }
 
-.status-badge {
-  padding: 4px 8px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 500;
+.invoice-info div:last-child {
+  margin-bottom: 0;
 }
 
-.status-success {
-  background: var(--success-bg);
-  color: var(--success);
+.invoice-notes {
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid var(--card-border);
 }
 
-.status-warning {
-  background: var(--warning-bg);
-  color: var(--warning);
+/* Product Form */
+#product-form .form-group {
+  margin-bottom: 20px;
 }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background-color: var(--dark);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background-color 0.3s ease;
+    }
 
-.status-danger {
-  background: var(--danger-bg);
-  color: var(--danger);
-}
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+      padding-top: var(--header-height);
+      transition: var(--transition);
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 500;
-  background: var(--line);
-}
+    .top-navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: var(--header-height);
+      background-color: var(--dark-light);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+      transition: var(--transition);
+    }
 
-.badge-success {
-  background: var(--success-bg);
-  color: var(--success);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
+    .logo {
+      display: flex;
+      align-items: center;
+      margin-right: 20px;
+    }
 
-.badge-warning {
-  background: var(--warning-bg);
-  color: var(--warning);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-}
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+    }
 
-.badge-danger {
-  background: var(--danger-bg);
-  color: var(--danger);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-}
+    .logo-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
 
-@media (max-width: 900px) {
-  .container { grid-template-columns: 1fr; }
-  header .actions { justify-content: flex-end; }
-}
+    .logo-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+    }
 
-@media print {
-  header, .no-print { display: none; }
-  body { background: white; color: black; }
-  .card { border: none; box-shadow: none; }
-  input, select, textarea { border: 1px solid #ccc; color: black; background: white; }
-  .muted { color: #555; }
-  .tab-content:not(.active) { display: none !important; }
-  .container { grid-template-columns: 1fr; padding: 0; gap: 0; }
-}
-</style>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    .search-container {
+      flex: 1;
+      max-width: 500px;
+      margin: 0 20px;
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 15px 10px 40px;
+      background-color: var(--darker);
+      border: none;
+      border-radius: 20px;
+      color: var(--text);
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+
+    .search-box input:focus {
+      outline: none;
+      background-color: var(--card-bg);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+    }
+
+    .nav-icons {
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-icon {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--darker);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .nav-icon:hover {
+      background-color: var(--card-border);
+    }
+
+    .icon-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: var(--danger);
+      color: white;
+      font-size: 0.7rem;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .language-toggle {
+      margin: 0 15px;
+      display: flex;
+      align-items: center;
+      background: var(--darker);
+      border-radius: 20px;
+      padding: 5px;
+    }
+
+    .lang-btn {
+      padding: 5px 15px;
+      border-radius: 15px;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .lang-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .profile-menu {
+      position: relative;
+      margin-left: 15px;
+    }
+
+    .profile-btn {
+      display: flex;
+      align-items: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 20px;
+      transition: var(--transition);
+    }
+
+    .profile-btn:hover {
+      background-color: var(--darker);
+    }
+
+    .profile-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+
+    .profile-name {
+      font-weight: 500;
+      font-size: 0.9rem;
+      margin-right: 8px;
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: var(--dark-light);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      min-width: 220px;
+      padding: 10px 0;
+      margin-top: 10px;
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: var(--transition);
+    }
+
+    .dropdown.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      color: var(--text);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .dropdown-item:hover {
+      background-color: var(--darker);
+    }
+
+    .dropdown-item i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .divider {
+      height: 1px;
+      background-color: var(--card-border);
+      margin: 5px 0;
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--dark-light);
+      height: calc(100vh - var(--header-height));
+      position: fixed;
+      left: 0;
+      padding: 20px 0;
+      overflow-y: auto;
+      transition: var(--transition);
+      z-index: 90;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+    }
+
+    .menu-item {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      color: var(--text);
+      text-decoration: none;
+      border-radius: 0 8px 8px 0;
+      margin: 5px 10px;
+      transition: var(--transition);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background-color: var(--darker);
+    }
+
+    .menu-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background-color: var(--primary);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .menu-item i {
+      margin-right: 15px;
+      width: 24px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+
+    .menu-title {
+      font-weight: 500;
+    }
+
+    .sidebar-footer {
+      padding: 20px;
+      margin-top: auto;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--darker);
+      border-radius: 20px;
+      padding: 5px;
+      margin-bottom: 15px;
+    }
+
+    .theme-btn {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+      border-radius: 15px;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .theme-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .help-box {
+      background: var(--darker);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .help-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    .help-title i {
+      margin-right: 10px;
+    }
+
+    .help-text {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 15px;
+    }
+
+    .help-btn {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .help-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 25px;
+      margin-left: var(--sidebar-width);
+      transition: var(--transition);
+    }
+
+    .page {
+      display: none;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: var(--transition);
+    }
+
+    .page.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .page-title {
+      font-size: 1.75rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .page-title i {
+      margin-right: 15px;
+      color: var(--primary);
+    }
+
+    .page-subtitle {
+      color: var(--text-secondary);
+      margin-bottom: 30px;
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+    }
+
+    .stat-icon.invoices {
+      background: rgba(24, 119, 242, 0.15);
+      color: var(--primary);
+    }
+
+    .stat-icon.products {
+      background: rgba(66, 183, 42, 0.15);
+      color: var(--secondary);
+    }
+
+    .stat-icon.revenue {
+      background: rgba(247, 185, 40, 0.15);
+      color: var(--warning);
+    }
+
+    .stat-icon.clients {
+      background: rgba(240, 40, 73, 0.15);
+      color: var(--danger);
+    }
+
+    .stat-title {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .stat-change {
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .stat-change.positive {
+      color: var(--success);
+    }
+
+    .stat-change.negative {
+      color: var(--danger);
+    }
+
+    .stat-change i {
+      margin-right: 5px;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .action-card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .action-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      font-size: 1.5rem;
+    }
+
+    .action-card:nth-child(1) .action-icon {
+      background: rgba(24, 119, 242, 0.15);
+      color: var(--primary);
+    }
+
+    .action-card:nth-child(2) .action-icon {
+      background: rgba(66, 183, 42, 0.15);
+      color: var(--secondary);
+    }
+
+    .action-card:nth-child(3) .action-icon {
+      background: rgba(247, 185, 40, 0.15);
+      color: var(--warning);
+    }
+
+    .action-card:nth-child(4) .action-icon {
+      background: rgba(240, 40, 73, 0.15);
+      color: var(--danger);
+    }
+
+    .action-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .action-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .recent-section {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .view-all {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .view-all:hover {
+      text-decoration: underline;
+    }
+
+    .invoice-list {
+      list-style: none;
+    }
+
+    .invoice-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .invoice-item:last-child {
+      border-bottom: none;
+    }
+
+    .invoice-info {
+      flex: 1;
+    }
+
+    .invoice-number {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .invoice-client {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .invoice-date {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .invoice-amount {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .invoice-status {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .status-paid {
+      background: rgba(49, 162, 76, 0.15);
+      color: var(--success);
+    }
+
+    .status-pending {
+      background: rgba(247, 185, 40, 0.15);
+      color: var(--warning);
+    }
+
+    .status-draft {
+      background: rgba(176, 179, 184, 0.15);
+      color: var(--text-secondary);
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .btn i {
+      margin-right: 8px;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background-color: var(--card-border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--darker);
+    }
+
+    .btn-success {
+      background-color: var(--success);
+      color: white;
+    }
+
+    .btn-warning {
+      background-color: var(--warning);
+      color: white;
+    }
+
+    .btn-danger {
+      background-color: var(--danger);
+      color: white;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .table-container {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .table-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .table-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .table-controls input, .table-controls select {
+      padding: 8px 15px;
+      background-color: var(--darker);
+      border: none;
+      border-radius: 20px;
+      color: var(--text);
+      font-size: 0.9rem;
+      min-width: 150px;
+    }
+
+    .table-controls .search-box {
+      position: relative;
+    }
+
+    .table-controls .search-box input {
+      padding-left: 35px;
+      width: 200px;
+    }
+
+    .table-controls .search-box .search-icon {
+      left: 12px;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th {
+      text-align: left;
+      padding: 15px 20px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .table td {
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .table tr:hover td {
+      background-color: var(--darker);
+    }
+
+    .action-cell {
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--darker);
+      color: var(--text);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .action-btn:hover {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+    }
+
+    .modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: translateY(30px);
+      transition: var(--transition);
+    }
+
+    .modal.active .modal-content {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .modal-close:hover {
+      color: var(--text);
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .modal-footer {
+      padding: 20px;
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      background-color: var(--darker);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    .invoice-editor {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .invoice-editor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .lines-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    .lines-table th {
+      text-align: left;
+      padding: 10px;
+      background-color: var(--darker);
+      font-weight: 500;
+    }
+
+    .lines-table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .lines-table input, .lines-table select {
+      width: 100%;
+      padding: 8px;
+      background-color: var(--darker);
+      border: 1px solid var(--card-border);
+      border-radius: 4px;
+      color: var(--text);
+    }
+
+    .lines-table .del-btn {
+      background: var(--danger);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    .invoice-totals {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+    }
+
+    .totals-table {
+      width: 300px;
+      border-collapse: collapse;
+    }
+
+    .totals-table td {
+      padding: 8px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .totals-table tr:last-child td {
+      border-bottom: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .mono {
+      font-family: monospace;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .settings-card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 20px;
+      transition: var(--transition);
+    }
+
+    .settings-card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .settings-card-header i {
+      font-size: 1.5rem;
+      margin-right: 15px;
+      color: var(--primary);
+    }
+
+    .settings-card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .settings-card-body {
+      margin-bottom: 20px;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      background-color: var(--dark-light);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      z-index: 2000;
+      transform: translateX(120%);
+      transition: transform 0.3s ease;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification.success {
+      border-left: 4px solid var(--success);
+    }
+
+    .notification.error {
+      border-left: 4px solid var(--danger);
+    }
+
+    .notification.warning {
+      border-left: 4px solid var(--warning);
+    }
+
+    .notification i {
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+
+    .notification .close {
+      margin-left: 15px;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+
+    .notification .close:hover {
+      opacity: 1;
+    }
+
+    .progress-container {
+      height: 4px;
+      background-color: var(--darker);
+      border-radius: 2px;
+      margin: 10px 0;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background-color: var(--primary);
+      width: 0;
+      transition: width 0.3s ease;
+    }
+
+    .filter-container {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .filter-group label {
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+      color: var(--text-secondary);
+    }
+
+    .filter-group select, .filter-group input {
+      padding: 8px 12px;
+      background-color: var(--darker);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      color: var(--text);
+    }
+
+    @media (max-width: 992px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .search-container {
+        display: none;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .table-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+      }
+
+      .filter-container {
+        flex-direction: column;
+      }
+    }
+
+    [dir="rtl"] .sidebar {
+      left: auto;
+      right: 0;
+      border-radius: 8px 0 0 8px;
+    }
+
+    [dir="rtl"] .main-content {
+      margin-left: 0;
+      margin-right: var(--sidebar-width);
+    }
+
+    [dir="rtl"] .menu-item {
+      border-radius: 8px 0 0 8px;
+    }
+
+    [dir="rtl"] .menu-item.active::before {
+      left: auto;
+      right: 0;
+      border-radius: 4px 0 0 4px;
+    }
+
+    [dir="rtl"] .menu-item i {
+      margin-right: 0;
+      margin-left: 15px;
+    }
+
+    [dir="rtl"] .profile-name {
+      margin-right: 0;
+      margin-left: 8px;
+    }
+
+    [dir="rtl"] .profile-img {
+      margin-right: 0;
+      margin-left: 8px;
+    }
+
+    [dir="rtl"] .dropdown {
+      right: auto;
+      left: 0;
+    }
+
+    [dir="rtl"] .search-icon {
+      left: auto;
+      right: 15px;
+    }
+
+    [dir="rtl"] .search-box input {
+      padding: 10px 40px 10px 15px;
+    }
+
+    [dir="rtl"] .btn i {
+      margin-right: 0;
+      margin-left: 8px;
+    }
+
+    [dir="rtl"] .action-btn {
+      margin-right: 0;
+      margin-left: 8px;
+    }
+
+    [dir="rtl"] .modal-footer {
+      justify-content: flex-start;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-        <polyline points="14 2 14 8 20 8"></polyline>
-        <line x1="16" y1="13" x2="8" y2="13"></line>
-        <line x1="16" y1="17" x2="8" y2="17"></line>
-        <polyline points="10 9 9 9 8 9"></polyline>
-      </svg>
-      <span>Proforma | Ma Cuisine</span>
-    </h1>
-    <div class="actions no-print">
-      <button class="btn" id="exportExcelBtn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-        Excel
-      </button>
-      <button class="btn" id="exportJsonBtn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-        JSON
-      </button>
-      <button class="btn" id="importJsonBtn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"></path>
-          <polyline points="16 5 22 5 22 11"></polyline>
-          <line x1="21" y1="3" x2="12" y2="12"></line>
-        </svg>
-        Importer
-      </button>
-      <button class="btn danger" id="resetBtn" title="Effacer les données locales">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="3 6 5 6 21 6"></polyline>
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-          <line x1="10" y1="11" x2="10" y2="17"></line>
-          <line x1="14" y1="11" x2="14" y2="17"></line>
-        </svg>
-        Réinitialiser
-      </button>
-      <button class="btn primary" id="printBtn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 6 2 18 2 18 9"></polyline>
-          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-          <rect x="6" y="14" width="12" height="8"></rect>
-        </svg>
-        Imprimer
-      </button>
-      <button class="btn" id="helpBtn">
-  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10"></circle>
-    <line x1="12" y1="8" x2="12" y2="12"></line>
-    <line x1="12" y1="16" x2="12" y2="16"></line>
-  </svg>
-  Aide
-</button>
-
-<button class="btn" id="aboutBtn">
-  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10"></circle>
-    <path d="M12 16v-4"></path>
-    <path d="M12 8h.01"></path>
-  </svg>
-  À propos
-</button>
-
-      <span id="testBadge" class="badge badge-success">✓ Tests OK</span>
-    </div>
-  </header>
-
-  <div class="container">
-    <!-- Left Column -->
-    <section class="card" id="productsCard">
-      <div class="tabs">
-        <div class="tab active" data-tab="products">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <path d="M16 10a4 4 0 0 1-8 0"></path>
+  <div class="app-container">
+    <header class="top-navbar">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
           </svg>
-          Produits
         </div>
-        <div class="tab" data-tab="history">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-          Historique
-        </div>
-        <div class="tab" data-tab="importExport">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="17 8 12 3 7 8"></polyline>
-            <line x1="12" y1="3" x2="12" y2="15"></line>
-          </svg>
-          Import/Export
+        <div class="logo-text">Proforma</div>
+      </div>
+
+      <div class="search-container">
+        <div class="search-box">
+          <div class="search-icon"><i class="fas fa-search"></i></div>
+          <input type="text" placeholder="Rechercher...">
         </div>
       </div>
 
-      <!-- Products Tab -->
-      <div id="products-tab" class="tab-content active">
-        <h2>
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <path d="M16 10a4 4 0 0 1-8 0"></path>
-          </svg>
-          Produits <span class="pill" id="prodCount">0</span>
-        </h2>
-        <div class="row">
-          <div>
-            <label>Nom</label>
-            <input id="pName" placeholder="ex: Caisson cuisine 60cm" />
+      <div class="nav-icons">
+        <div class="nav-icon">
+          <i class="fas fa-home"></i>
+        </div>
+        <div class="nav-icon">
+          <i class="fas fa-bell"></i>
+          <div class="icon-badge">3</div>
+        </div>
+        <div class="nav-icon">
+          <i class="fas fa-cog"></i>
+        </div>
+
+        <div class="language-toggle">
+          <button class="lang-btn active" data-lang="fr">FR</button>
+          <button class="lang-btn" data-lang="ar">AR</button>
+        </div>
+
+        <div class="profile-menu">
+          <button class="profile-btn">
+            <div class="profile-img">MS</div>
+            <div class="profile-name">Mustapha</div>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="dropdown">
+            <a href="#" class="dropdown-item">
+              <i class="fas fa-user"></i>
+              <span>Mon profil</span>
+            </a>
+            <a href="#" class="dropdown-item">
+              <i class="fas fa-cog"></i>
+              <span>Paramètres</span>
+            </a>
+            <a href="#" class="dropdown-item" id="reset-tour">
+              <i class="fas fa-sync-alt"></i>
+              <span>Redémarrer le guide</span>
+            </a>
+            <div class="divider"></div>
+            <a href="#" class="dropdown-item">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Déconnexion</span>
+            </a>
           </div>
+        </div>
+      </div>
+    </header>
+
+    <aside class="sidebar">
+      <ul class="sidebar-menu">
+        <li>
+          <a class="menu-item active" data-page="dashboard">
+            <i class="fas fa-tachometer-alt"></i>
+            <span class="menu-title">Tableau de bord</span>
+          </a>
+        </li>
+        <li>
+          <a class="menu-item" data-page="products">
+            <i class="fas fa-box"></i>
+            <span class="menu-title">Produits</span>
+          </a>
+        </li>
+        <li>
+          <a class="menu-item" data-page="invoices">
+            <i class="fas fa-file-invoice"></i>
+            <span class="menu-title">Factures</span>
+          </a>
+        </li>
+        <li>
+          <a class="menu-item" data-page="settings">
+            <i class="fas fa-cog"></i>
+            <span class="menu-title">Paramètres</span>
+          </a>
+        </li>
+        <li>
+          <a class="menu-item" id="open-guide">
+            <i class="fas fa-book"></i>
+            <span class="menu-title">Guide d'utilisation</span>
+          </a>
+        </li>
+        <li>
+          <a class="menu-item" id="open-about">
+            <i class="fas fa-info-circle"></i>
+            <span class="menu-title">À propos</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="theme-toggle">
+          <button class="theme-btn active" data-theme="light">
+            <i class="fas fa-sun"></i>
+          </button>
+          <button class="theme-btn" data-theme="dark">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+
+        <div class="help-box">
+          <div class="help-title">
+            <i class="fas fa-question-circle"></i>
+            <span>Besoin d'aide?</span>
+          </div>
+          <div class="help-text">
+            Notre équipe de support est disponible 24/7 pour répondre à vos questions.
+          </div>
+          <button class="help-btn">
+            <i class="fas fa-headset"></i>
+            Contacter le support
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="page active" id="dashboard-page">
+        <h1 class="page-title">
+          <i class="fas fa-tachometer-alt"></i>
+          Tableau de bord
+        </h1>
+        <p class="page-subtitle">Vue d'ensemble de votre activité et statistiques</p>
+
+        <div class="stats-container">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon invoices">
+                <i class="fas fa-file-invoice"></i>
+              </div>
+              <div>
+                <div class="stat-title">Factures</div>
+                <div class="stat-value">142</div>
+                <div class="stat-change positive">
+                  <i class="fas fa-arrow-up"></i>
+                  12% ce mois
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon products">
+                <i class="fas fa-box"></i>
+              </div>
+              <div>
+                <div class="stat-title">Produits</div>
+                <div class="stat-value">38</div>
+                <div class="stat-change positive">
+                  <i class="fas fa-arrow-up"></i>
+                  5% ce mois
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon revenue">
+                <i class="fas fa-money-bill-wave"></i>
+              </div>
+              <div>
+                <div class="stat-title">Revenu</div>
+                <div class="stat-value">2.4M DA</div>
+                <div class="stat-change positive">
+                  <i class="fas fa-arrow-up"></i>
+                  18% ce mois
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon clients">
+                <i class="fas fa-users"></i>
+              </div>
+              <div>
+                <div class="stat-title">Clients</div>
+                <div class="stat-value">64</div>
+                <div class="stat-change positive">
+                  <i class="fas fa-arrow-up"></i>
+                  8% ce mois
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-actions">
+          <div class="action-card" data-page="invoices">
+            <div class="action-icon">
+              <i class="fas fa-plus"></i>
+            </div>
+            <h3 class="action-title">Nouvelle facture</h3>
+            <p class="action-desc">Créer une nouvelle facture ou proforma</p>
+          </div>
+
+          <div class="action-card" data-page="products">
+            <div class="action-icon">
+              <i class="fas fa-box"></i>
+            </div>
+            <h3 class="action-title">Ajouter produit</h3>
+            <p class="action-desc">Ajouter un nouveau produit au catalogue</p>
+          </div>
+
+          <div class="action-card" id="export-data">
+            <div class="action-icon">
+              <i class="fas fa-file-export"></i>
+            </div>
+            <h3 class="action-title">Exporter données</h3>
+            <p class="action-desc">Exporter en Excel ou JSON</p>
+          </div>
+
+          <div class="action-card" id="print-action">
+            <div class="action-icon">
+              <i class="fas fa-print"></i>
+            </div>
+            <h3 class="action-title">Imprimer</h3>
+            <p class="action-desc">Imprimer des factures ou rapports</p>
+          </div>
+        </div>
+
+        <div class="recent-section">
+          <div class="section-header">
+            <h2 class="section-title">Factures récentes</h2>
+            <a href="#" class="view-all" data-page="invoices">Voir tout</a>
+          </div>
+
+          <ul class="invoice-list" id="recent-invoices-list">
+            <li class="invoice-item">
+              <div class="invoice-info">
+                <div class="invoice-number">PF-2023-00125</div>
+                <div class="invoice-client">Restaurant El Bahdja</div>
+              </div>
+              <div class="invoice-date">14 Août 2023</div>
+              <div class="invoice-amount">185,400 DA</div>
+              <div class="invoice-status status-paid">Payée</div>
+            </li>
+
+            <li class="invoice-item">
+              <div class="invoice-info">
+                <div class="invoice-number">PF-2023-00124</div>
+                <div class="invoice-client">Hôtel Mazafran</div>
+              </div>
+              <div class="invoice-date">12 Août 2023</div>
+              <div class="invoice-amount">267,800 DA</div>
+              <div class="invoice-status status-pending">En attente</div>
+            </li>
+
+            <li class="invoice-item">
+              <div class="invoice-info">
+                <div class="invoice-number">PF-2023-00123</div>
+                <div class="invoice-client">Café El Mountazah</div>
+              </div>
+              <div class="invoice-date">10 Août 2023</div>
+              <div class="invoice-amount">98,500 DA</div>
+              <div class="invoice-status status-paid">Payée</div>
+            </li>
+
+            <li class="invoice-item">
+              <div class="invoice-info">
+                <div class="invoice-number">PF-2023-00122</div>
+                <div class="invoice-client">Particulier - M. Khelifi</div>
+              </div>
+              <div class="invoice-date">8 Août 2023</div>
+              <div class="invoice-amount">142,600 DA</div>
+              <div class="invoice-status status-draft">Brouillon</div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="page" id="products-page">
+        <div class="page-header">
           <div>
+            <h1 class="page-title">
+              <i class="fas fa-box"></i>
+              Gestion des produits
+            </h1>
+            <p class="page-subtitle">Liste complète de vos produits et services</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn" id="add-product">
+              <i class="fas fa-plus"></i>
+              Ajouter produit
+            </button>
+            <button class="btn btn-success" id="export-products">
+              <i class="fas fa-file-excel"></i>
+              Excel
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-container">
+          <div class="filter-group">
+            <label>Recherche</label>
+            <input type="text" id="product-search" placeholder="Rechercher un produit...">
+          </div>
+          <div class="filter-group">
             <label>Catégorie</label>
-            <select id="pCat">
-              <option>Cuisine</option>
-              <option>Chambre</option>
-              <option>Salon</option>
-              <option>Bureau</option>
-              <option>Aluminium</option>
-              <option>Bois</option>
-              <option>Autre</option>
+            <select id="product-category">
+              <option value="">Toutes les catégories</option>
+              <option value="Cuisine">Cuisine</option>
+              <option value="Chambre">Chambre</option>
+              <option value="Salon">Salon</option>
+              <option value="Aluminium">Aluminium</option>
             </select>
           </div>
         </div>
-        <div class="grid-3" style="margin-top:8px">
-          <div>
-            <label>Unité</label>
-            <input id="pUnit" placeholder="pcs / ml / m²" />
-          </div>
-          <div>
-            <label>Prix Unitaire</label>
-            <input id="pPrice" type="number" step="0.01" placeholder="0.00" />
-          </div>
-          <div class="right">
-            <button class="btn" id="saveProdBtn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                <polyline points="7 3 7 8 15 8"></polyline>
-              </svg>
-              Ajouter
-            </button>
-          </div>
-        </div>
-        <div class="notice" style="margin-top:8px">Astuce : cliquez une ligne pour éditer. Données sauvegardées dans le navigateur.</div>
-        <table style="margin-top:10px">
-          <thead>
-            <tr><th>Nom</th><th>Catégorie</th><th>Unité</th><th>Prix</th><th class="no-print"></th></tr>
-          </thead>
-          <tbody id="prodBody"></tbody>
-        </table>
 
-        <div class="preview-pane no-print">
-          <div class="preview-header">
-            <div class="preview-title">Aperçu du produit sélectionné</div>
-          </div>
-          <div id="productPreview">
-            <div class="notice">Aucun produit sélectionné</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- History Tab -->
-      <div id="history-tab" class="tab-content">
-        <h2>
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-          Proformas récentes (7 jours)
-        </h2>
-        <div class="list" id="recentList"></div>
-      </div>
-
-      <!-- Import/Export Tab -->
-      <div id="importExport-tab" class="tab-content">
-        <h2>
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="17 8 12 3 7 8"></polyline>
-            <line x1="12" y1="3" x2="12" y2="15"></line>
-          </svg>
-          Import/Export de données
-        </h2>
-        <div class="notice">Sauvegardez ou restaurez toutes vos données (produits, factures, historique)</div>
-
-        <div style="margin-top: 16px;">
-          <h3>Export</h3>
-          <div class="grid-3" style="margin-top:8px">
-            <div>
-              <button class="btn full-width" id="exportProductsBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="7 10 12 15 17 10"></polyline>
-                  <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-                Produits (JSON)
-              </button>
-            </div>
-            <div>
-              <button class="btn full-width" id="exportInvoicesBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="7 10 12 15 17 10"></polyline>
-                  <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-                Factures (JSON)
-              </button>
-            </div>
-            <div>
-              <button class="btn full-width" id="exportAllBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="7 10 12 15 17 10"></polyline>
-                  <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-                Tout exporter
-              </button>
+        <div class="table-container">
+          <div class="table-header">
+            <div class="table-title">Tous les produits</div>
+            <div class="table-controls">
+              <div class="search-box">
+                <div class="search-icon"><i class="fas fa-search"></i></div>
+                <input type="text" placeholder="Rechercher..." id="product-table-search">
+              </div>
             </div>
           </div>
-        </div>
 
-        <div style="margin-top: 16px;">
-          <h3>Import</h3>
-          <div class="grid-3" style="margin-top:8px">
-            <div>
-              <button class="btn full-width" id="importProductsBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"></path>
-                  <polyline points="16 5 22 5 22 11"></polyline>
-                  <line x1="21" y1="3" x2="12" y2="12"></line>
-                </svg>
-                Produits
-              </button>
-            </div>
-            <div>
-              <button class="btn full-width" id="importInvoicesBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"></path>
-                  <polyline points="16 5 22 5 22 11"></polyline>
-                  <line x1="21" y1="3" x2="12" y2="12"></line>
-                </svg>
-                Factures
-              </button>
-            </div>
-            <div>
-              <button class="btn full-width" id="importAllBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"></path>
-                  <polyline points="16 5 22 5 22 11"></polyline>
-                  <line x1="21" y1="3" x2="12" y2="12"></line>
-                </svg>
-                Tout importer
-              </button>
-            </div>
-          </div>
-          <div class="notice" style="margin-top:8px">L'import écrasera les données existantes du même type.</div>
-        </div>
-
-        <div style="margin-top: 16px;">
-          <h3>Sauvegarde locale</h3>
-          <div class="notice" style="margin-top:8px">Les données sont automatiquement sauvegardées dans votre navigateur.</div>
-          <div style="margin-top:8px">
-            <button class="btn full-width" id="backupNowBtn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                <polyline points="7 3 7 8 15 8"></polyline>
-              </svg>
-              Forcer sauvegarde maintenant
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Right Column - Invoice -->
-    <section class="card">
-      <h2>
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14 2 14 8 20 8"></polyline>
-          <line x1="16" y1="13" x2="8" y2="13"></line>
-          <line x1="16" y1="17" x2="8" y2="17"></line>
-          <polyline points="10 9 9 9 8 9"></polyline>
-        </svg>
-        Proforma
-      </h2>
-      <div class="row">
-        <div>
-          <label>N°</label>
-          <input id="invNo" />
-        </div>
-        <div>
-          <label>Date</label>
-          <input id="invDate" type="date" />
-        </div>
-      </div>
-      <div class="row" style="margin-top:8px">
-        <div>
-          <label>Client</label>
-          <input id="client" placeholder="Nom du client" />
-        </div>
-        <div>
-          <label>Notes</label>
-          <input id="notes" placeholder="Optionnel" />
-        </div>
-      </div>
-
-      <table style="margin-top:10px">
-        <thead>
-          <tr>
-            <th style="width:22%">Produit</th>
-            <th>Description</th>
-            <th style="width:8%">Unité</th>
-            <th style="width:8%">Qté</th>
-            <th style="width:12%">PU</th>
-            <th style="width:8%">TVA %</th>
-            <th style="width:10%">Remise %</th>
-            <th style="width:12%">Total</th>
-            <th class="no-print" style="width:6%"></th>
-          </tr>
-        </thead>
-        <tbody id="lines"></tbody>
-        <tfoot>
-          <tr>
-            <td colspan="9" class="no-print">
-              <button class="btn" id="addLineBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Ligne
-              </button>
-              <button class="btn" id="clearLinesBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="3 6 5 6 21 6"></polyline>
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                </svg>
-                Vider
-              </button>
-              <button class="btn" id="saveDraftBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                  <polyline points="7 3 7 8 15 8"></polyline>
-                </svg>
-                Enregistrer
-              </button>
-              <button class="btn" id="loadDraftBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="7 10 12 15 17 10"></polyline>
-                  <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-                Charger
-              </button>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-
-      <div class="row" style="margin-top:12px">
-        <div>
-          <div class="muted">Vendeur (Atelier / Entreprise)</div>
-          <textarea id="seller" rows="4" placeholder="Raison sociale / Adresse / Téléphone"></textarea>
-        </div>
-        <div>
-          <table>
-            <tr><td class="muted">Sous-total</td><td class="right mono" id="subtotal">0.00</td></tr>
-            <tr><td class="muted">TVA</td><td class="right mono" id="tax">0.00</td></tr>
-            <tr><td class="muted">Remise</td><td class="right mono" id="discount">0.00</td></tr>
-            <tr><td class="total">Total TTC</td><td class="right total mono" id="grand">0.00</td></tr>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Catégorie</th>
+                <th>Prix unitaire</th>
+                <th>Unité</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="products-table-body">
+              <!-- Products will be rendered here -->
+            </tbody>
           </table>
         </div>
-      </div>
-      <div class="notice" style="margin-top:6px">Utilisation atelier : devis/proforma pour fabrication de meubles (bois / aluminium), cuisines, chambres, etc.</div>
+      </section>
 
-      <div class="preview-pane no-print">
-        <div class="preview-header">
-          <div class="preview-title">Aperçu de la proforma</div>
-          <div class="preview-actions">
-            <button class="btn" id="refreshPreviewBtn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="23 4 23 10 17 10"></polyline>
-                <polyline points="1 20 1 14 7 14"></polyline>
-                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-              </svg>
-              Actualiser
+      <section class="page" id="invoices-page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">
+              <i class="fas fa-file-invoice"></i>
+              Gestion des factures
+            </h1>
+            <p class="page-subtitle">Créer et gérer vos factures et proformas</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn" id="new-invoice">
+              <i class="fas fa-plus"></i>
+              Nouvelle facture
+            </button>
+            <button class="btn btn-success" id="export-invoices">
+              <i class="fas fa-file-excel"></i>
+              Excel
             </button>
           </div>
         </div>
-        <div id="invoicePreview">
-          <div class="notice">Aperçu de la proforma sera affiché ici</div>
+
+        <div class="filter-container">
+          <div class="filter-group">
+            <label>Recherche</label>
+            <input type="text" id="invoice-search" placeholder="Rechercher une facture...">
+          </div>
+          <div class="filter-group">
+            <label>Statut</label>
+            <select id="invoice-status-filter">
+              <option value="">Tous les statuts</option>
+              <option value="paid">Payée</option>
+              <option value="pending">En attente</option>
+              <option value="draft">Brouillon</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Date de début</label>
+            <input type="date" id="start-date">
+          </div>
+          <div class="filter-group">
+            <label>Date de fin</label>
+            <input type="date" id="end-date">
+          </div>
         </div>
-      </div>
-    </section>
-  </div>
 
-  <!-- Guide d'utilisation Modal -->
-<div id="helpModal" class="modal">
-  <div class="modal-content">
-    <span class="modal-close" data-close="helpModal">&times;</span>
-    <h2>Guide d’utilisation</h2>
-    <p>Ce logiciel permet de créer, gérer et exporter des devis/proformas pour un atelier de meubles en bois ou aluminium.</p>
-    <h3>Fonctionnalités principales</h3>
-    <ul>
-      <li><strong>Produits :</strong> Ajoutez, modifiez ou supprimez des produits avec nom, catégorie, unité et prix.</li>
-      <li><strong>Création Proforma :</strong> Remplissez les informations client, date et ajoutez des lignes d’articles.</li>
-      <li><strong>Calcul automatique :</strong> Les totaux sont calculés automatiquement avec TVA et remises.</li>
-      <li><strong>Historique :</strong> Consultez les proformas créées dans les 7 derniers jours.</li>
-      <li><strong>Import/Export :</strong> Sauvegardez ou restaurez vos données (JSON ou Excel).</li>
-      <li><strong>Impression :</strong> Imprimez directement la proforma prête à remettre au client.</li>
-      <li><strong>Sauvegarde locale :</strong> Les données sont stockées dans votre navigateur, même après fermeture.</li>
-    </ul>
-    <h3>Conseils d’utilisation</h3>
-    <ul>
-      <li>Utilisez le bouton <em>Enregistrer</em> pour sauvegarder un brouillon de proforma.</li>
-      <li>Vérifiez vos données avant export ou impression.</li>
-      <li>Utilisez l’onglet Import/Export pour transférer vos données sur un autre appareil.</li>
-    </ul>
-  </div>
-</div>
-
-<!-- À propos Modal -->
-<div id="aboutModal" class="modal">
-  <div class="modal-content">
-    <span class="modal-close" data-close="aboutModal">&times;</span>
-    <h2>À propos</h2>
-    <p><strong>Nom :</strong> Proforma   — Ma Cuisine</p>
-    <p><strong>Version :</strong> 1.0.0</p>
-    <p><strong>Description :</strong> Application locale pour la gestion et l’édition de devis/proformas d’atelier. Conçue pour une utilisation simple, rapide et efficace, sans connexion internet.</p>
-    <p><strong>Auteur :</strong> Mustapha Salhi</p>
-  </div>
-</div>
-
-
-  <script>
-    const LS_PROD = 'pf_products_v2';
-    const LS_DRAFT = 'pf_invoice_draft_v2';
-    const LS_HISTORY = 'pf_history_v1';
-    const AUTOSAVE_MS = 60000;
-
-    const $ = (q, root=document) => root.querySelector(q);
-    const $$ = (q, root=document) => [...root.querySelectorAll(q)];
-
-    let products = JSON.parse(localStorage.getItem(LS_PROD)) || [];
-    let editingIndex = null;
-    let autosaveTimer = null;
-    let selectedProductId = null;
-
-    // ===== Tab Navigation =====
-    function setupTabs() {
-      const tabs = $$('.tab');
-      tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          $$('.tab').forEach(t => t.classList.remove('active'));
-          $$('.tab-content').forEach(c => c.classList.remove('active'));
-
-          tab.classList.add('active');
-          $(`#${tab.dataset.tab}-tab`).classList.add('active');
-        });
-      });
-    }
-
-    // ===== Produits =====
-    function saveProducts() {
-      localStorage.setItem(LS_PROD, JSON.stringify(products));
-      renderProducts();
-      refreshProductOptions();
-    }
-
-    function renderProducts() {
-      const body = $('#prodBody');
-      body.innerHTML = '';
-      $('#prodCount').textContent = products.length;
-
-      products.forEach((p, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${p.name}</td>
-          <td>${p.cat}</td>
-          <td>${p.unit||''}</td>
-          <td class="mono">${num(p.price)}</td>
-          <td class="no-print">
-            <button class="btn" data-edit=${idx}>Modifier</button>
-            <button class="btn danger" data-del=${idx}>Suppr</button>
-          </td>`;
-
-        tr.addEventListener('click', (e) => {
-          if(e.target.dataset.edit !== undefined) {
-            fillEditor(idx);
-            selectedProductId = idx;
-            renderProductPreview();
-          }
-          if(e.target.dataset.del !== undefined) {
-            if(confirm(`Supprimer le produit "${p.name}" ?`)) {
-              products.splice(idx, 1);
-              saveProducts();
-              selectedProductId = null;
-              renderProductPreview();
-            }
-          }
-        });
-
-        if(selectedProductId === idx) {
-          tr.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
-        }
-
-        body.appendChild(tr);
-      });
-      renderHistory();
-    }
-
-    function fillEditor(idx) {
-      const p = products[idx];
-      $('#pName').value = p.name;
-      $('#pCat').value = p.cat;
-      $('#pUnit').value = p.unit || '';
-      $('#pPrice').value = p.price;
-      editingIndex = idx;
-    }
-
-    function renderProductPreview() {
-      const preview = $('#productPreview');
-      if(selectedProductId === null || !products[selectedProductId]) {
-        preview.innerHTML = '<div class="notice">Aucun produit sélectionné</div>';
-        return;
-      }
-
-      const p = products[selectedProductId];
-      preview.innerHTML = `
-        <div style="margin-bottom: 8px;">
-          <div style="font-weight: 600; font-size: 14px;">${p.name}</div>
-          <div style="font-size: 12px; color: var(--muted);">${p.cat}</div>
-        </div>
-        <table>
-          <tr>
-            <td class="muted">Unité:</td>
-            <td>${p.unit || '—'}</td>
-          </tr>
-          <tr>
-            <td class="muted">Prix:</td>
-            <td class="mono">${num(p.price)}</td>
-          </tr>
-        </table>
-      `;
-    }
-
-    $('#saveProdBtn').addEventListener('click', () => {
-      const name = $('#pName').value.trim();
-      if(!name) return alert('Nom requis');
-
-      const prod = {
-        name,
-        cat: $('#pCat').value,
-        unit: $('#pUnit').value.trim(),
-        price: parseFloat($('#pPrice').value || '0')
-      };
-
-      if(editingIndex == null) {
-        products.push(prod);
-        selectedProductId = products.length - 1;
-      } else {
-        products[editingIndex] = prod;
-        selectedProductId = editingIndex;
-        editingIndex = null;
-      }
-
-      $('#pName').value = '';
-      $('#pUnit').value = '';
-      $('#pPrice').value = '';
-
-      saveProducts();
-      renderProductPreview();
-    });
-
-    // ===== Lignes proforma =====
-    function addLine(data = {}) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><select class="prodSel"></select></td>
-        <td><input class="desc" placeholder="Détails (dimensions, finition...)" value="${data.desc||''}" /></td>
-        <td><input class="unit" placeholder="pcs" value="${data.unit||''}" /></td>
-        <td><input class="qty" type="number" step="0.01" value="${data.qty??1}" /></td>
-        <td><input class="price" type="number" step="0.01" value="${data.price??0}" /></td>
-        <td><input class="tax" type="number" step="0.01" value="${data.tax??0}" /></td>
-        <td><input class="disc" type="number" step="0.01" value="${data.disc??0}" /></td>
-        <td class="mono lineTotal">0.00</td>
-        <td class="no-print"><button class="btn danger del">✕</button></td>`;
-
-      const sel = $('.prodSel', tr);
-      refreshProductOptions(sel);
-
-      if(data.product) {
-        sel.value = data.product;
-        const p = products.find(x => x.name === data.product);
-        if(p) {
-          $('.price', tr).value = p.price;
-          $('.unit', tr).value = p.unit || '';
-          if(!$('.desc', tr).value) $('.desc', tr).value = p.cat;
-        }
-      }
-
-      sel.addEventListener('change', () => {
-        const p = products.find(x => x.name === sel.value);
-        if(p) {
-          $('.price', tr).value = p.price;
-          $('.unit', tr).value = p.unit || '';
-          if(!$('.desc', tr).value) $('.desc', tr).value = p.cat;
-          calc();
-          scheduleAutosave();
-          renderInvoicePreview();
-        }
-      });
-
-      tr.addEventListener('input', () => {
-        calc();
-        scheduleAutosave();
-        renderInvoicePreview();
-      });
-
-      $('.del', tr).addEventListener('click', () => {
-        tr.remove();
-        calc();
-        scheduleAutosave();
-        renderInvoicePreview();
-      });
-
-      $('#lines').appendChild(tr);
-      calc();
-      renderInvoicePreview();
-    }
-
-    function refreshProductOptions(selectEl) {
-      const options = products.map(p => `<option>${p.name}</option>`).join('');
-      if(selectEl) {
-        selectEl.innerHTML = `<option value="">—</option>` + options;
-      } else {
-        $$('#lines .prodSel').forEach(s => s.innerHTML = `<option value="">—</option>` + options);
-      }
-    }
-
-    function num(n) {
-      return (Number(n || 0)).toFixed(2);
-    }
-
-    function calc() {
-      let subtotal = 0, tax = 0, disc = 0;
-
-      $$('#lines tr').forEach(tr => {
-        const q = Number($('.qty', tr).value || 0);
-        const up = Number($('.price', tr).value || 0);
-        const tx = Number($('.tax', tr).value || 0) / 100;
-        const dc = Number($('.disc', tr).value || 0) / 100;
-
-        const lineSub = q * up;
-        const lineTax = lineSub * tx;
-        const lineDisc = lineSub * dc;
-        const total = lineSub + lineTax - lineDisc;
-
-        $('.lineTotal', tr).textContent = num(total);
-        subtotal += lineSub;
-        tax += lineTax;
-        disc += lineDisc;
-      });
-
-      $('#subtotal').textContent = num(subtotal);
-      $('#tax').textContent = num(tax);
-      $('#discount').textContent = num(disc);
-      $('#grand').textContent = num(subtotal + tax - disc);
-    }
-
-    // ===== Brouillon =====
-    function getDraft() {
-      const lines = $$('#lines tr').map(tr => ({
-        product: $('.prodSel', tr).value,
-        desc: $('.desc', tr).value,
-        unit: $('.unit', tr).value,
-        qty: Number($('.qty', tr).value || 0),
-        price: Number($('.price', tr).value || 0),
-        tax: Number($('.tax', tr).value || 0),
-        disc: Number($('.disc', tr).value || 0)
-      }));
-
-      return {
-        invNo: $('#invNo').value,
-        invDate: $('#invDate').value,
-        client: $('#client').value,
-        notes: $('#notes').value,
-        seller: $('#seller').value,
-        lines
-      };
-    }
-
-    function saveDraft(manual = false) {
-      const draft = getDraft();
-      localStorage.setItem(LS_DRAFT, JSON.stringify(draft));
-      pushHistory({ ...draft, ts: Date.now() });
-
-      if(manual) {
-        const badge = $('#testBadge');
-        badge.textContent = '✓ Enregistré';
-        badge.className = 'badge badge-success';
-        setTimeout(() => {
-          if(badge.textContent === '✓ Enregistré') {
-            badge.textContent = '✓ Tests OK';
-          }
-        }, 2000);
-      }
-
-      renderInvoicePreview();
-    }
-
-    function loadDraft() {
-      const data = JSON.parse(localStorage.getItem(LS_DRAFT) || null);
-      if(!data) return alert('Aucun brouillon');
-
-      $('#invNo').value = data.invNo || '';
-      $('#invDate').value = data.invDate || today();
-      $('#client').value = data.client || '';
-      $('#notes').value = data.notes || '';
-      $('#seller').value = data.seller || '';
-
-      $('#lines').innerHTML = '';
-      (data.lines || []).forEach(addLine);
-      calc();
-      renderInvoicePreview();
-    }
-
-    function scheduleAutosave() {
-      clearTimeout(autosaveTimer);
-      autosaveTimer = setTimeout(() => saveDraft(false), AUTOSAVE_MS);
-    }
-
-    $('#saveDraftBtn').addEventListener('click', () => saveDraft(true));
-    $('#loadDraftBtn').addEventListener('click', loadDraft);
-
-    // ===== Historique =====
-    function pushHistory(item) {
-      const list = JSON.parse(localStorage.getItem(LS_HISTORY) || []);
-      list.unshift(item);
-
-      const seven = 7 * 24 * 60 * 60 * 1000;
-      const now = Date.now();
-      const kept = list.filter(x => now - (x.ts || now) <= seven).slice(0, 200);
-
-      localStorage.setItem(LS_HISTORY, JSON.stringify(kept));
-      renderHistory();
-    }
-
-    function renderHistory() {
-      const box = $('#recentList');
-      box.innerHTML = '';
-      const list = JSON.parse(localStorage.getItem(LS_HISTORY) || []);
-
-      if(list.length === 0) {
-        box.innerHTML = '<div class="list-item muted">Aucune proforma récente</div>';
-        return;
-      }
-
-      list.forEach((x, i) => {
-        const d = new Date(x.ts || Date.now());
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        div.innerHTML = `
-          <div>
-            <div class="mono">${x.invNo || '—'} <span class="tag">${(x.client || 'Sans client')}</span></div>
-            <div class="muted" style="font-size:11px">${d.toLocaleString()}</div>
-            <div class="muted" style="font-size:11px; margin-top:4px;">
-              ${x.lines.length} articles • Total: ${x.lines.reduce((sum, line) => {
-                const q = line.qty || 0;
-                const up = line.price || 0;
-                const tx = (line.tax || 0) / 100;
-                const dc = (line.disc || 0) / 100;
-                return sum + (q * up * (1 + tx) - (q * up * dc));
-              }, 0).toFixed(2)}
+        <div class="invoice-editor" id="invoice-editor" style="display: none;">
+          <div class="invoice-editor-header">
+            <h2 id="invoice-editor-title">Nouvelle Facture</h2>
+            <div>
+              <button class="btn btn-secondary" id="cancel-invoice">Annuler</button>
+              <button class="btn" id="save-invoice">Enregistrer</button>
             </div>
           </div>
-          <div>
-            <button class="btn" data-load=${i}>Charger</button>
-            <button class="btn danger" data-del=${i}>Suppr</button>
-          </div>`;
 
-        div.addEventListener('click', (e) => {
-          if(e.target.dataset.load !== undefined) {
-            const item = list[Number(e.target.dataset.load)];
-            localStorage.setItem(LS_DRAFT, JSON.stringify(item));
-            loadDraft();
+          <div class="form-group">
+            <label>N° Facture</label>
+            <input type="text" id="invoice-number" placeholder="PF-2023-00125">
+          </div>
 
-            $$('.tab').forEach(t => t.classList.remove('active'));
-            $$('.tab-content').forEach(c => c.classList.remove('active'));
-            $('.tab[data-tab="products"]').classList.add('active');
-            $('#products-tab').classList.add('active');
-          }
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" id="invoice-date">
+            </div>
 
-          if(e.target.dataset.del !== undefined) {
-            if(confirm('Supprimer cette proforma de l\'historique ?')) {
-              list.splice(Number(e.target.dataset.del), 1);
-              localStorage.setItem(LS_HISTORY, JSON.stringify(list));
-              renderHistory();
-            }
-          }
-        });
+            <div class="form-group">
+              <label>Client</label>
+              <input type="text" id="invoice-client" placeholder="Nom du client">
+            </div>
+          </div>
 
-        box.appendChild(div);
+          <h3>Articles</h3>
+          <table class="lines-table">
+            <thead>
+              <tr>
+                <th>Produit</th>
+                <th>Description</th>
+                <th>Unité</th>
+                <th>Quantité</th>
+                <th>Prix</th>
+                <th>TVA (%)</th>
+                <th>Remise (%)</th>
+                <th>Total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="invoice-lines">
+              <!-- Invoice lines will be added here -->
+            </tbody>
+          </table>
+
+          <button class="btn" id="add-line">
+            <i class="fas fa-plus"></i>
+            Ajouter une ligne
+          </button>
+
+          <div class="invoice-totals">
+            <table class="totals-table">
+              <tr>
+                <td>Sous-total:</td>
+                <td id="subtotal" class="mono">0.00 DA</td>
+              </tr>
+              <tr>
+                <td>TVA:</td>
+                <td id="tax-total" class="mono">0.00 DA</td>
+              </tr>
+              <tr>
+                <td>Remise:</td>
+                <td id="discount-total" class="mono">0.00 DA</td>
+              </tr>
+              <tr>
+                <td>Total:</td>
+                <td id="grand-total" class="mono">0.00 DA</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="form-group">
+            <label>Notes</label>
+            <textarea id="invoice-notes" rows="3"></textarea>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <div class="table-header">
+            <div class="table-title">Factures récentes</div>
+            <div class="table-controls">
+              <button class="btn btn-secondary" id="clear-filters">
+                <i class="fas fa-times"></i>
+                Effacer les filtres
+              </button>
+            </div>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th>N° Facture</th>
+                <th>Client</th>
+                <th>Date</th>
+                <th>Montant</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="invoices-table-body">
+              <!-- Invoices will be rendered here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="page" id="settings-page">
+        <h1 class="page-title">
+          <i class="fas fa-cog"></i>
+          Paramètres
+        </h1>
+        <p class="page-subtitle">Gérer les préférences et les données de l'application</p>
+
+        <div class="settings-grid">
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <i class="fas fa-database"></i>
+              <div class="settings-card-title">Gestion des données</div>
+            </div>
+            <div class="settings-card-body">
+              <p>Sauvegardez ou restaurez toutes les données de l'application.</p>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-success" id="export-json">
+                <i class="fas fa-file-export"></i>
+                Exporter JSON
+              </button>
+              <button class="btn btn-secondary" id="import-json">
+                <i class="fas fa-file-import"></i>
+                Importer JSON
+              </button>
+            </div>
+            <input type="file" id="import-file" accept=".json" style="display: none;">
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <i class="fas fa-redo"></i>
+              <div class="settings-card-title">Réinitialisation</div>
+            </div>
+            <div class="settings-card-body">
+              <p>Réinitialisez les données ou restaurez les valeurs par défaut.</p>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-warning" id="reset-data">
+                <i class="fas fa-history"></i>
+                Réinitialiser
+              </button>
+              <button class="btn btn-danger" id="clear-data">
+                <i class="fas fa-trash"></i>
+                Effacer données
+              </button>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <i class="fas fa-cloud"></i>
+              <div class="settings-card-title">Sauvegarde Cloud</div>
+            </div>
+            <div class="settings-card-body">
+              <p>Activez la synchronisation automatique avec le cloud pour sauvegarder vos données.</p>
+            </div>
+            <div class="form-group">
+              <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="cloud-sync" style="width: auto;">
+                <label for="cloud-sync">Synchronisation automatique</label>
+              </div>
+            </div>
+            <button class="btn btn-secondary">
+              <i class="fas fa-sync"></i>
+              Synchroniser maintenant
+            </button>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <i class="fas fa-shield-alt"></i>
+              <div class="settings-card-title">Sécurité</div>
+            </div>
+            <div class="settings-card-body">
+              <p>Modifiez votre mot de passe ou configurez l'authentification à deux facteurs.</p>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-secondary">
+                <i class="fas fa-key"></i>
+                Changer mot de passe
+              </button>
+              <button class="btn btn-secondary">
+                <i class="fas fa-lock"></i>
+                2FA
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="guide-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Guide d'utilisation</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Ce logiciel permet de créer, gérer et exporter des devis/proformas pour un atelier de meubles en bois ou aluminium.</p>
+
+        <h3>Fonctionnalités principales</h3>
+        <ul>
+          <li><strong>Produits :</strong> Ajoutez, modifiez ou supprimez des produits avec nom, catégorie, unité et prix.</li>
+          <li><strong>Création Proforma :</strong> Remplissez les informations client, date et ajoutez des lignes d'articles.</li>
+          <li><strong>Calcul automatique :</strong> Les totaux sont calculés automatiquement avec TVA et remises.</li>
+          <li><strong>Historique :</strong> Consultez les proformas créées dans les 7 derniers jours.</li>
+          <li><strong>Import/Export :</strong> Sauvegardez ou restaurez vos données (JSON ou Excel).</li>
+          <li><strong>Impression :</strong> Imprimez directement la proforma prête à remettre au client.</li>
+          <li><strong>Sauvegarde locale :</strong> Les données sont stockées dans votre navigateur, même après fermeture.</li>
+        </ul>
+
+        <h3>Conseils d'utilisation</h3>
+        <ul>
+          <li>Utilisez le bouton <em>Enregistrer</em> pour sauvegarder un brouillon de proforma.</li>
+          <li>Vérifiez vos données avant export ou impression.</li>
+          <li>Utilisez l'onglet Import/Export pour transférer vos données sur un autre appareil.</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary modal-close">Fermer</button>
+        <button class="btn" id="start-tour">
+          <i class="fas fa-play"></i>
+          Démarrer la visite guidée
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="about-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">À propos</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Nom :</strong> Proforma Ma Cuisine</p>
+        <p><strong>Version :</strong> 2.1.0</p>
+        <p><strong>Description :</strong> Application SaaS pour la gestion et l'édition de devis/proformas d'atelier. Conçue pour une utilisation simple, rapide et efficace, avec synchronisation cloud.</p>
+        <p><strong>Auteur :</strong> Mustapha Salhi</p>
+        <p><strong>Contact :</strong> salhimustapha28@gmail.com</p>
+8
+        <h3>Fonctionnalités</h3>
+        <ul>
+          <li>Gestion complète des produits et services</li>
+          <li>Création de proformas et factures</li>
+          <li>Calculs automatiques (TVA, remises, totaux)</li>
+          <li>Historique des documents</li>
+          <li>Export Excel et JSON</li>
+          <li>Impression professionnelle</li>
+          <li>Synchronisation cloud</li>
+          <li>Interface multilingue (Français/Arabe)</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn modal-close">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="confirmation-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="confirmation-title">Confirmation</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmation-message">Êtes-vous sûr de vouloir effectuer cette action?</p>
+        <div class="progress-container" id="progress-container" style="display: none;">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-action">Annuler</button>
+        <button class="btn" id="confirm-action">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="notification-area"></div>
+  <div class="modal" id="product-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title" id="product-modal-title">Nouveau Produit</h2>
+      <button class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Nom du produit*</label>
+        <input type="text" id="product-name" required>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="form-group">
+          <label>Catégorie</label>
+          <select id="product-category-input">
+            <option value="">Sélectionner</option>
+            <option value="Cuisine">Cuisine</option>
+            <option value="Chambre">Chambre</option>
+            <option value="Salon">Salon</option>
+            <option value="Aluminium">Aluminium</option>
+            <option value="Bureau">Bureau</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Unité</label>
+          <select id="product-unit">
+            <option value="pcs">Pièce (pcs)</option>
+            <option value="ml">Mètre linéaire (ml)</option>
+            <option value="m²">Mètre carré (m²)</option>
+            <option value="lot">Lot</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="form-group">
+          <label>Prix unitaire (DA)*</label>
+          <input type="number" id="product-price" min="0" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+          <label>TVA (%)</label>
+          <input type="number" id="product-tax" min="0" max="100" step="0.1" value="19">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="product-description" rows="3"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="cancel-product">Annuler</button>
+      <button class="btn" id="save-product">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+  <script>
+    // Utility functions
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from((root||document).querySelectorAll(sel));
+    const esc = s => s ? String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])) : '';
+    const num = n => (Number(n||0)).toFixed(2);
+    const today = () => new Date().toISOString().slice(0,10);
+
+    // Show notification
+    function showNotification(message, type = 'success', duration = 3000) {
+      const notificationArea = $('#notification-area');
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+        <span class="close"><i class="fas fa-times"></i></span>
+      `;
+
+      notificationArea.appendChild(notification);
+
+      // Show notification
+      setTimeout(() => notification.classList.add('show'), 10);
+
+      // Close notification
+      notification.querySelector('.close').addEventListener('click', () => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+      });
+
+      // Auto close
+      if (duration > 0) {
+        setTimeout(() => {
+          notification.classList.remove('show');
+          setTimeout(() => notification.remove(), 300);
+        }, duration);
+      }
+    }
+
+    // Data storage keys
+    const LS_PROD = 'proforma_products_v3';
+    const LS_INVOICES = 'proforma_invoices_v3';
+
+    // Initialize data
+    let products = JSON.parse(localStorage.getItem(LS_PROD)) || [];
+    let invoices = JSON.parse(localStorage.getItem(LS_INVOICES)) || [];
+    let currentInvoice = null;
+
+    // Ensure product IDs
+    function ensureProductId(prod) {
+      if (!prod.id) prod.id = 'p_' + Date.now().toString(36) + '_' + Math.floor(Math.random()*9000+1000);
+      return prod;
+    }
+
+    // Render products table
+    function renderProducts() {
+      const tbody = $('#products-table-body');
+      if (!tbody) return;
+
+      tbody.innerHTML = '';
+
+      // Apply filters
+      const searchTerm = $('#product-search').value.toLowerCase();
+      const categoryFilter = $('#product-category').value;
+
+      let filteredProducts = products;
+
+      if (searchTerm) {
+        filteredProducts = filteredProducts.filter(p =>
+          p.name.toLowerCase().includes(searchTerm) ||
+          (p.category && p.category.toLowerCase().includes(searchTerm)))
+      }
+
+      if (categoryFilter) {
+        filteredProducts = filteredProducts.filter(p => p.category === categoryFilter);
+      }
+
+      filteredProducts.forEach((p, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${esc(p.name)}</td>
+          <td>${esc(p.category || '')}</td>
+          <td>${num(p.price)} DA</td>
+          <td>${esc(p.unit || '')}</td>
+          <td class="action-cell">
+            <div class="action-btn edit-product" data-id="${p.id}">
+              <i class="fas fa-edit"></i>
+            </div>
+            <div class="action-btn delete-product" data-id="${p.id}">
+              <i class="fas fa-trash"></i>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
       });
     }
 
-    // ===== Invoice Preview =====
-    function renderInvoicePreview() {
-      const preview = $('#invoicePreview');
-      const draft = getDraft();
+    // Render invoices table
+    function renderInvoices() {
+      const tbody = $('#invoices-table-body');
+      if (!tbody) return;
 
-      if(!draft.invNo && !draft.client && (!draft.lines || draft.lines.length === 0)) {
-        preview.innerHTML = '<div class="notice">Aperçu de la proforma sera affiché ici</div>';
-        return;
+      tbody.innerHTML = '';
+
+      // Apply filters
+      const searchTerm = $('#invoice-search').value.toLowerCase();
+      const statusFilter = $('#invoice-status-filter').value;
+      const startDate = $('#start-date').value;
+      const endDate = $('#end-date').value;
+
+      let filteredInvoices = invoices;
+
+      if (searchTerm) {
+        filteredInvoices = filteredInvoices.filter(inv =>
+          inv.number.toLowerCase().includes(searchTerm) ||
+          inv.client.toLowerCase().includes(searchTerm))
       }
 
-      let html = `
-        <div style="margin-bottom: 12px;">
-          <div style="font-weight: 600; font-size: 16px;">Proforma ${draft.invNo || '—'}</div>
-          <div style="font-size: 13px; color: var(--muted);">${draft.client || 'Sans client'} • ${draft.invDate || today()}</div>
-        </div>
-      `;
+      if (statusFilter) {
+        filteredInvoices = filteredInvoices.filter(inv => inv.status === statusFilter);
+      }
 
-      if(draft.lines && draft.lines.length > 0) {
-        html += `<table style="width: 100%; font-size: 13px;">
-          <thead>
-            <tr style="border-bottom: 1px solid var(--line);">
-              <th style="text-align: left; padding: 4px 0;">Produit</th>
-              <th style="text-align: right; padding: 4px 0;">Qté</th>
-              <th style="text-align: right; padding: 4px 0;">PU</th>
-              <th style="text-align: right; padding: 4px 0;">Total</th>
-            </tr>
-          </thead>
-          <tbody>`;
+      if (startDate) {
+        filteredInvoices = filteredInvoices.filter(inv => inv.date >= startDate);
+      }
 
-        draft.lines.forEach(line => {
-          const qty = line.qty || 0;
-          const price = line.price || 0;
-          const tax = (line.tax || 0) / 100;
-          const disc = (line.disc || 0) / 100;
-          const total = (qty * price * (1 + tax)) - (qty * price * disc);
+      if (endDate) {
+        filteredInvoices = filteredInvoices.filter(inv => inv.date <= endDate);
+      }
 
-          html += `
-            <tr style="border-bottom: 1px dashed var(--line);">
-              <td style="padding: 6px 0;">
-                <div style="font-weight: 500;">${line.product || '—'}</div>
-                <div style="font-size: 12px; color: var(--muted);">${line.desc || ''}</div>
-              </td>
-              <td style="text-align: right; padding: 6px 0;">${qty} ${line.unit || ''}</td>
-              <td style="text-align: right; padding: 6px 0;" class="mono">${num(price)}</td>
-              <td style="text-align: right; padding: 6px 0;" class="mono">${num(total)}</td>
-            </tr>`;
-        });
+      filteredInvoices.forEach(invoice => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${esc(invoice.number)}</td>
+          <td>${esc(invoice.client)}</td>
+          <td>${invoice.date}</td>
+          <td>${num(invoice.total)} DA</td>
+          <td><span class="invoice-status ${invoice.status === 'paid' ? 'status-paid' : invoice.status === 'pending' ? 'status-pending' : 'status-draft'}">${
+            invoice.status === 'paid' ? 'Payée' : invoice.status === 'pending' ? 'En attente' : 'Brouillon'
+          }</span></td>
+          <td class="action-cell">
+            <div class="action-btn view-invoice" data-id="${invoice.id}">
+              <i class="fas fa-eye"></i>
+            </div>
+            <div class="action-btn edit-invoice" data-id="${invoice.id}">
+              <i class="fas fa-edit"></i>
+            </div>
+            <div class="action-btn print-invoice" data-id="${invoice.id}">
+              <i class="fas fa-print"></i>
+            </div>
+            <div class="action-btn export-invoice" data-id="${invoice.id}">
+              <i class="fas fa-file-excel"></i>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
 
-        const subtotal = draft.lines.reduce((sum, line) => sum + ((line.qty || 0) * (line.price || 0)), 0);
-        const tax = draft.lines.reduce((sum, line) => sum + ((line.qty || 0) * (line.price || 0) * ((line.tax || 0) / 100)), 0);
-        const disc = draft.lines.reduce((sum, line) => sum + ((line.qty || 0) * (line.price || 0) * ((line.disc || 0) / 100)), 0);
-        const grand = subtotal + tax - disc;
+    // Save products to localStorage
+    function saveProducts() {
+      localStorage.setItem(LS_PROD, JSON.stringify(products));
+      showNotification('Produits sauvegardés avec succès!');
+    }
 
-        html += `</tbody>
-          <tfoot>
-            <tr>
-              <td colspan="3" style="text-align: right; padding: 6px 0; font-weight: 500;">Sous-total:</td>
-              <td style="text-align: right; padding: 6px 0;" class="mono">${num(subtotal)}</td>
-            </tr>
-            <tr>
-              <td colspan="3" style="text-align: right; padding: 6px 0; font-weight: 500;">TVA:</td>
-              <td style="text-align: right; padding: 6px 0;" class="mono">${num(tax)}</td>
-            </tr>
-            <tr>
-              <td colspan="3" style="text-align: right; padding: 6px 0; font-weight: 500;">Remise:</td>
-              <td style="text-align: right; padding: 6px 0;" class="mono">${num(disc)}</td>
-            </tr>
-            <tr>
-              <td colspan="3" style="text-align: right; padding: 6px 0; font-weight: 600;">Total TTC:</td>
-              <td style="text-align: right; padding: 6px 0; font-weight: 600;" class="mono">${num(grand)}</td>
-            </tr>
-          </tfoot>
-        </table>`;
+    // Save invoices to localStorage
+    function saveInvoices() {
+      localStorage.setItem(LS_INVOICES, JSON.stringify(invoices));
+      showNotification('Factures sauvegardées avec succès!');
+    }
+
+    // Calculate invoice totals
+    function calculateTotals() {
+      if (!currentInvoice) return;
+
+      const lines = currentInvoice.lines;
+      let subtotal = 0;
+      let taxTotal = 0;
+      let discountTotal = 0;
+
+      lines.forEach(line => {
+        const quantity = parseFloat(line.quantity) || 0;
+        const price = parseFloat(line.price) || 0;
+        const tax = parseFloat(line.tax) || 0;
+        const discount = parseFloat(line.discount) || 0;
+
+        const lineTotal = quantity * price;
+        const lineTax = lineTotal * (tax / 100);
+        const lineDiscount = lineTotal * (discount / 100);
+
+        subtotal += lineTotal;
+        taxTotal += lineTax;
+        discountTotal += lineDiscount;
+      });
+
+      const grandTotal = subtotal + taxTotal - discountTotal;
+
+      $('#subtotal').textContent = `${num(subtotal)} DA`;
+      $('#tax-total').textContent = `${num(taxTotal)} DA`;
+      $('#discount-total').textContent = `${num(discountTotal)} DA`;
+      $('#grand-total').textContent = `${num(grandTotal)} DA`;
+
+      if (currentInvoice) {
+        currentInvoice.subtotal = subtotal;
+        currentInvoice.tax = taxTotal;
+        currentInvoice.discount = discountTotal;
+        currentInvoice.total = grandTotal;
+      }
+    }
+
+    // Add new invoice line
+    function addInvoiceLine() {
+      if (!currentInvoice) return;
+
+      currentInvoice.lines.push({
+        product: '',
+        description: '',
+        unit: '',
+        quantity: 1,
+        price: 0,
+        tax: 0,
+        discount: 0
+      });
+
+      renderInvoiceEditor();
+    }
+
+    // Render invoice editor
+    function renderInvoiceEditor() {
+      if (!currentInvoice) return;
+
+      const linesBody = $('#invoice-lines');
+      if (!linesBody) return;
+
+      linesBody.innerHTML = '';
+
+      currentInvoice.lines.forEach((line, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <select class="product-select" data-idx="${idx}">
+              <option value="">Sélectionner un produit</option>
+              ${products.map(p => `<option value="${p.id}" ${line.product === p.id ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}
+            </select>
+          </td>
+          <td><input type="text" class="description" data-idx="${idx}" value="${esc(line.description)}"></td>
+          <td><input type="text" class="unit" data-idx="${idx}" value="${esc(line.unit)}"></td>
+          <td><input type="number" class="quantity" data-idx="${idx}" min="0" step="0.01" value="${line.quantity}"></td>
+          <td><input type="number" class="price" data-idx="${idx}" min="0" step="0.01" value="${line.price}"></td>
+          <td><input type="number" class="tax" data-idx="${idx}" min="0" max="100" step="0.1" value="${line.tax}"></td>
+          <td><input type="number" class="discount" data-idx="${idx}" min="0" max="100" step="0.1" value="${line.discount}"></td>
+          <td class="line-total">${num(line.quantity * line.price * (1 + line.tax/100 - line.discount/100))} DA</td>
+          <td><button class="del-btn delete-line" data-idx="${idx}">✕</button></td>
+        `;
+        linesBody.appendChild(tr);
+      });
+
+      calculateTotals();
+    }
+
+    // Save current invoice
+    function saveCurrentInvoice() {
+      if (!currentInvoice) return;
+
+      // Get invoice data from form
+      currentInvoice.number = $('#invoice-number').value || '';
+      currentInvoice.date = $('#invoice-date').value || today();
+      currentInvoice.client = $('#invoice-client').value || '';
+      currentInvoice.notes = $('#invoice-notes').value || '';
+
+      // If it's a new invoice, add to the list
+      if (!currentInvoice.id) {
+        currentInvoice.id = 'inv_' + Date.now().toString(36);
+        currentInvoice.createdAt = new Date().toISOString();
+        currentInvoice.status = 'draft';
+        invoices.unshift(currentInvoice);
       } else {
-        html += '<div class="notice">Aucun article ajouté</div>';
-      }
-
-      preview.innerHTML = html;
-    }
-
-    $('#refreshPreviewBtn').addEventListener('click', renderInvoicePreview);
-
-    // ===== Export Excel =====
-    function buildExcelHTML(draft, totals) {
-      const rows = draft.lines.map((l, idx) => `<tr>
-        <td>${idx+1}</td>
-        <td>${esc(l.product||'')}</td>
-        <td>${esc(l.desc||'')}</td>
-        <td>${esc(l.unit||'')}</td>
-        <td>${l.qty||0}</td>
-        <td>${l.price||0}</td>
-        <td>${l.tax||0}</td>
-        <td>${l.disc||0}</td>
-        <td>${((l.qty||0)*(l.price||0)*(1+(l.tax||0)/100) - ((l.qty||0)*(l.price||0)*(l.disc||0)/100)).toFixed(2)}</td>
-      </tr>`).join('');
-
-      const sellerFlat = (draft.seller||'').replace(/\n/g,' / ');
-
-      return `<!DOCTYPE html><html><head>
-        <meta charset="UTF-8">
-        <style>
-          body { font-family: Arial, sans-serif; }
-          table { border-collapse: collapse; width: 100%; }
-          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-          th { background-color: #f2f2f2; }
-          .mono { font-family: monospace; }
-          .right { text-align: right; }
-        </style>
-      </head><body>
-        <table>
-          <tr><th colspan="9">Proforma — ${esc(draft.invNo||'')}</th></tr>
-          <tr><td colspan="9">Date: ${esc(draft.invDate||'')} &nbsp; Client: ${esc(draft.client||'')}</td></tr>
-          <tr><td colspan="9">Notes: ${esc(draft.notes||'')}</td></tr>
-          <tr><td colspan="9">Vendeur: ${esc(sellerFlat)}</td></tr>
-          <tr><th>#</th><th>Produit</th><th>Description</th><th>Unité</th><th>Qté</th><th>PU</th><th>TVA %</th><th>Remise %</th><th>Total</th></tr>
-          ${rows}
-          <tr><td colspan="8" align="right"><b>Sous-total</b></td><td class="mono">${totals.subtotal}</td></tr>
-          <tr><td colspan="8" align="right"><b>TVA</b></td><td class="mono">${totals.tax}</td></tr>
-          <tr><td colspan="8" align="right"><b>Remise</b></td><td class="mono">${totals.discount}</td></tr>
-          <tr><td colspan="8" align="right"><b>Total TTC</b></td><td class="mono">${totals.grand}</td></tr>
-        </table>
-      </body></html>`;
-    }
-
-    function exportExcel() {
-      const draft = getDraft();
-      const totals = {
-        subtotal: $('#subtotal').textContent,
-        tax: $('#tax').textContent,
-        discount: $('#discount').textContent,
-        grand: $('#grand').textContent
-      };
-      const html = buildExcelHTML(draft, totals);
-      const blob = new Blob([html], {type:'application/vnd.ms-excel'});
-      downloadBlob(blob, (draft.invNo||'proforma') + '.xls');
-    }
-
-    function esc(s) {
-      return String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-    }
-
-    function downloadBlob(blob, filename) {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    }
-
-    // ===== Impression =====
-    $('#printBtn').addEventListener('click', () => { window.print(); });
-
-    // ===== Enhanced JSON import/export =====
-    function exportData(type) {
-      let data, filename;
-      switch(type) {
-        case 'products':
-          data = {products};
-          filename = 'proforma-products.json';
-          break;
-        case 'invoices':
-          data = {
-            draft: JSON.parse(localStorage.getItem(LS_DRAFT)||'{}'),
-            history: JSON.parse(localStorage.getItem(LS_HISTORY)||'[]')
-          };
-          filename = 'proforma-invoices.json';
-          break;
-        case 'all':
-          data = {
-            products,
-            draft: JSON.parse(localStorage.getItem(LS_DRAFT)||'{}'),
-            history: JSON.parse(localStorage.getItem(LS_HISTORY)||'[]')
-          };
-          filename = 'proforma-all-data.json';
-          break;
-        default:
-          return;
-      }
-
-      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-      downloadBlob(blob, filename);
-    }
-
-    function importData(type, file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const data = JSON.parse(reader.result);
-
-          switch(type) {
-            case 'products':
-              if(data.products) {
-                products = data.products;
-                saveProducts();
-                alert(`${data.products.length} produits importés avec succès`);
-              } else {
-                alert('Fichier ne contient pas de données produits valides');
-              }
-              break;
-
-            case 'invoices':
-              if(data.draft || data.history) {
-                if(data.draft) localStorage.setItem(LS_DRAFT, JSON.stringify(data.draft));
-                if(data.history) localStorage.setItem(LS_HISTORY, JSON.stringify(data.history));
-                alert('Données factures importées avec succès');
-                renderHistory();
-                loadDraft();
-              } else {
-                alert('Fichier ne contient pas de données factures valides');
-              }
-              break;
-
-            case 'all':
-              if(data.products) {
-                products = data.products;
-                saveProducts();
-              }
-              if(data.draft) localStorage.setItem(LS_DRAFT, JSON.stringify(data.draft));
-              if(data.history) localStorage.setItem(LS_HISTORY, JSON.stringify(data.history));
-              alert('Toutes données importées avec succès');
-              renderHistory();
-              loadDraft();
-              break;
-          }
-        } catch(e) {
-          alert('Erreur lors de la lecture du fichier JSON');
-          console.error(e);
+        // Update existing invoice
+        const index = invoices.findIndex(inv => inv.id === currentInvoice.id);
+        if (index !== -1) {
+          invoices[index] = currentInvoice;
         }
-      };
-      reader.readAsText(file);
+      }
+
+      saveInvoices();
+      renderInvoices();
+      hideInvoiceEditor();
+      showNotification('Facture enregistrée avec succès!');
     }
 
-    function setupImportExportButtons() {
-      // Export buttons
-      $('#exportProductsBtn').addEventListener('click', () => exportData('products'));
-      $('#exportInvoicesBtn').addEventListener('click', () => exportData('invoices'));
-      $('#exportAllBtn').addEventListener('click', () => exportData('all'));
+    // Show invoice editor
+    function showInvoiceEditor(invoice = null) {
+      if (invoice) {
+        currentInvoice = {...invoice};
+        $('#invoice-editor-title').textContent = 'Modifier Facture';
+      } else {
+        currentInvoice = {
+          id: null,
+          number: '',
+          date: today(),
+          client: '',
+          notes: '',
+          status: 'draft',
+          lines: [{
+            product: '',
+            description: '',
+            unit: '',
+            quantity: 1,
+            price: 0,
+            tax: 0,
+            discount: 0
+          }],
+          subtotal: 0,
+          tax: 0,
+          discount: 0,
+          total: 0
+        };
+        $('#invoice-editor-title').textContent = 'Nouvelle Facture';
+      }
 
-      // Import buttons
-      function createImportHandler(type) {
-        return () => {
-          const inp = document.createElement('input');
-          inp.type = 'file';
-          inp.accept = '.json,application/json';
-          inp.onchange = () => {
-            if(inp.files && inp.files[0]) {
-              if(confirm(`Êtes-vous sûr de vouloir importer des données ${type}? Cela écrasera les données existantes.`)) {
-                importData(type, inp.files[0]);
-              }
-            }
-          };
-          inp.click();
+      // Set form values
+      $('#invoice-number').value = currentInvoice.number;
+      $('#invoice-date').value = currentInvoice.date;
+      $('#invoice-client').value = currentInvoice.client;
+      $('#invoice-notes').value = currentInvoice.notes;
+
+      renderInvoiceEditor();
+      $('#invoice-editor').style.display = 'block';
+
+      // Scroll to editor
+      document.querySelector('#invoice-editor').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Hide invoice editor
+    function hideInvoiceEditor() {
+      $('#invoice-editor').style.display = 'none';
+      currentInvoice = null;
+    }
+
+    // Add a new product
+    function addProduct() {
+      const name = prompt('Nom du produit');
+      if (!name) return;
+
+      const category = prompt('Catégorie') || '';
+      const price = parseFloat(prompt('Prix unitaire')) || 0;
+      const unit = prompt('Unité (pcs, ml, etc.)') || '';
+
+      const newProduct = ensureProductId({
+        name,
+        category,
+        price,
+        unit
+      });
+
+      products.push(newProduct);
+      saveProducts();
+      renderProducts();
+      showNotification('Produit ajouté avec succès!');
+    }
+
+    // Edit a product
+    function editProduct(id) {
+      const product = products.find(p => p.id === id);
+      if (!product) return;
+
+      const newName = prompt('Nom du produit', product.name) || product.name;
+      const newCategory = prompt('Catégorie', product.category) || product.category;
+      const newPrice = parseFloat(prompt('Prix unitaire', product.price)) || product.price;
+      const newUnit = prompt('Unité', product.unit) || product.unit;
+
+      const index = products.findIndex(p => p.id === id);
+      if (index !== -1) {
+        products[index] = {
+          ...product,
+          name: newName,
+          category: newCategory,
+          price: newPrice,
+          unit: newUnit
         };
       }
 
-      $('#importProductsBtn').addEventListener('click', createImportHandler('products'));
-      $('#importInvoicesBtn').addEventListener('click', createImportHandler('invoices'));
-      $('#importAllBtn').addEventListener('click', createImportHandler('all'));
+      saveProducts();
+      renderProducts();
+      showNotification('Produit modifié avec succès!');
+    }
 
-      // Backup now button
-      $('#backupNowBtn').addEventListener('click', () => {
+    // Delete a product
+    function deleteProduct(id) {
+      showConfirmation('Supprimer ce produit?', 'Êtes-vous sûr de vouloir supprimer ce produit? Cette action est irréversible.', () => {
+        const index = products.findIndex(p => p.id === id);
+        if (index !== -1) {
+          products.splice(index, 1);
+          saveProducts();
+          renderProducts();
+          showNotification('Produit supprimé avec succès!');
+        }
+      });
+    }
+
+    // Export products to Excel
+    function exportProductsToExcel() {
+      try {
+        const worksheet = XLSX.utils.json_to_sheet(products.map(p => ({
+          'Nom': p.name,
+          'Catégorie': p.category || '',
+          'Prix unitaire': p.price,
+          'Unité': p.unit || ''
+        })));
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Produits');
+        XLSX.writeFile(workbook, 'produits.xlsx');
+        showNotification('Produits exportés avec succès!');
+      } catch (e) {
+        showNotification('Erreur lors de l\'export: ' + e.message, 'error');
+      }
+    }
+
+    // Export invoices to Excel
+    function exportInvoicesToExcel() {
+      try {
+        const worksheet = XLSX.utils.json_to_sheet(invoices.map(inv => ({
+          'N° Facture': inv.number,
+          'Client': inv.client,
+          'Date': inv.date,
+          'Montant': inv.total,
+          'Statut': inv.status === 'paid' ? 'Payée' : inv.status === 'pending' ? 'En attente' : 'Brouillon'
+        })));
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Factures');
+        XLSX.writeFile(workbook, 'factures.xlsx');
+        showNotification('Factures exportées avec succès!');
+      } catch (e) {
+        showNotification('Erreur lors de l\'export: ' + e.message, 'error');
+      }
+    }
+
+    // Export single invoice to Excel
+   function exportInvoiceToExcel(id) {
+  const invoice = invoices.find(inv => inv.id === id);
+  if (!invoice) return;
+
+  try {
+    // Create a more detailed and formatted worksheet
+    const header = [
+      ['Proforma Ma Cuisine'],
+      ['Facture Proforma'],
+      ['N°:', invoice.number],
+      ['Date:', invoice.date],
+      ['Client:', invoice.client],
+      ['Statut:', invoice.status === 'paid' ? 'Payée' : invoice.status === 'pending' ? 'En attente' : 'Brouillon'],
+      ['Notes:', invoice.notes || ''],
+      [''] // Empty row
+    ];
+
+    // Create invoice lines with better formatting
+    const lines = [
+      ['N°', 'Désignation', 'Unité', 'Quantité', 'Prix unitaire', 'TVA (%)', 'Remise (%)', 'Total HT', 'Total TTC']
+    ];
+
+    invoice.lines.forEach((line, idx) => {
+      const product = products.find(p => p.id === line.product) || {};
+      lines.push([
+        idx + 1,
+        line.description || product.name || '',
+        line.unit || product.unit || '',
+        line.quantity,
+        line.price,
+        line.tax,
+        line.discount,
+        line.quantity * line.price,
+        line.quantity * line.price * (1 + line.tax/100 - line.discount/100)
+      ]);
+    });
+
+    // Add totals with proper formatting
+    lines.push(['']);
+    lines.push(['', '', '', '', '', '', 'Sous-total:', invoice.subtotal]);
+    lines.push(['', '', '', '', '', '', 'TVA:', invoice.tax]);
+    lines.push(['', '', '', '', '', '', 'Remise:', invoice.discount]);
+    lines.push(['', '', '', '', '', '', 'TOTAL:', invoice.total]);
+
+    // Create worksheet with merged cells for header
+    const ws = XLSX.utils.aoa_to_sheet([...header, ...lines]);
+
+    // Apply styling through cell formatting
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for(let C = range.s.c; C <= range.e.c; ++C) {
+      const addr = XLSX.utils.encode_cell({c:C, r:0});
+      if(!ws[addr]) ws[addr] = {};
+      ws[addr].s = {font: {bold: true, sz: 16}};
+    }
+
+    // Merge header cells
+    ws['!merges'] = [
+      {s: {r:0, c:0}, e: {r:0, c:7}},  // "Proforma Ma Cuisine"
+      {s: {r:1, c:0}, e: {r:1, c:7}},  // "Facture Proforma"
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, `Facture_${invoice.number}`);
+    XLSX.writeFile(wb, `facture_${invoice.number}_${invoice.date.replace(/-/g, '')}.xlsx`);
+    showNotification('Facture exportée avec succès!');
+  } catch (e) {
+    showNotification('Erreur lors de l\'export: ' + e.message, 'error');
+  }
+}
+
+    // Export all data to JSON
+    function exportToJSON() {
+      const data = {
+        products,
+        invoices,
+        exportedAt: new Date().toISOString(),
+        version: '2.1.0'
+      };
+
+      const dataStr = JSON.stringify(data, null, 2);
+      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+      const exportFileDefaultName = `proforma_backup_${new Date().toISOString().slice(0,10)}.json`;
+
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
+
+      showNotification('Sauvegarde JSON exportée avec succès!');
+    }
+
+    // Import from JSON
+    function importFromJSON(file) {
+      showConfirmation('Importer des données?', 'Êtes-vous sûr de vouloir importer ces données? Cela écrasera vos données actuelles.', () => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            const data = JSON.parse(e.target.result);
+
+            if (data.products && data.invoices) {
+              products = data.products;
+              invoices = data.invoices;
+
+              saveProducts();
+              saveInvoices();
+
+              renderProducts();
+              renderInvoices();
+
+              showNotification('Données importées avec succès!');
+            } else {
+              showNotification('Format de fichier invalide', 'error');
+            }
+          } catch (e) {
+            showNotification('Erreur lors de l\'import: ' + e.message, 'error');
+          }
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    // Reset to default data
+    function resetToDefaultData() {
+      showConfirmation('Réinitialiser les données?', 'Êtes-vous sûr de vouloir réinitialiser les données aux valeurs par défaut?', () => {
+        // Default products
+        products = [
+          { id: 'p_1', name: 'Caisson cuisine 60cm', category: 'Cuisine', unit: 'pcs', price: 18000 },
+          { id: 'p_2', name: 'Armoire 2 portes', category: 'Chambre', unit: 'pcs', price: 42000 },
+          { id: 'p_3', name: 'Meuble TV 140cm', category: 'Salon', unit: 'pcs', price: 32000 },
+          { id: 'p_4', name: 'Plan de travail (ml)', category: 'Cuisine', unit: 'ml', price: 9000 },
+          { id: 'p_5', name: 'Profilé aluminium 3m', category: 'Aluminium', unit: 'pcs', price: 4500 }
+        ];
+
+        // Default invoices
+        invoices = [
+          {
+            id: 'inv_1',
+            number: 'PF-2023-00125',
+            date: '2023-08-14',
+            client: 'Restaurant El Bahdja',
+            status: 'paid',
+            lines: [
+              { product: 'p_1', description: 'Caisson cuisine', unit: 'pcs', quantity: 4, price: 18000, tax: 19, discount: 0 },
+              { product: 'p_4', description: 'Plan de travail', unit: 'ml', quantity: 3.2, price: 9000, tax: 19, discount: 5 }
+            ],
+            subtotal: 97200,
+            tax: 18468,
+            discount: 1440,
+            total: 114228,
+            notes: 'Livraison prévue le 20/08/2023'
+          },
+          {
+            id: 'inv_2',
+            number: 'PF-2023-00124',
+            date: '2023-08-12',
+            client: 'Hôtel Mazafran',
+            status: 'pending',
+            lines: [
+              { product: 'p_2', description: 'Armoire 2 portes', unit: 'pcs', quantity: 2, price: 42000, tax: 19, discount: 0 },
+              { product: 'p_3', description: 'Meuble TV', unit: 'pcs', quantity: 1, price: 32000, tax: 19, discount: 10 }
+            ],
+            subtotal: 116000,
+            tax: 22040,
+            discount: 3200,
+            total: 134840,
+            notes: 'Paiement à réception'
+          }
+        ];
+
         saveProducts();
-        saveDraft(true);
-        alert('Sauvegarde locale effectuée');
-      });
-    }
+        saveInvoices();
 
-    // ===== Main buttons =====
-    $('#exportExcelBtn').addEventListener('click', exportExcel);
-    $('#addLineBtn').addEventListener('click', () => {
-      addLine();
-      scheduleAutosave();
-    });
-
-    $('#clearLinesBtn').addEventListener('click', () => {
-      if(confirm('Vider toutes les lignes de la proforma ?')) {
-        $('#lines').innerHTML = '';
-        calc();
-        scheduleAutosave();
-        renderInvoicePreview();
-      }
-    });
-
-    $('#resetBtn').addEventListener('click', () => {
-      if(confirm('Effacer TOUTES les données locales ?')) {
-        localStorage.removeItem(LS_PROD);
-        localStorage.removeItem(LS_DRAFT);
-        localStorage.removeItem(LS_HISTORY);
-        products = [];
         renderProducts();
-        refreshProductOptions();
-        $('#lines').innerHTML = '';
-        calc();
-        renderInvoicePreview();
-        renderProductPreview();
-      }
-    });
+        renderInvoices();
 
-    function today() {
-      return new Date().toISOString().slice(0, 10);
+        showNotification('Données réinitialisées avec succès!');
+      });
     }
 
-    // ===== Auto-tests =====
-    function assert(name, cond) {
-      return {name, ok: !!cond};
+    // Clear all data
+    function clearAllData() {
+      showConfirmation('Effacer toutes les données?', 'Êtes-vous sûr de vouloir effacer TOUTES vos données? Cette action est irréversible.', () => {
+        products = [];
+        invoices = [];
+
+        saveProducts();
+        saveInvoices();
+
+        renderProducts();
+        renderInvoices();
+
+        showNotification('Toutes les données ont été effacées!');
+      });
     }
 
-    function runSelfTests() {
-      const results = [];
-      results.push(assert('esc encode <>&', esc('<>&') === '&lt;&gt;&amp;'));
+    // Show confirmation dialog
+    function showConfirmation(title, message, confirmCallback) {
+      const modal = $('#confirmation-modal');
+      $('#confirmation-title').textContent = title;
+      $('#confirmation-message').textContent = message;
+      $('#progress-container').style.display = 'none';
 
-      const htmlTest = buildExcelHTML({
-        invNo:'TST',
-        invDate:'2025-08-13',
-        client:'C',
-        seller:'A\nB',
-        lines:[]
-      }, {
-        subtotal:'0.00',
-        tax:'0.00',
-        discount:'0.00',
-        grand:'0.00'
+      const confirmAction = () => {
+        modal.classList.remove('active');
+        confirmCallback();
+      };
+
+      $('#confirm-action').onclick = confirmAction;
+      $('#cancel-action').onclick = () => modal.classList.remove('active');
+
+      modal.classList.add('active');
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+
+$('#save-product').addEventListener('click', saveProduct);
+$('#cancel-product').addEventListener('click', () => $('#product-modal').classList.remove('active'));
+      // Navigation
+      $$('.menu-item').forEach(item => {
+        item.addEventListener('click', e => {
+          const page = item.dataset.page;
+          if (!page) return;
+
+          // Update active states
+          $$('.page').forEach(p => p.classList.remove('active'));
+          $$('.menu-item').forEach(m => m.classList.remove('active'));
+
+          $(`#${page}-page`).classList.add('active');
+          item.classList.add('active');
+        });
       });
 
-      results.push(assert('seller newline → slash', htmlTest.includes('A / B')));
+      // Quick actions
+      $$('.action-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const page = card.dataset.page;
+          if (page) {
+            $$('.page').forEach(p => p.classList.remove('active'));
+            $$('.menu-item').forEach(m => m.classList.remove('active'));
 
-      scheduleAutosave();
-      results.push(assert('autosave timer set', autosaveTimer !== null));
+            $(`#${page}-page`).classList.add('active');
+            $(`.menu-item[data-page="${page}"]`).classList.add('active');
+          }
+        });
+      });
 
-      const ok = results.filter(r => r.ok).length;
-      const badge = document.getElementById('testBadge');
+      // Theme toggle
+      $$('.theme-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const theme = btn.dataset.theme;
+          document.documentElement.setAttribute('data-theme', theme);
+          $$('.theme-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        });
+      });
 
-      if(badge) {
-        badge.textContent = `SAVED: ${ok}/${results.length} OK`;
-        badge.className = ok === results.length ? 'badge badge-success' : 'badge badge-danger';
-      }
+      // Language toggle
+      $$('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+          $$('.lang-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        });
+      });
 
-      if(ok !== results.length) {
-        console.group('Self-tests');
-        results.forEach(r => console[r.ok?'log':'error'](`${r.ok?'OK':'FAIL'} — ${r.name}`));
-        console.groupEnd();
-      }
+      // Profile dropdown
+      $('.profile-btn').addEventListener('click', () => {
+        $('.dropdown').classList.toggle('show');
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.profile-menu')) {
+          $('.dropdown').classList.remove('show');
+        }
+      });
+
+      // Modals
+      $('#open-guide').addEventListener('click', () => $('#guide-modal').classList.add('active'));
+      $('#open-about').addEventListener('click', () => $('#about-modal').classList.add('active'));
+      $$('.modal-close').forEach(btn => {
+        btn.addEventListener('click', () => {
+          $$('.modal').forEach(m => m.classList.remove('active'));
+        });
+      });
+
+      // Products page
+      $('#add-product').addEventListener('click', addProduct);
+      $('#export-products').addEventListener('click', exportProductsToExcel);
+      $('#product-search').addEventListener('input', renderProducts);
+      $('#product-category').addEventListener('change', renderProducts);
+
+      // Products table actions (delegated)
+      $('#products-table-body').addEventListener('click', e => {
+        const editBtn = e.target.closest('.edit-product');
+        const delBtn = e.target.closest('.delete-product');
+
+        if (editBtn) {
+          const id = editBtn.dataset.id;
+          editProduct(id);
+        }
+
+        if (delBtn) {
+          const id = delBtn.dataset.id;
+          deleteProduct(id);
+        }
+      });
+
+      // Invoices page
+      $('#new-invoice').addEventListener('click', () => showInvoiceEditor());
+      $('#cancel-invoice').addEventListener('click', hideInvoiceEditor);
+      $('#save-invoice').addEventListener('click', saveCurrentInvoice);
+      $('#add-line').addEventListener('click', addInvoiceLine);
+      $('#export-invoices').addEventListener('click', exportInvoicesToExcel);
+      $('#clear-filters').addEventListener('click', () => {
+        $('#invoice-search').value = '';
+        $('#invoice-status-filter').value = '';
+        $('#start-date').value = '';
+        $('#end-date').value = '';
+        renderInvoices();
+      });
+
+      // Invoice filters
+      $('#invoice-search').addEventListener('input', renderInvoices);
+      $('#invoice-status-filter').addEventListener('change', renderInvoices);
+      $('#start-date').addEventListener('change', renderInvoices);
+      $('#end-date').addEventListener('change', renderInvoices);
+
+      // Invoice editor events (delegated)
+      $('#invoice-lines').addEventListener('input', e => {
+        if (!currentInvoice) return;
+
+        const input = e.target;
+        const idx = parseInt(input.dataset.idx);
+        const field = input.className;
+        const value = input.value;
+
+        if (idx >= 0 && idx < currentInvoice.lines.length) {
+          if (field === 'product-select') {
+            const product = products.find(p => p.id === value);
+            if (product) {
+              currentInvoice.lines[idx].product = product.id;
+              currentInvoice.lines[idx].description = product.name;
+              currentInvoice.lines[idx].unit = product.unit;
+              currentInvoice.lines[idx].price = product.price;
+            }
+          } else {
+            currentInvoice.lines[idx][field] = value;
+          }
+
+          renderInvoiceEditor();
+        }
+      });
+
+      $('#invoice-lines').addEventListener('click', e => {
+        if (!currentInvoice) return;
+
+        const delBtn = e.target.closest('.delete-line');
+        if (delBtn) {
+          const idx = parseInt(delBtn.dataset.idx);
+          currentInvoice.lines.splice(idx, 1);
+          renderInvoiceEditor();
+        }
+      });
+
+      // Invoices table actions (delegated)
+      $('#invoices-table-body').addEventListener('click', e => {
+        const viewBtn = e.target.closest('.view-invoice');
+        const editBtn = e.target.closest('.edit-invoice');
+        const printBtn = e.target.closest('.print-invoice');
+        const exportBtn = e.target.closest('.export-invoice');
+
+        if (viewBtn) {
+          const id = viewBtn.dataset.id;
+          // Implement view functionality
+          showNotification('Affichage des détails de la facture', 'info');
+        }
+
+        if (editBtn) {
+          const id = editBtn.dataset.id;
+          const invoice = invoices.find(inv => inv.id === id);
+          if (invoice) {
+            showInvoiceEditor(invoice);
+          }
+        }
+
+        if (printBtn) {
+          const id = printBtn.dataset.id;
+          showNotification('Impression de la facture', 'info');
+        }
+
+        if (exportBtn) {
+          const id = exportBtn.dataset.id;
+          exportInvoiceToExcel(id);
+        }
+      });
+
+      // Settings page
+      $('#export-json').addEventListener('click', exportToJSON);
+      $('#import-json').addEventListener('click', () => $('#import-file').click());
+      $('#import-file').addEventListener('change', e => {
+        if (e.target.files.length > 0) {
+          importFromJSON(e.target.files[0]);
+          e.target.value = ''; // Reset file input
+        }
+      });
+      $('#reset-data').addEventListener('click', resetToDefaultData);
+      $('#clear-data').addEventListener('click', clearAllData);
+      $('#export-data').addEventListener('click', () => {
+        $$('.menu-item').forEach(m => m.classList.remove('active'));
+        $('.menu-item[data-page="settings"]').classList.add('active');
+        $$('.page').forEach(p => p.classList.remove('active'));
+        $('#settings-page').classList.add('active');
+      });
     }
 
-// ===== Modals =====
-document.addEventListener('DOMContentLoaded', () => {
-  function setupModal(btnId, modalId) {
-    const btn = document.getElementById(btnId);
-    const modal = document.getElementById(modalId);
-    if (!btn || !modal) return;
-    const close = modal.querySelector('.modal-close');
-    btn.addEventListener('click', () => modal.style.display = 'block');
-    if (close) close.addEventListener('click', () => modal.style.display = 'none');
+    // Initialize the application
+    function initApp() {
+      // Initialize default products if empty
+      if (products.length === 0) {
+        products = [
+          { name: 'Caisson cuisine 60cm', category: 'Cuisine', unit: 'pcs', price: 18000 },
+          { name: 'Armoire 2 portes', category: 'Chambre', unit: 'pcs', price: 42000 },
+          { name: 'Meuble TV 140cm', category: 'Salon', unit: 'pcs', price: 32000 },
+          { name: 'Plan de travail (ml)', category: 'Cuisine', unit: 'ml', price: 9000 },
+          { name: 'Profilé aluminium 3m', category: 'Aluminium', unit: 'pcs', price: 4500 }
+        ].map(ensureProductId);
+        saveProducts();
+      }
+
+      // Initialize default invoices if empty
+      if (invoices.length === 0) {
+        invoices = [
+          {
+            id: 'inv_1',
+            number: 'PF-2023-00125',
+            date: '2023-08-14',
+            client: 'Restaurant El Bahdja',
+            status: 'paid',
+            lines: [
+              { product: '', description: 'Caisson cuisine', unit: 'pcs', quantity: 4, price: 18000, tax: 19, discount: 0 },
+              { product: '', description: 'Plan de travail', unit: 'ml', quantity: 3.2, price: 9000, tax: 19, discount: 5 }
+            ],
+            subtotal: 97200,
+            tax: 18468,
+            discount: 1440,
+            total: 114228
+          },
+          {
+            id: 'inv_2',
+            number: 'PF-2023-00124',
+            date: '2023-08-12',
+            client: 'Hôtel Mazafran',
+            status: 'pending',
+            lines: [
+              { product: '', description: 'Armoire 2 portes', unit: 'pcs', quantity: 2, price: 42000, tax: 19, discount: 0 },
+              { product: '', description: 'Meuble TV', unit: 'pcs', quantity: 1, price: 32000, tax: 19, discount: 10 }
+            ],
+            subtotal: 116000,
+            tax: 22040,
+            discount: 3200,
+            total: 134840
+          }
+        ];
+        saveInvoices();
+      }
+
+      // Render initial data
+      renderProducts();
+      renderInvoices();
+
+      // Set today's date in invoice form
+      $('#invoice-date').value = today();
+
+      // Setup event listeners
+      setupEventListeners();
+    }
+
+    function printInvoice(id) {
+  const invoice = invoices.find(inv => inv.id === id);
+  if (!invoice) return;
+
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Facture ${invoice.number}</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .info-table td { padding: 8px; vertical-align: top; }
+        .items-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .items-table th, .items-table td { border: 1px solid #000; padding: 8px; text-align: center; }
+        .totals-table { margin-left: auto; width: 300px; border-collapse: collapse; }
+        .totals-table td { padding: 8px; border-bottom: 1px solid #000; }
+        .totals-table tr:last-child td { border-bottom: none; font-weight: bold; }
+        .notes { margin-top: 30px; }
+        .footer { margin-top: 50px; text-align: center; font-size: 12px; }
+        @media print {
+          body { padding: 15mm; }
+          .no-print { display: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>PROFORMA MA CUISINE</h1>
+        <h2>FACTURE PROFORMA</h2>
+      </div>
+
+      <table class="info-table">
+        <tr>
+          <td width="50%">
+            <strong>N° Facture:</strong> ${esc(invoice.number)}<br>
+            <strong>Date:</strong> ${invoice.date}
+          </td>
+          <td width="50%">
+            <strong>Client:</strong> ${esc(invoice.client)}<br>
+            <strong>Statut:</strong> ${invoice.status === 'paid' ? 'Payée' : invoice.status === 'pending' ? 'En attente' : 'Brouillon'}
+          </td>
+        </tr>
+      </table>
+
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th width="5%">N°</th>
+            <th width="35%">Désignation</th>
+            <th width="10%">Unité</th>
+            <th width="10%">Quantité</th>
+            <th width="10%">Prix unitaire</th>
+            <th width="10%">TVA %</th>
+            <th width="10%">Remise %</th>
+            <th width="10%">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${invoice.lines.map((line, idx) => {
+            const product = products.find(p => p.id === line.product) || {};
+            return `
+            <tr>
+              <td>${idx + 1}</td>
+              <td>${esc(line.description || product.name || '')}</td>
+              <td>${esc(line.unit || product.unit || '')}</td>
+              <td>${line.quantity}</td>
+              <td>${num(line.price)} DA</td>
+              <td>${line.tax}</td>
+              <td>${line.discount}</td>
+              <td>${num(line.quantity * line.price * (1 + line.tax/100 - line.discount/100))} DA</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+
+      <table class="totals-table">
+        <tr>
+          <td>Sous-total:</td>
+          <td>${num(invoice.subtotal)} DA</td>
+        </tr>
+        <tr>
+          <td>TVA:</td>
+          <td>${num(invoice.tax)} DA</td>
+        </tr>
+        <tr>
+          <td>Remise:</td>
+          <td>${num(invoice.discount)} DA</td>
+        </tr>
+        <tr>
+          <td>TOTAL:</td>
+          <td>${num(invoice.total)} DA</td>
+        </tr>
+      </table>
+
+      <div class="notes">
+        <strong>Notes:</strong><br>
+        ${esc(invoice.notes || '')}
+      </div>
+
+      <div class="footer">
+        <p>Proforma Ma Cuisine - Tél: 0550 123 456 - Email: contact@proforma-macuisine.dz</p>
+        <p>Merci pour votre confiance!</p>
+      </div>
+
+      <div class="no-print" style="margin-top: 20px; text-align: center;">
+        <button onclick="window.print()">Imprimer</button>
+        <button onclick="window.close()">Fermer</button>
+      </div>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+}
+// Show product modal
+function showProductModal(product = null) {
+  const modal = $('#product-modal');
+  const title = $('#product-modal-title');
+  const form = $('#product-form');
+
+  if (product) {
+    title.textContent = 'Modifier Produit';
+    $('#product-name').value = product.name;
+    $('#product-category-input').value = product.category || '';
+    $('#product-unit').value = product.unit || 'pcs';
+    $('#product-price').value = product.price;
+    $('#product-tax').value = product.tax || 19;
+    $('#product-description').value = product.description || '';
+    $('#save-product').dataset.id = product.id;
+  } else {
+    title.textContent = 'Nouveau Produit';
+    $('#product-name').value = '';
+    $('#product-category-input').value = '';
+    $('#product-unit').value = 'pcs';
+    $('#product-price').value = '';
+    $('#product-tax').value = 19;
+    $('#product-description').value = '';
+    delete $('#save-product').dataset.id;
   }
 
-  setupModal('helpBtn', 'helpModal');
-  setupModal('aboutBtn', 'aboutModal');
+  modal.classList.add('active');
+}
 
-  window.addEventListener('click', (e) => {
-    if (e.target.classList && e.target.classList.contains('modal')) e.target.style.display = 'none';
-  });
-});
-    // ===== Init =====
-    (function init() {
-      setupTabs();
-      setupImportExportButtons();
-      renderProducts();
-      refreshProductOptions();
-      document.getElementById('invDate').value = today();
-      document.getElementById('invNo').value = 'PF-' + Date.now().toString().slice(-6);
+// Save product from modal
+function saveProduct() {
+  const id = $('#save-product').dataset.id;
+  const name = $('#product-name').value.trim();
+  const category = $('#product-category-input').value;
+  const unit = $('#product-unit').value;
+  const price = parseFloat($('#product-price').value);
+  const tax = parseFloat($('#product-tax').value) || 0;
+  const description = $('#product-description').value.trim();
 
-      if(products.length === 0) {
-        products = [
-          { name:'Caisson cuisine 60cm', cat:'Cuisine', unit:'pcs', price: 18000 },
-          { name:'Armoire 2 portes', cat:'Chambre', unit:'pcs', price: 42000 },
-          { name:'Meuble TV 140cm', cat:'Salon', unit:'pcs', price: 32000 },
-          { name:'Plan de travail (ml)', cat:'Cuisine', unit:'ml', price: 9000 },
-          { name:'Profilé aluminium 3m', cat:'Aluminium', unit:'pcs', price: 4500 }
-        ];
-        saveProducts();
-      }
+  if (!name || isNaN(price)) {
+    showNotification('Nom et prix sont requis!', 'error');
+    return;
+  }
 
-      addLine();
-      loadDraft();
-      scheduleAutosave();
-      runSelfTests();
-      renderInvoicePreview();
-      renderProductPreview();
-    })();
+  if (id) {
+    // Update existing product
+    const index = products.findIndex(p => p.id === id);
+    if (index !== -1) {
+      products[index] = {
+        ...products[index],
+        name,
+        category,
+        unit,
+        price,
+        tax,
+        description
+      };
+    }
+  } else {
+    // Add new product
+    const newProduct = ensureProductId({
+      name,
+      category,
+      unit,
+      price,
+      tax,
+      description
+    });
+    products.push(newProduct);
+  }
+
+  saveProducts();
+  renderProducts();
+  $('#product-modal').classList.remove('active');
+  showNotification(`Produit ${id ? 'modifié' : 'ajouté'} avec succès!`);
+}
+
+
+
+    // Start the app when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initApp);
   </script>
 </body>
 </html>
