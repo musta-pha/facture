@@ -50,42 +50,43 @@
     }
 
     /* View Invoice Modal */
-#view-invoice-modal .modal-content {
-  max-width: 800px;
-}
+    #view-invoice-modal .modal-content {
+      max-width: 800px;
+    }
 
-.invoice-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
 
-.invoice-info {
-  background: var(--darker);
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
+    .invoice-info {
+      background: var(--darker);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
 
-.invoice-info div {
-  margin-bottom: 8px;
-}
+    .invoice-info div {
+      margin-bottom: 8px;
+    }
 
-.invoice-info div:last-child {
-  margin-bottom: 0;
-}
+    .invoice-info div:last-child {
+      margin-bottom: 0;
+    }
 
-.invoice-notes {
-  margin-top: 25px;
-  padding-top: 15px;
-  border-top: 1px solid var(--card-border);
-}
+    .invoice-notes {
+      margin-top: 25px;
+      padding-top: 15px;
+      border-top: 1px solid var(--card-border);
+    }
 
-/* Product Form */
-#product-form .form-group {
-  margin-bottom: 20px;
-}
+    /* Product Form */
+    #product-form .form-group {
+      margin-bottom: 20px;
+    }
+    
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
       background-color: var(--dark);
@@ -823,7 +824,7 @@
     }
 
     .table-controls input, .table-controls select {
-      padding: 8px 15px;
+      padding: 8px 12px;
       background-color: var(--darker);
       border: none;
       border-radius: 20px;
@@ -1187,6 +1188,19 @@
       color: var(--text);
     }
 
+    /* Product Modal */
+    #product-modal .form-group {
+      margin-bottom: 15px;
+    }
+    
+    #product-modal .modal-content {
+      max-width: 500px;
+    }
+    
+    #product-modal .modal-body {
+      padding: 20px;
+    }
+
     @media (max-width: 992px) {
       .sidebar {
         transform: translateX(-100%);
@@ -1232,6 +1246,10 @@
 
       .filter-container {
         flex-direction: column;
+      }
+      
+      #product-modal .modal-content {
+        width: 95%;
       }
     }
 
@@ -1950,7 +1968,8 @@
         <p><strong>Description :</strong> Application SaaS pour la gestion et l'édition de devis/proformas d'atelier. Conçue pour une utilisation simple, rapide et efficace, avec synchronisation cloud.</p>
         <p><strong>Auteur :</strong> Mustapha Salhi</p>
         <p><strong>Contact :</strong> salhimustapha28@gmail.com</p>
-8
+        <p><strong>Date :</strong> Août 2023</p>
+
         <h3>Fonctionnalités</h3>
         <ul>
           <li>Gestion complète des produits et services</li>
@@ -1988,67 +2007,70 @@
     </div>
   </div>
 
-  <div id="notification-area"></div>
   <div class="modal" id="product-modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2 class="modal-title" id="product-modal-title">Nouveau Produit</h2>
-      <button class="modal-close">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label>Nom du produit*</label>
-        <input type="text" id="product-name" required>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="product-modal-title">Nouveau Produit</h2>
+        <button class="modal-close">&times;</button>
       </div>
+      <div class="modal-body">
+        <form id="product-form">
+          <div class="form-group">
+            <label>Nom du produit*</label>
+            <input type="text" id="product-name" required>
+          </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-        <div class="form-group">
-          <label>Catégorie</label>
-          <select id="product-category-input">
-            <option value="">Sélectionner</option>
-            <option value="Cuisine">Cuisine</option>
-            <option value="Chambre">Chambre</option>
-            <option value="Salon">Salon</option>
-            <option value="Aluminium">Aluminium</option>
-            <option value="Bureau">Bureau</option>
-          </select>
-        </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+              <label>Catégorie</label>
+              <select id="product-category-input">
+                <option value="">Sélectionner</option>
+                <option value="Cuisine">Cuisine</option>
+                <option value="Chambre">Chambre</option>
+                <option value="Salon">Salon</option>
+                <option value="Aluminium">Aluminium</option>
+                <option value="Bureau">Bureau</option>
+              </select>
+            </div>
 
-        <div class="form-group">
-          <label>Unité</label>
-          <select id="product-unit">
-            <option value="pcs">Pièce (pcs)</option>
-            <option value="ml">Mètre linéaire (ml)</option>
-            <option value="m²">Mètre carré (m²)</option>
-            <option value="lot">Lot</option>
-          </select>
-        </div>
+            <div class="form-group">
+              <label>Unité</label>
+              <select id="product-unit">
+                <option value="pcs">Pièce (pcs)</option>
+                <option value="ml">Mètre linéaire (ml)</option>
+                <option value="m²">Mètre carré (m²)</option>
+                <option value="lot">Lot</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+              <label>Prix unitaire (DA)*</label>
+              <input type="number" id="product-price" min="0" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+              <label>TVA (%)</label>
+              <input type="number" id="product-tax" min="0" max="100" step="0.1" value="19">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="product-description" rows="3"></textarea>
+          </div>
+        </form>
       </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-        <div class="form-group">
-          <label>Prix unitaire (DA)*</label>
-          <input type="number" id="product-price" min="0" step="0.01" required>
-        </div>
-
-        <div class="form-group">
-          <label>TVA (%)</label>
-          <input type="number" id="product-tax" min="0" max="100" step="0.1" value="19">
-        </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-product">Annuler</button>
+        <button class="btn" id="save-product">Enregistrer</button>
       </div>
-
-      <div class="form-group">
-        <label>Description</label>
-        <textarea id="product-description" rows="3"></textarea>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" id="cancel-product">Annuler</button>
-      <button class="btn" id="save-product">Enregistrer</button>
     </div>
   </div>
-</div>
 
+  <div id="notification-area"></div>
+  
   <script>
     // Utility functions
     const $ = (sel, root=document) => root.querySelector(sel);
@@ -2119,7 +2141,8 @@
       if (searchTerm) {
         filteredProducts = filteredProducts.filter(p =>
           p.name.toLowerCase().includes(searchTerm) ||
-          (p.category && p.category.toLowerCase().includes(searchTerm)))
+          (p.category && p.category.toLowerCase().includes(searchTerm)) ||
+          (p.description && p.description.toLowerCase().includes(searchTerm)))
       }
 
       if (categoryFilter) {
@@ -2388,52 +2411,13 @@
       currentInvoice = null;
     }
 
-    // Add a new product
-    function addProduct() {
-      const name = prompt('Nom du produit');
-      if (!name) return;
-
-      const category = prompt('Catégorie') || '';
-      const price = parseFloat(prompt('Prix unitaire')) || 0;
-      const unit = prompt('Unité (pcs, ml, etc.)') || '';
-
-      const newProduct = ensureProductId({
-        name,
-        category,
-        price,
-        unit
-      });
-
-      products.push(newProduct);
-      saveProducts();
-      renderProducts();
-      showNotification('Produit ajouté avec succès!');
-    }
-
     // Edit a product
     function editProduct(id) {
       const product = products.find(p => p.id === id);
       if (!product) return;
 
-      const newName = prompt('Nom du produit', product.name) || product.name;
-      const newCategory = prompt('Catégorie', product.category) || product.category;
-      const newPrice = parseFloat(prompt('Prix unitaire', product.price)) || product.price;
-      const newUnit = prompt('Unité', product.unit) || product.unit;
-
-      const index = products.findIndex(p => p.id === id);
-      if (index !== -1) {
-        products[index] = {
-          ...product,
-          name: newName,
-          category: newCategory,
-          price: newPrice,
-          unit: newUnit
-        };
-      }
-
-      saveProducts();
-      renderProducts();
-      showNotification('Produit modifié avec succès!');
+      // Show the product modal with the product data
+      showProductModal(product);
     }
 
     // Delete a product
@@ -2456,7 +2440,9 @@
           'Nom': p.name,
           'Catégorie': p.category || '',
           'Prix unitaire': p.price,
-          'Unité': p.unit || ''
+          'Unité': p.unit || '',
+          'TVA (%)': p.tax || 0,
+          'Description': p.description || ''
         })));
 
         const workbook = XLSX.utils.book_new();
@@ -2489,75 +2475,194 @@
     }
 
     // Export single invoice to Excel
-   function exportInvoiceToExcel(id) {
-  const invoice = invoices.find(inv => inv.id === id);
-  if (!invoice) return;
+    function exportInvoiceToExcel(id) {
+      const invoice = invoices.find(inv => inv.id === id);
+      if (!invoice) return;
 
-  try {
-    // Create a more detailed and formatted worksheet
-    const header = [
-      ['Proforma Ma Cuisine'],
-      ['Facture Proforma'],
-      ['N°:', invoice.number],
-      ['Date:', invoice.date],
-      ['Client:', invoice.client],
-      ['Statut:', invoice.status === 'paid' ? 'Payée' : invoice.status === 'pending' ? 'En attente' : 'Brouillon'],
-      ['Notes:', invoice.notes || ''],
-      [''] // Empty row
-    ];
+      try {
+        // Create a more detailed and formatted worksheet
+        const header = [
+          ['Proforma Ma Cuisine'],
+          ['Facture Proforma'],
+          ['N°:', invoice.number],
+          ['Date:', invoice.date],
+          ['Client:', invoice.client],
+          ['Statut:', invoice.status === 'paid' ? 'Payée' : invoice.status === 'pending' ? 'En attente' : 'Brouillon'],
+          ['Notes:', invoice.notes || ''],
+          [''] // Empty row
+        ];
 
-    // Create invoice lines with better formatting
-    const lines = [
-      ['N°', 'Désignation', 'Unité', 'Quantité', 'Prix unitaire', 'TVA (%)', 'Remise (%)', 'Total HT', 'Total TTC']
-    ];
+        // Create invoice lines with better formatting
+        const lines = [
+          ['N°', 'Désignation', 'Unité', 'Quantité', 'Prix unitaire', 'TVA (%)', 'Remise (%)', 'Total HT', 'Total TTC']
+        ];
 
-    invoice.lines.forEach((line, idx) => {
-      const product = products.find(p => p.id === line.product) || {};
-      lines.push([
-        idx + 1,
-        line.description || product.name || '',
-        line.unit || product.unit || '',
-        line.quantity,
-        line.price,
-        line.tax,
-        line.discount,
-        line.quantity * line.price,
-        line.quantity * line.price * (1 + line.tax/100 - line.discount/100)
-      ]);
-    });
+        invoice.lines.forEach((line, idx) => {
+          const product = products.find(p => p.id === line.product) || {};
+          lines.push([
+            idx + 1,
+            line.description || product.name || '',
+            line.unit || product.unit || '',
+            line.quantity,
+            line.price,
+            line.tax,
+            line.discount,
+            line.quantity * line.price,
+            line.quantity * line.price * (1 + line.tax/100 - line.discount/100)
+          ]);
+        });
 
-    // Add totals with proper formatting
-    lines.push(['']);
-    lines.push(['', '', '', '', '', '', 'Sous-total:', invoice.subtotal]);
-    lines.push(['', '', '', '', '', '', 'TVA:', invoice.tax]);
-    lines.push(['', '', '', '', '', '', 'Remise:', invoice.discount]);
-    lines.push(['', '', '', '', '', '', 'TOTAL:', invoice.total]);
+        // Add totals with proper formatting
+        lines.push(['']);
+        lines.push(['', '', '', '', '', '', 'Sous-total:', invoice.subtotal]);
+        lines.push(['', '', '', '', '', '', 'TVA:', invoice.tax]);
+        lines.push(['', '', '', '', '', '', 'Remise:', invoice.discount]);
+        lines.push(['', '', '', '', '', '', 'TOTAL:', invoice.total]);
 
-    // Create worksheet with merged cells for header
-    const ws = XLSX.utils.aoa_to_sheet([...header, ...lines]);
+        // Create worksheet with merged cells for header
+        const ws = XLSX.utils.aoa_to_sheet([...header, ...lines]);
 
-    // Apply styling through cell formatting
-    const range = XLSX.utils.decode_range(ws['!ref']);
-    for(let C = range.s.c; C <= range.e.c; ++C) {
-      const addr = XLSX.utils.encode_cell({c:C, r:0});
-      if(!ws[addr]) ws[addr] = {};
-      ws[addr].s = {font: {bold: true, sz: 16}};
+        // Apply styling through cell formatting
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        for(let C = range.s.c; C <= range.e.c; ++C) {
+          const addr = XLSX.utils.encode_cell({c:C, r:0});
+          if(!ws[addr]) ws[addr] = {};
+          ws[addr].s = {font: {bold: true, sz: 16}};
+        }
+
+        // Merge header cells
+        ws['!merges'] = [
+          {s: {r:0, c:0}, e: {r:0, c:7}},  // "Proforma Ma Cuisine"
+          {s: {r:1, c:0}, e: {r:1, c:7}},  // "Facture Proforma"
+        ];
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, `Facture_${invoice.number}`);
+        XLSX.writeFile(wb, `facture_${invoice.number}_${invoice.date.replace(/-/g, '')}.xlsx`);
+        showNotification('Facture exportée avec succès!');
+      } catch (e) {
+        showNotification('Erreur lors de l\'export: ' + e.message, 'error');
+      }
     }
 
-    // Merge header cells
-    ws['!merges'] = [
-      {s: {r:0, c:0}, e: {r:0, c:7}},  // "Proforma Ma Cuisine"
-      {s: {r:1, c:0}, e: {r:1, c:7}},  // "Facture Proforma"
-    ];
+    // Print invoice
+    function printInvoice(id) {
+      const invoice = invoices.find(inv => inv.id === id);
+      if (!invoice) return;
 
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, `Facture_${invoice.number}`);
-    XLSX.writeFile(wb, `facture_${invoice.number}_${invoice.date.replace(/-/g, '')}.xlsx`);
-    showNotification('Facture exportée avec succès!');
-  } catch (e) {
-    showNotification('Erreur lors de l\'export: ' + e.message, 'error');
-  }
-}
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Facture ${invoice.number}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+            .header { text-align: center; margin-bottom: 30px; }
+            .header h1 { margin: 0; font-size: 24px; }
+            .info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+            .info-table td { padding: 8px; vertical-align: top; }
+            .items-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+            .items-table th, .items-table td { border: 1px solid #000; padding: 8px; text-align: center; }
+            .totals-table { margin-left: auto; width: 300px; border-collapse: collapse; }
+            .totals-table td { padding: 8px; border-bottom: 1px solid #000; }
+            .totals-table tr:last-child td { border-bottom: none; font-weight: bold; }
+            .notes { margin-top: 30px; }
+            .footer { margin-top: 50px; text-align: center; font-size: 12px; }
+            @media print {
+              body { padding: 15mm; }
+              .no-print { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>PROFORMA MA CUISINE</h1>
+            <h2>FACTURE PROFORMA</h2>
+          </div>
+
+          <table class="info-table">
+            <tr>
+              <td width="50%">
+                <strong>N° Facture:</strong> ${esc(invoice.number)}<br>
+                <strong>Date:</strong> ${invoice.date}
+              </td>
+              <td width="50%">
+                <strong>Client:</strong> ${esc(invoice.client)}<br>
+                <strong>Statut:</strong> ${invoice.status === 'paid' ? 'Payée' : invoice.status === 'pending' ? 'En attente' : 'Brouillon'}
+              </td>
+            </tr>
+          </table>
+
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th width="5%">N°</th>
+                <th width="35%">Désignation</th>
+                <th width="10%">Unité</th>
+                <th width="10%">Quantité</th>
+                <th width="10%">Prix unitaire</th>
+                <th width="10%">TVA %</th>
+                <th width="10%">Remise %</th>
+                <th width="10%">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${invoice.lines.map((line, idx) => {
+                const product = products.find(p => p.id === line.product) || {};
+                return `
+                <tr>
+                  <td>${idx + 1}</td>
+                  <td>${esc(line.description || product.name || '')}</td>
+                  <td>${esc(line.unit || product.unit || '')}</td>
+                  <td>${line.quantity}</td>
+                  <td>${num(line.price)} DA</td>
+                  <td>${line.tax}</td>
+                  <td>${line.discount}</td>
+                  <td>${num(line.quantity * line.price * (1 + line.tax/100 - line.discount/100))} DA</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+
+          <table class="totals-table">
+            <tr>
+              <td>Sous-total:</td>
+              <td>${num(invoice.subtotal)} DA</td>
+            </tr>
+            <tr>
+              <td>TVA:</td>
+              <td>${num(invoice.tax)} DA</td>
+            </tr>
+            <tr>
+              <td>Remise:</td>
+              <td>${num(invoice.discount)} DA</td>
+            </tr>
+            <tr>
+              <td>TOTAL:</td>
+              <td>${num(invoice.total)} DA</td>
+            </tr>
+          </table>
+
+          <div class="notes">
+            <strong>Notes:</strong><br>
+            ${esc(invoice.notes || '')}
+          </div>
+
+          <div class="footer">
+            <p>Proforma Ma Cuisine - Tél: 0550 123 456 - Email: contact@proforma-macuisine.dz</p>
+            <p>Merci pour votre confiance!</p>
+          </div>
+
+          <div class="no-print" style="margin-top: 20px; text-align: center;">
+            <button onclick="window.print()">Imprimer</button>
+            <button onclick="window.close()">Fermer</button>
+          </div>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
 
     // Export all data to JSON
     function exportToJSON() {
@@ -2703,11 +2808,85 @@
       modal.classList.add('active');
     }
 
+    // Show product modal
+    function showProductModal(product = null) {
+      const modal = $('#product-modal');
+      const title = $('#product-modal-title');
+      const form = $('#product-form');
+
+      if (product) {
+        title.textContent = 'Modifier Produit';
+        $('#product-name').value = product.name;
+        $('#product-category-input').value = product.category || '';
+        $('#product-unit').value = product.unit || 'pcs';
+        $('#product-price').value = product.price;
+        $('#product-tax').value = product.tax || 19;
+        $('#product-description').value = product.description || '';
+        $('#save-product').dataset.id = product.id;
+      } else {
+        title.textContent = 'Nouveau Produit';
+        $('#product-name').value = '';
+        $('#product-category-input').value = '';
+        $('#product-unit').value = 'pcs';
+        $('#product-price').value = '';
+        $('#product-tax').value = 19;
+        $('#product-description').value = '';
+        delete $('#save-product').dataset.id;
+      }
+
+      modal.classList.add('active');
+    }
+
+    // Save product from modal
+    function saveProduct() {
+      const id = $('#save-product').dataset.id;
+      const name = $('#product-name').value.trim();
+      const category = $('#product-category-input').value;
+      const unit = $('#product-unit').value;
+      const price = parseFloat($('#product-price').value);
+      const tax = parseFloat($('#product-tax').value) || 0;
+      const description = $('#product-description').value.trim();
+
+      if (!name || isNaN(price)) {
+        showNotification('Nom et prix sont requis!', 'error');
+        return;
+      }
+
+      if (id) {
+        // Update existing product
+        const index = products.findIndex(p => p.id === id);
+        if (index !== -1) {
+          products[index] = {
+            ...products[index],
+            name,
+            category,
+            unit,
+            price,
+            tax,
+            description
+          };
+        }
+      } else {
+        // Add new product
+        const newProduct = ensureProductId({
+          name,
+          category,
+          unit,
+          price,
+          tax,
+          description
+        });
+        products.push(newProduct);
+      }
+
+      saveProducts();
+      renderProducts();
+      $('#product-modal').classList.remove('active');
+      showNotification(`Produit ${id ? 'modifié' : 'ajouté'} avec succès!`);
+    }
+
     // Setup event listeners
     function setupEventListeners() {
-
-$('#save-product').addEventListener('click', saveProduct);
-$('#cancel-product').addEventListener('click', () => $('#product-modal').classList.remove('active'));
       // Navigation
       $$('.menu-item').forEach(item => {
         item.addEventListener('click', e => {
@@ -2779,7 +2958,7 @@ $('#cancel-product').addEventListener('click', () => $('#product-modal').classLi
       });
 
       // Products page
-      $('#add-product').addEventListener('click', addProduct);
+      $('#add-product').addEventListener('click', () => showProductModal());
       $('#export-products').addEventListener('click', exportProductsToExcel);
       $('#product-search').addEventListener('input', renderProducts);
       $('#product-category').addEventListener('change', renderProducts);
@@ -2866,8 +3045,10 @@ $('#cancel-product').addEventListener('click', () => $('#product-modal').classLi
 
         if (viewBtn) {
           const id = viewBtn.dataset.id;
-          // Implement view functionality
-          showNotification('Affichage des détails de la facture', 'info');
+          const invoice = invoices.find(inv => inv.id === id);
+          if (invoice) {
+            showInvoiceEditor(invoice);
+          }
         }
 
         if (editBtn) {
@@ -2880,7 +3061,7 @@ $('#cancel-product').addEventListener('click', () => $('#product-modal').classLi
 
         if (printBtn) {
           const id = printBtn.dataset.id;
-          showNotification('Impression de la facture', 'info');
+          printInvoice(id);
         }
 
         if (exportBtn) {
@@ -2906,6 +3087,10 @@ $('#cancel-product').addEventListener('click', () => $('#product-modal').classLi
         $$('.page').forEach(p => p.classList.remove('active'));
         $('#settings-page').classList.add('active');
       });
+      
+      // Product modal events
+      $('#save-product').addEventListener('click', saveProduct);
+      $('#cancel-product').addEventListener('click', () => $('#product-modal').classList.remove('active'));
     }
 
     // Initialize the application
@@ -2969,202 +3154,6 @@ $('#cancel-product').addEventListener('click', () => $('#product-modal').classLi
       // Setup event listeners
       setupEventListeners();
     }
-
-    function printInvoice(id) {
-  const invoice = invoices.find(inv => inv.id === id);
-  if (!invoice) return;
-
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Facture ${invoice.number}</title>
-      <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { margin: 0; font-size: 24px; }
-        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .info-table td { padding: 8px; vertical-align: top; }
-        .items-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-        .items-table th, .items-table td { border: 1px solid #000; padding: 8px; text-align: center; }
-        .totals-table { margin-left: auto; width: 300px; border-collapse: collapse; }
-        .totals-table td { padding: 8px; border-bottom: 1px solid #000; }
-        .totals-table tr:last-child td { border-bottom: none; font-weight: bold; }
-        .notes { margin-top: 30px; }
-        .footer { margin-top: 50px; text-align: center; font-size: 12px; }
-        @media print {
-          body { padding: 15mm; }
-          .no-print { display: none; }
-        }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <h1>PROFORMA MA CUISINE</h1>
-        <h2>FACTURE PROFORMA</h2>
-      </div>
-
-      <table class="info-table">
-        <tr>
-          <td width="50%">
-            <strong>N° Facture:</strong> ${esc(invoice.number)}<br>
-            <strong>Date:</strong> ${invoice.date}
-          </td>
-          <td width="50%">
-            <strong>Client:</strong> ${esc(invoice.client)}<br>
-            <strong>Statut:</strong> ${invoice.status === 'paid' ? 'Payée' : invoice.status === 'pending' ? 'En attente' : 'Brouillon'}
-          </td>
-        </tr>
-      </table>
-
-      <table class="items-table">
-        <thead>
-          <tr>
-            <th width="5%">N°</th>
-            <th width="35%">Désignation</th>
-            <th width="10%">Unité</th>
-            <th width="10%">Quantité</th>
-            <th width="10%">Prix unitaire</th>
-            <th width="10%">TVA %</th>
-            <th width="10%">Remise %</th>
-            <th width="10%">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${invoice.lines.map((line, idx) => {
-            const product = products.find(p => p.id === line.product) || {};
-            return `
-            <tr>
-              <td>${idx + 1}</td>
-              <td>${esc(line.description || product.name || '')}</td>
-              <td>${esc(line.unit || product.unit || '')}</td>
-              <td>${line.quantity}</td>
-              <td>${num(line.price)} DA</td>
-              <td>${line.tax}</td>
-              <td>${line.discount}</td>
-              <td>${num(line.quantity * line.price * (1 + line.tax/100 - line.discount/100))} DA</td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table>
-
-      <table class="totals-table">
-        <tr>
-          <td>Sous-total:</td>
-          <td>${num(invoice.subtotal)} DA</td>
-        </tr>
-        <tr>
-          <td>TVA:</td>
-          <td>${num(invoice.tax)} DA</td>
-        </tr>
-        <tr>
-          <td>Remise:</td>
-          <td>${num(invoice.discount)} DA</td>
-        </tr>
-        <tr>
-          <td>TOTAL:</td>
-          <td>${num(invoice.total)} DA</td>
-        </tr>
-      </table>
-
-      <div class="notes">
-        <strong>Notes:</strong><br>
-        ${esc(invoice.notes || '')}
-      </div>
-
-      <div class="footer">
-        <p>Proforma Ma Cuisine - Tél: 0550 123 456 - Email: contact@proforma-macuisine.dz</p>
-        <p>Merci pour votre confiance!</p>
-      </div>
-
-      <div class="no-print" style="margin-top: 20px; text-align: center;">
-        <button onclick="window.print()">Imprimer</button>
-        <button onclick="window.close()">Fermer</button>
-      </div>
-    </body>
-    </html>
-  `);
-  printWindow.document.close();
-}
-// Show product modal
-function showProductModal(product = null) {
-  const modal = $('#product-modal');
-  const title = $('#product-modal-title');
-  const form = $('#product-form');
-
-  if (product) {
-    title.textContent = 'Modifier Produit';
-    $('#product-name').value = product.name;
-    $('#product-category-input').value = product.category || '';
-    $('#product-unit').value = product.unit || 'pcs';
-    $('#product-price').value = product.price;
-    $('#product-tax').value = product.tax || 19;
-    $('#product-description').value = product.description || '';
-    $('#save-product').dataset.id = product.id;
-  } else {
-    title.textContent = 'Nouveau Produit';
-    $('#product-name').value = '';
-    $('#product-category-input').value = '';
-    $('#product-unit').value = 'pcs';
-    $('#product-price').value = '';
-    $('#product-tax').value = 19;
-    $('#product-description').value = '';
-    delete $('#save-product').dataset.id;
-  }
-
-  modal.classList.add('active');
-}
-
-// Save product from modal
-function saveProduct() {
-  const id = $('#save-product').dataset.id;
-  const name = $('#product-name').value.trim();
-  const category = $('#product-category-input').value;
-  const unit = $('#product-unit').value;
-  const price = parseFloat($('#product-price').value);
-  const tax = parseFloat($('#product-tax').value) || 0;
-  const description = $('#product-description').value.trim();
-
-  if (!name || isNaN(price)) {
-    showNotification('Nom et prix sont requis!', 'error');
-    return;
-  }
-
-  if (id) {
-    // Update existing product
-    const index = products.findIndex(p => p.id === id);
-    if (index !== -1) {
-      products[index] = {
-        ...products[index],
-        name,
-        category,
-        unit,
-        price,
-        tax,
-        description
-      };
-    }
-  } else {
-    // Add new product
-    const newProduct = ensureProductId({
-      name,
-      category,
-      unit,
-      price,
-      tax,
-      description
-    });
-    products.push(newProduct);
-  }
-
-  saveProducts();
-  renderProducts();
-  $('#product-modal').classList.remove('active');
-  showNotification(`Produit ${id ? 'modifié' : 'ajouté'} avec succès!`);
-}
-
-
 
     // Start the app when DOM is loaded
     document.addEventListener('DOMContentLoaded', initApp);
