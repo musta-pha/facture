@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Proforma Ma Cuisine | SaaS App</title>
+  <title>Proforma Ma Cuisine  </title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
   <style>
     :root {
-      --primary: #1877f2;
-      --primary-dark: #166fe5;
-      --secondary: #42b72a;
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --secondary: #60a5fa;
       --dark: #1c1e21;
       --dark-light: #242526;
       --darker: #18191a;
@@ -86,7 +87,7 @@
     #product-form .form-group {
       margin-bottom: 20px;
     }
-    
+
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
       background-color: var(--dark);
@@ -537,12 +538,12 @@
     }
 
     .stat-icon.invoices {
-      background: rgba(24, 119, 242, 0.15);
+      background: rgba(59, 130, 246, 0.15);
       color: var(--primary);
     }
 
     .stat-icon.products {
-      background: rgba(66, 183, 42, 0.15);
+      background: rgba(96, 165, 250, 0.15);
       color: var(--secondary);
     }
 
@@ -579,6 +580,10 @@
 
     .stat-change.negative {
       color: var(--danger);
+    }
+
+    .stat-change.neutral {
+      color: var(--text-secondary);
     }
 
     .stat-change i {
@@ -618,12 +623,12 @@
     }
 
     .action-card:nth-child(1) .action-icon {
-      background: rgba(24, 119, 242, 0.15);
+      background: rgba(59, 130, 246, 0.15);
       color: var(--primary);
     }
 
     .action-card:nth-child(2) .action-icon {
-      background: rgba(66, 183, 42, 0.15);
+      background: rgba(96, 165, 250, 0.15);
       color: var(--secondary);
     }
 
@@ -1192,11 +1197,11 @@
     #product-modal .form-group {
       margin-bottom: 15px;
     }
-    
+
     #product-modal .modal-content {
       max-width: 500px;
     }
-    
+
     #product-modal .modal-body {
       padding: 20px;
     }
@@ -1247,7 +1252,7 @@
       .filter-container {
         flex-direction: column;
       }
-      
+
       #product-modal .modal-content {
         width: 95%;
       }
@@ -1405,6 +1410,12 @@
           </a>
         </li>
         <li>
+            <a class="menu-item" data-page="clients">
+              <i class="fas fa-users"></i>
+              <span class="menu-title">Clients</span>
+            </a>
+        </li>
+        <li>
           <a class="menu-item" data-page="settings">
             <i class="fas fa-cog"></i>
             <span class="menu-title">Paramètres</span>
@@ -1466,10 +1477,10 @@
               </div>
               <div>
                 <div class="stat-title">Factures</div>
-                <div class="stat-value">142</div>
-                <div class="stat-change positive">
+                <div class="stat-value" id="stats-invoices">0</div>
+                <div class="stat-change positive" id="stats-invoices-change">
                   <i class="fas fa-arrow-up"></i>
-                  12% ce mois
+                  <span>0% ce mois</span>
                 </div>
               </div>
             </div>
@@ -1482,10 +1493,10 @@
               </div>
               <div>
                 <div class="stat-title">Produits</div>
-                <div class="stat-value">38</div>
-                <div class="stat-change positive">
+                <div class="stat-value" id="stats-products">0</div>
+                <div class="stat-change positive" id="stats-products-change">
                   <i class="fas fa-arrow-up"></i>
-                  5% ce mois
+                  <span>0% ce mois</span>
                 </div>
               </div>
             </div>
@@ -1497,11 +1508,11 @@
                 <i class="fas fa-money-bill-wave"></i>
               </div>
               <div>
-                <div class="stat-title">Revenu</div>
-                <div class="stat-value">2.4M DA</div>
-                <div class="stat-change positive">
+                <div class="stat-title">Revenu (Payé)</div>
+                <div class="stat-value" id="stats-revenue">0 DA</div>
+                <div class="stat-change positive" id="stats-revenue-change">
                   <i class="fas fa-arrow-up"></i>
-                  18% ce mois
+                  <span>0% ce mois</span>
                 </div>
               </div>
             </div>
@@ -1514,18 +1525,25 @@
               </div>
               <div>
                 <div class="stat-title">Clients</div>
-                <div class="stat-value">64</div>
-                <div class="stat-change positive">
+                <div class="stat-value" id="stats-clients">0</div>
+                <div class="stat-change positive" id="stats-clients-change">
                   <i class="fas fa-arrow-up"></i>
-                  8% ce mois
+                  <span>0% ce mois</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
+        <div class="recent-section">
+            <div class="section-header">
+                <h2 class="section-title">Ventes mensuelles</h2>
+            </div>
+            <canvas id="salesChart" height="100"></canvas>
+        </div>
+
         <div class="quick-actions">
-          <div class="action-card" data-page="invoices">
+          <div class="action-card" data-action="new-invoice">
             <div class="action-icon">
               <i class="fas fa-plus"></i>
             </div>
@@ -1533,7 +1551,7 @@
             <p class="action-desc">Créer une nouvelle facture ou proforma</p>
           </div>
 
-          <div class="action-card" data-page="products">
+          <div class="action-card" data-action="new-product">
             <div class="action-icon">
               <i class="fas fa-box"></i>
             </div>
@@ -1541,7 +1559,7 @@
             <p class="action-desc">Ajouter un nouveau produit au catalogue</p>
           </div>
 
-          <div class="action-card" id="export-data">
+          <div class="action-card" data-action="export-data">
             <div class="action-icon">
               <i class="fas fa-file-export"></i>
             </div>
@@ -1549,12 +1567,12 @@
             <p class="action-desc">Exporter en Excel ou JSON</p>
           </div>
 
-          <div class="action-card" id="print-action">
+          <div class="action-card" data-action="go-to-settings">
             <div class="action-icon">
-              <i class="fas fa-print"></i>
+              <i class="fas fa-cog"></i>
             </div>
-            <h3 class="action-title">Imprimer</h3>
-            <p class="action-desc">Imprimer des factures ou rapports</p>
+            <h3 class="action-title">Paramètres</h3>
+            <p class="action-desc">Gérer les données de l'application</p>
           </div>
         </div>
 
@@ -1563,47 +1581,9 @@
             <h2 class="section-title">Factures récentes</h2>
             <a href="#" class="view-all" data-page="invoices">Voir tout</a>
           </div>
-
           <ul class="invoice-list" id="recent-invoices-list">
-            <li class="invoice-item">
-              <div class="invoice-info">
-                <div class="invoice-number">PF-2023-00125</div>
-                <div class="invoice-client">Restaurant El Bahdja</div>
-              </div>
-              <div class="invoice-date">14 Août 2023</div>
-              <div class="invoice-amount">185,400 DA</div>
-              <div class="invoice-status status-paid">Payée</div>
-            </li>
-
-            <li class="invoice-item">
-              <div class="invoice-info">
-                <div class="invoice-number">PF-2023-00124</div>
-                <div class="invoice-client">Hôtel Mazafran</div>
-              </div>
-              <div class="invoice-date">12 Août 2023</div>
-              <div class="invoice-amount">267,800 DA</div>
-              <div class="invoice-status status-pending">En attente</div>
-            </li>
-
-            <li class="invoice-item">
-              <div class="invoice-info">
-                <div class="invoice-number">PF-2023-00123</div>
-                <div class="invoice-client">Café El Mountazah</div>
-              </div>
-              <div class="invoice-date">10 Août 2023</div>
-              <div class="invoice-amount">98,500 DA</div>
-              <div class="invoice-status status-paid">Payée</div>
-            </li>
-
-            <li class="invoice-item">
-              <div class="invoice-info">
-                <div class="invoice-number">PF-2023-00122</div>
-                <div class="invoice-client">Particulier - M. Khelifi</div>
-              </div>
-              <div class="invoice-date">8 Août 2023</div>
-              <div class="invoice-amount">142,600 DA</div>
-              <div class="invoice-status status-draft">Brouillon</div>
-            </li>
+             <!-- Recent invoices will be rendered here -->
+             <p id="no-recent-invoices">Aucune facture récente.</p>
           </ul>
         </div>
       </section>
@@ -1636,7 +1616,7 @@
           </div>
           <div class="filter-group">
             <label>Catégorie</label>
-            <select id="product-category">
+            <select id="product-category-filter">
               <option value="">Toutes les catégories</option>
               <option value="Cuisine">Cuisine</option>
               <option value="Chambre">Chambre</option>
@@ -1647,16 +1627,6 @@
         </div>
 
         <div class="table-container">
-          <div class="table-header">
-            <div class="table-title">Tous les produits</div>
-            <div class="table-controls">
-              <div class="search-box">
-                <div class="search-icon"><i class="fas fa-search"></i></div>
-                <input type="text" placeholder="Rechercher..." id="product-table-search">
-              </div>
-            </div>
-          </div>
-
           <table class="table">
             <thead>
               <tr>
@@ -1717,6 +1687,12 @@
             <label>Date de fin</label>
             <input type="date" id="end-date">
           </div>
+           <div class="filter-group">
+             <button class="btn btn-secondary" id="clear-filters" style="margin-top:25px">
+                <i class="fas fa-times"></i>
+                Effacer
+              </button>
+           </div>
         </div>
 
         <div class="invoice-editor" id="invoice-editor" style="display: none;">
@@ -1730,7 +1706,7 @@
 
           <div class="form-group">
             <label>N° Facture</label>
-            <input type="text" id="invoice-number" placeholder="PF-2023-00125">
+            <input type="text" id="invoice-number" placeholder="Ex: PF-2023-00125">
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
@@ -1741,7 +1717,8 @@
 
             <div class="form-group">
               <label>Client</label>
-              <input type="text" id="invoice-client" placeholder="Nom du client">
+              <input type="text" id="invoice-client" list="client-datalist" placeholder="Nom du client">
+              <datalist id="client-datalist"></datalist>
             </div>
           </div>
 
@@ -1798,16 +1775,6 @@
         </div>
 
         <div class="table-container">
-          <div class="table-header">
-            <div class="table-title">Factures récentes</div>
-            <div class="table-controls">
-              <button class="btn btn-secondary" id="clear-filters">
-                <i class="fas fa-times"></i>
-                Effacer les filtres
-              </button>
-            </div>
-          </div>
-
           <table class="table">
             <thead>
               <tr>
@@ -1821,6 +1788,39 @@
             </thead>
             <tbody id="invoices-table-body">
               <!-- Invoices will be rendered here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="page" id="clients-page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">
+              <i class="fas fa-users"></i>
+              Gestion des clients
+            </h1>
+            <p class="page-subtitle">Gérer votre base de données clients</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn" id="add-client-btn">
+              <i class="fas fa-plus"></i>
+              Ajouter Client
+            </button>
+          </div>
+        </div>
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Contact</th>
+                <th>Adresse</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="clients-table-body">
+              <!-- Clients will be rendered here -->
             </tbody>
           </table>
         </div>
@@ -1847,7 +1847,7 @@
                 <i class="fas fa-file-export"></i>
                 Exporter JSON
               </button>
-              <button class="btn btn-secondary" id="import-json">
+              <button class="btn btn-secondary" id="import-json-btn">
                 <i class="fas fa-file-import"></i>
                 Importer JSON
               </button>
@@ -1886,10 +1886,10 @@
             <div class="form-group">
               <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
                 <input type="checkbox" id="cloud-sync" style="width: auto;">
-                <label for="cloud-sync">Synchronisation automatique</label>
+                <label for="cloud-sync">Synchronisation automatique (Bientôt)</label>
               </div>
             </div>
-            <button class="btn btn-secondary">
+            <button class="btn btn-secondary" disabled>
               <i class="fas fa-sync"></i>
               Synchroniser maintenant
             </button>
@@ -1904,11 +1904,11 @@
               <p>Modifiez votre mot de passe ou configurez l'authentification à deux facteurs.</p>
             </div>
             <div class="btn-group">
-              <button class="btn btn-secondary">
+              <button class="btn btn-secondary" disabled>
                 <i class="fas fa-key"></i>
                 Changer mot de passe
               </button>
-              <button class="btn btn-secondary">
+              <button class="btn btn-secondary" disabled>
                 <i class="fas fa-lock"></i>
                 2FA
               </button>
@@ -1964,11 +1964,11 @@
       </div>
       <div class="modal-body">
         <p><strong>Nom :</strong> Proforma Ma Cuisine</p>
-        <p><strong>Version :</strong> 2.1.0</p>
+        <p><strong>Version :</strong> 3.0.0 (IndexedDB Edition)</p>
         <p><strong>Description :</strong> Application SaaS pour la gestion et l'édition de devis/proformas d'atelier. Conçue pour une utilisation simple, rapide et efficace, avec synchronisation cloud.</p>
         <p><strong>Auteur :</strong> Mustapha Salhi</p>
         <p><strong>Contact :</strong> salhimustapha28@gmail.com</p>
-        <p><strong>Date :</strong> Août 2023</p>
+        <p><strong>Date :</strong> Août 2025</p>
 
         <h3>Fonctionnalités</h3>
         <ul>
@@ -2064,22 +2064,52 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" id="cancel-product">Annuler</button>
-        <button class="btn" id="save-product">Enregistrer</button>
+        <button class="btn" id="save-product-btn">Enregistrer</button>
       </div>
     </div>
   </div>
 
-  <div id="notification-area"></div>
-  
-  <script>
-    // Utility functions
-    const $ = (sel, root=document) => root.querySelector(sel);
-    const $$ = (sel, root=document) => Array.from((root||document).querySelectorAll(sel));
-    const esc = s => s ? String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])) : '';
-    const num = n => (Number(n||0)).toFixed(2);
-    const today = () => new Date().toISOString().slice(0,10);
+  <div class="modal" id="client-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="client-modal-title">Nouveau Client</h2>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="client-form">
+                <div class="form-group">
+                    <label>Nom du client*</label>
+                    <input type="text" id="client-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Contact (Tél, Email)</label>
+                    <input type="text" id="client-contact">
+                </div>
+                <div class="form-group">
+                    <label>Adresse</label>
+                    <textarea id="client-address" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" id="cancel-client-btn">Annuler</button>
+            <button class="btn" id="save-client-btn">Enregistrer</button>
+        </div>
+    </div>
+  </div>
 
-    // Show notification
+  <div id="notification-area"></div>
+
+  <script>
+    // --- UTILITY FUNCTIONS ---
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => Array.from((root || document).querySelectorAll(sel));
+    const esc = s => s ? String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])) : '';
+    const num = n => (Number(n || 0)).toFixed(2);
+    const today = () => new Date().toISOString().slice(0, 10);
+    const generateId = (prefix) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // --- NOTIFICATION SYSTEM ---
     function showNotification(message, type = 'success', duration = 3000) {
       const notificationArea = $('#notification-area');
       const notification = document.createElement('div');
@@ -2089,232 +2119,388 @@
         <span>${message}</span>
         <span class="close"><i class="fas fa-times"></i></span>
       `;
-
       notificationArea.appendChild(notification);
-
-      // Show notification
       setTimeout(() => notification.classList.add('show'), 10);
-
-      // Close notification
-      notification.querySelector('.close').addEventListener('click', () => {
+      const close = () => {
         notification.classList.remove('show');
         setTimeout(() => notification.remove(), 300);
-      });
+      };
+      notification.querySelector('.close').addEventListener('click', close);
+      if (duration > 0) setTimeout(close, duration);
+    }
 
-      // Auto close
-      if (duration > 0) {
-        setTimeout(() => {
-          notification.classList.remove('show');
-          setTimeout(() => notification.remove(), 300);
-        }, duration);
+    // --- INDEXEDDB DATABASE HELPER ---
+    const DB_NAME = 'ProformaDB_v1';
+    const DB_VERSION = 1;
+    let db;
+
+    const DB = {
+      async open() {
+        return new Promise((resolve, reject) => {
+          if (db) return resolve(db);
+          const request = indexedDB.open(DB_NAME, DB_VERSION);
+          request.onupgradeneeded = e => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('products')) {
+              const store = db.createObjectStore('products', { keyPath: 'id' });
+              store.createIndex('name', 'name');
+            }
+            if (!db.objectStoreNames.contains('invoices')) {
+              const store = db.createObjectStore('invoices', { keyPath: 'id' });
+              store.createIndex('date', 'date');
+            }
+            if (!db.objectStoreNames.contains('clients')) {
+              const store = db.createObjectStore('clients', { keyPath: 'id' });
+              store.createIndex('name', 'name');
+            }
+          };
+          request.onsuccess = e => {
+            db = e.target.result;
+            resolve(db);
+          };
+          request.onerror = e => reject('IndexedDB error: ' + e.target.errorCode);
+        });
+      },
+      async get(storeName, key) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(storeName, 'readonly');
+          const store = tx.objectStore(storeName);
+          const request = store.get(key);
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = e => reject(e.target.error);
+        });
+      },
+      async getAll(storeName) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(storeName, 'readonly');
+          const store = tx.objectStore(storeName);
+          const request = store.getAll();
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = e => reject(e.target.error);
+        });
+      },
+      async put(storeName, item) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(storeName, 'readwrite');
+          const store = tx.objectStore(storeName);
+          const request = store.put(item);
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = e => reject(e.target.error);
+        });
+      },
+      async delete(storeName, key) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(storeName, 'readwrite');
+          const store = tx.objectStore(storeName);
+          const request = store.delete(key);
+          request.onsuccess = () => resolve();
+          request.onerror = e => reject(e.target.error);
+        });
+      },
+      async clear(storeName) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(storeName, 'readwrite');
+          const store = tx.objectStore(storeName);
+          const request = store.clear();
+          request.onsuccess = () => resolve();
+          request.onerror = e => reject(e.target.error);
+        });
       }
-    }
+    };
 
-    // Data storage keys
-    const LS_PROD = 'proforma_products_v3';
-    const LS_INVOICES = 'proforma_invoices_v3';
-
-    // Initialize data
-    let products = JSON.parse(localStorage.getItem(LS_PROD)) || [];
-    let invoices = JSON.parse(localStorage.getItem(LS_INVOICES)) || [];
+    // --- GLOBAL STATE ---
+    let products = [];
+    let invoices = [];
+    let clients = [];
     let currentInvoice = null;
+    let salesChart = null;
 
-    // Ensure product IDs
-    function ensureProductId(prod) {
-      if (!prod.id) prod.id = 'p_' + Date.now().toString(36) + '_' + Math.floor(Math.random()*9000+1000);
-      return prod;
+    // --- DATA RENDERING FUNCTIONS ---
+    async function renderAll() {
+        await Promise.all([
+            renderProducts(),
+            renderInvoices(),
+            renderClients(),
+            updateDashboard()
+        ]);
     }
 
-    // Render products table
-    function renderProducts() {
+    async function renderProducts() {
       const tbody = $('#products-table-body');
       if (!tbody) return;
 
-      tbody.innerHTML = '';
-
-      // Apply filters
       const searchTerm = $('#product-search').value.toLowerCase();
-      const categoryFilter = $('#product-category').value;
+      const categoryFilter = $('#product-category-filter').value;
 
-      let filteredProducts = products;
+      let filteredProducts = products.filter(p => {
+          const matchesSearch = !searchTerm || p.name.toLowerCase().includes(searchTerm) || (p.description || '').toLowerCase().includes(searchTerm);
+          const matchesCategory = !categoryFilter || p.category === categoryFilter;
+          return matchesSearch && matchesCategory;
+      });
 
-      if (searchTerm) {
-        filteredProducts = filteredProducts.filter(p =>
-          p.name.toLowerCase().includes(searchTerm) ||
-          (p.category && p.category.toLowerCase().includes(searchTerm)) ||
-          (p.description && p.description.toLowerCase().includes(searchTerm)))
-      }
-
-      if (categoryFilter) {
-        filteredProducts = filteredProducts.filter(p => p.category === categoryFilter);
-      }
-
-      filteredProducts.forEach((p, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+      tbody.innerHTML = filteredProducts.map(p => `
+        <tr>
           <td>${esc(p.name)}</td>
           <td>${esc(p.category || '')}</td>
           <td>${num(p.price)} DA</td>
           <td>${esc(p.unit || '')}</td>
           <td class="action-cell">
-            <div class="action-btn edit-product" data-id="${p.id}">
-              <i class="fas fa-edit"></i>
-            </div>
-            <div class="action-btn delete-product" data-id="${p.id}">
-              <i class="fas fa-trash"></i>
-            </div>
+            <div class="action-btn edit-product" data-id="${p.id}"><i class="fas fa-edit"></i></div>
+            <div class="action-btn delete-product" data-id="${p.id}"><i class="fas fa-trash"></i></div>
           </td>
-        `;
-        tbody.appendChild(tr);
-      });
+        </tr>
+      `).join('');
     }
 
-    // Render invoices table
-    function renderInvoices() {
+    async function renderInvoices() {
       const tbody = $('#invoices-table-body');
       if (!tbody) return;
 
-      tbody.innerHTML = '';
-
-      // Apply filters
       const searchTerm = $('#invoice-search').value.toLowerCase();
       const statusFilter = $('#invoice-status-filter').value;
       const startDate = $('#start-date').value;
       const endDate = $('#end-date').value;
 
-      let filteredInvoices = invoices;
+      let filteredInvoices = invoices.filter(inv => {
+          const matchesSearch = !searchTerm || inv.number.toLowerCase().includes(searchTerm) || inv.client.toLowerCase().includes(searchTerm);
+          const matchesStatus = !statusFilter || inv.status === statusFilter;
+          const matchesStartDate = !startDate || inv.date >= startDate;
+          const matchesEndDate = !endDate || inv.date <= endDate;
+          return matchesSearch && matchesStatus && matchesStartDate && matchesEndDate;
+      }).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-      if (searchTerm) {
-        filteredInvoices = filteredInvoices.filter(inv =>
-          inv.number.toLowerCase().includes(searchTerm) ||
-          inv.client.toLowerCase().includes(searchTerm))
-      }
-
-      if (statusFilter) {
-        filteredInvoices = filteredInvoices.filter(inv => inv.status === statusFilter);
-      }
-
-      if (startDate) {
-        filteredInvoices = filteredInvoices.filter(inv => inv.date >= startDate);
-      }
-
-      if (endDate) {
-        filteredInvoices = filteredInvoices.filter(inv => inv.date <= endDate);
-      }
-
-      filteredInvoices.forEach(invoice => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${esc(invoice.number)}</td>
-          <td>${esc(invoice.client)}</td>
-          <td>${invoice.date}</td>
-          <td>${num(invoice.total)} DA</td>
-          <td><span class="invoice-status ${invoice.status === 'paid' ? 'status-paid' : invoice.status === 'pending' ? 'status-pending' : 'status-draft'}">${
-            invoice.status === 'paid' ? 'Payée' : invoice.status === 'pending' ? 'En attente' : 'Brouillon'
-          }</span></td>
-          <td class="action-cell">
-            <div class="action-btn view-invoice" data-id="${invoice.id}">
-              <i class="fas fa-eye"></i>
-            </div>
-            <div class="action-btn edit-invoice" data-id="${invoice.id}">
-              <i class="fas fa-edit"></i>
-            </div>
-            <div class="action-btn print-invoice" data-id="${invoice.id}">
-              <i class="fas fa-print"></i>
-            </div>
-            <div class="action-btn export-invoice" data-id="${invoice.id}">
-              <i class="fas fa-file-excel"></i>
-            </div>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
+      tbody.innerHTML = filteredInvoices.map(inv => {
+          const statusMap = {
+              paid: { class: 'status-paid', text: 'Payée' },
+              pending: { class: 'status-pending', text: 'En attente' },
+              draft: { class: 'status-draft', text: 'Brouillon' }
+          };
+          const status = statusMap[inv.status] || statusMap.draft;
+          return `
+            <tr>
+              <td>${esc(inv.number)}</td>
+              <td>${esc(inv.client)}</td>
+              <td>${inv.date}</td>
+              <td>${num(inv.total)} DA</td>
+              <td><span class="invoice-status ${status.class}">${status.text}</span></td>
+              <td class="action-cell">
+                <div class="action-btn view-invoice" data-id="${inv.id}"><i class="fas fa-eye"></i></div>
+                <div class="action-btn edit-invoice" data-id="${inv.id}"><i class="fas fa-edit"></i></div>
+                <div class="action-btn print-invoice" data-id="${inv.id}"><i class="fas fa-print"></i></div>
+                <div class="action-btn export-invoice-excel" data-id="${inv.id}"><i class="fas fa-file-excel"></i></div>
+                <div class="action-btn delete-invoice" data-id="${inv.id}"><i class="fas fa-trash"></i></div>
+              </td>
+            </tr>
+          `;
+      }).join('');
     }
 
-    // Save products to localStorage
-    function saveProducts() {
-      localStorage.setItem(LS_PROD, JSON.stringify(products));
-      showNotification('Produits sauvegardés avec succès!');
+    async function renderClients() {
+        const tbody = $('#clients-table-body');
+        if (!tbody) return;
+        tbody.innerHTML = clients.map(c => `
+            <tr>
+                <td>${esc(c.name)}</td>
+                <td>${esc(c.contact || '')}</td>
+                <td>${esc(c.address || '')}</td>
+                <td class="action-cell">
+                    <div class="action-btn edit-client" data-id="${c.id}"><i class="fas fa-edit"></i></div>
+                    <div class="action-btn delete-client" data-id="${c.id}"><i class="fas fa-trash"></i></div>
+                </td>
+            </tr>
+        `).join('');
+        const datalist = $('#client-datalist');
+        datalist.innerHTML = clients.map(c => `<option value="${esc(c.name)}"></option>`).join('');
     }
 
-    // Save invoices to localStorage
-    function saveInvoices() {
-      localStorage.setItem(LS_INVOICES, JSON.stringify(invoices));
-      showNotification('Factures sauvegardées avec succès!');
+    // --- DASHBOARD & STATISTICS ---
+    async function updateDashboard() {
+        await updateDashboardStats();
+        await renderRecentInvoices();
+        await renderSalesChart();
     }
 
-    // Calculate invoice totals
+    async function updateDashboardStats() {
+        // Invoices
+        const totalInvoices = invoices.length;
+        $('#stats-invoices').textContent = totalInvoices;
+
+        // Products
+        const totalProducts = products.length;
+        $('#stats-products').textContent = totalProducts;
+
+        // Revenue
+        const totalRevenue = invoices
+            .filter(inv => inv.status === 'paid')
+            .reduce((sum, inv) => sum + inv.total, 0);
+        $('#stats-revenue').textContent = `${num(totalRevenue)} DA`;
+
+        // Clients
+        const uniqueClients = new Set(invoices.map(inv => inv.client.trim())).size;
+        $('#stats-clients').textContent = uniqueClients;
+
+        // --- Monthly change calculations ---
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+        const currentMonthRevenue = invoices
+            .filter(inv => inv.status === 'paid' && new Date(inv.date) >= startOfMonth)
+            .reduce((sum, inv) => sum + inv.total, 0);
+
+        const lastMonthRevenue = invoices
+            .filter(inv => inv.status === 'paid' && new Date(inv.date) >= startOfLastMonth && new Date(inv.date) <= endOfLastMonth)
+            .reduce((sum, inv) => sum + inv.total, 0);
+
+        updateStatChange($('#stats-revenue-change'), currentMonthRevenue, lastMonthRevenue);
+
+        const currentMonthInvoices = invoices.filter(inv => new Date(inv.date) >= startOfMonth).length;
+        const lastMonthInvoices = invoices.filter(inv => new Date(inv.date) >= startOfLastMonth && new Date(inv.date) <= endOfLastMonth).length;
+        updateStatChange($('#stats-invoices-change'), currentMonthInvoices, lastMonthInvoices, false);
+    }
+
+    function updateStatChange(element, current, previous, isCurrency = true) {
+        let percentage;
+        if (previous > 0) {
+            percentage = ((current - previous) / previous) * 100;
+        } else if (current > 0) {
+            percentage = 100;
+        } else {
+            percentage = 0;
+        }
+
+        element.classList.remove('positive', 'negative', 'neutral');
+        const icon = element.querySelector('i');
+        const text = element.querySelector('span');
+
+        if (percentage > 0) {
+            element.classList.add('positive');
+            icon.className = 'fas fa-arrow-up';
+        } else if (percentage < 0) {
+            element.classList.add('negative');
+            icon.className = 'fas fa-arrow-down';
+        } else {
+            element.classList.add('neutral');
+            icon.className = 'fas fa-minus';
+        }
+        text.textContent = `${percentage.toFixed(0)}% ce mois`;
+    }
+
+    async function renderRecentInvoices() {
+        const list = $('#recent-invoices-list');
+        const noItems = $('#no-recent-invoices');
+        const recent = invoices.slice(0, 5);
+        if (recent.length > 0) {
+            noItems.style.display = 'none';
+            list.innerHTML = recent.map(inv => {
+                const statusMap = {
+                    paid: { class: 'status-paid', text: 'Payée' },
+                    pending: { class: 'status-pending', text: 'En attente' },
+                    draft: { class: 'status-draft', text: 'Brouillon' }
+                };
+                const status = statusMap[inv.status] || statusMap.draft;
+                return `
+                <li class="invoice-item">
+                  <div class="invoice-info">
+                    <div class="invoice-number">${esc(inv.number)}</div>
+                    <div class="invoice-client">${esc(inv.client)}</div>
+                  </div>
+                  <div class="invoice-date">${inv.date}</div>
+                  <div class="invoice-amount">${num(inv.total)} DA</div>
+                  <div class="invoice-status ${status.class}">${status.text}</div>
+                </li>
+                `;
+            }).join('');
+        } else {
+            noItems.style.display = 'block';
+            list.innerHTML = '';
+        }
+    }
+
+    async function renderSalesChart() {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        const salesData = invoices
+            .filter(inv => inv.status === 'paid')
+            .reduce((acc, inv) => {
+                const month = inv.date.substring(0, 7); // YYYY-MM
+                acc[month] = (acc[month] || 0) + inv.total;
+                return acc;
+            }, {});
+
+        const sortedMonths = Object.keys(salesData).sort();
+        const labels = sortedMonths.map(month => new Date(month + '-02').toLocaleString('fr-FR', { month: 'long', year: 'numeric' }));
+        const data = sortedMonths.map(month => salesData[month]);
+
+        if (salesChart) {
+            salesChart.destroy();
+        }
+
+        salesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Revenu mensuel (Payé)',
+                    data: data,
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value, index, values) {
+                                return value.toLocaleString('fr-FR') + ' DA';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // --- INVOICE EDITOR LOGIC ---
     function calculateTotals() {
       if (!currentInvoice) return;
-
-      const lines = currentInvoice.lines;
-      let subtotal = 0;
-      let taxTotal = 0;
-      let discountTotal = 0;
-
-      lines.forEach(line => {
-        const quantity = parseFloat(line.quantity) || 0;
-        const price = parseFloat(line.price) || 0;
-        const tax = parseFloat(line.tax) || 0;
-        const discount = parseFloat(line.discount) || 0;
-
-        const lineTotal = quantity * price;
-        const lineTax = lineTotal * (tax / 100);
-        const lineDiscount = lineTotal * (discount / 100);
-
+      let subtotal = 0, taxTotal = 0, discountTotal = 0;
+      currentInvoice.lines.forEach(line => {
+        const lineTotal = (line.quantity || 0) * (line.price || 0);
         subtotal += lineTotal;
-        taxTotal += lineTax;
-        discountTotal += lineDiscount;
+        taxTotal += lineTotal * ((line.tax || 0) / 100);
+        discountTotal += lineTotal * ((line.discount || 0) / 100);
       });
-
       const grandTotal = subtotal + taxTotal - discountTotal;
-
       $('#subtotal').textContent = `${num(subtotal)} DA`;
       $('#tax-total').textContent = `${num(taxTotal)} DA`;
       $('#discount-total').textContent = `${num(discountTotal)} DA`;
       $('#grand-total').textContent = `${num(grandTotal)} DA`;
-
-      if (currentInvoice) {
-        currentInvoice.subtotal = subtotal;
-        currentInvoice.tax = taxTotal;
-        currentInvoice.discount = discountTotal;
-        currentInvoice.total = grandTotal;
-      }
+      currentInvoice.subtotal = subtotal;
+      currentInvoice.tax = taxTotal;
+      currentInvoice.discount = discountTotal;
+      currentInvoice.total = grandTotal;
     }
 
-    // Add new invoice line
-    function addInvoiceLine() {
-      if (!currentInvoice) return;
-
-      currentInvoice.lines.push({
-        product: '',
-        description: '',
-        unit: '',
-        quantity: 1,
-        price: 0,
-        tax: 0,
-        discount: 0
-      });
-
-      renderInvoiceEditor();
-    }
-
-    // Render invoice editor
     function renderInvoiceEditor() {
       if (!currentInvoice) return;
-
       const linesBody = $('#invoice-lines');
-      if (!linesBody) return;
-
-      linesBody.innerHTML = '';
-
-      currentInvoice.lines.forEach((line, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+      linesBody.innerHTML = currentInvoice.lines.map((line, idx) => `
+        <tr>
           <td>
             <select class="product-select" data-idx="${idx}">
               <option value="">Sélectionner un produit</option>
-              ${products.map(p => `<option value="${p.id}" ${line.product === p.id ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}
+              ${products.map(p => `<option value="${p.id}" ${line.productId === p.id ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}
             </select>
           </td>
           <td><input type="text" class="description" data-idx="${idx}" value="${esc(line.description)}"></td>
@@ -2323,118 +2509,267 @@
           <td><input type="number" class="price" data-idx="${idx}" min="0" step="0.01" value="${line.price}"></td>
           <td><input type="number" class="tax" data-idx="${idx}" min="0" max="100" step="0.1" value="${line.tax}"></td>
           <td><input type="number" class="discount" data-idx="${idx}" min="0" max="100" step="0.1" value="${line.discount}"></td>
-          <td class="line-total">${num(line.quantity * line.price * (1 + line.tax/100 - line.discount/100))} DA</td>
+          <td class="line-total">${num((line.quantity||0) * (line.price||0))} DA</td>
           <td><button class="del-btn delete-line" data-idx="${idx}">✕</button></td>
-        `;
-        linesBody.appendChild(tr);
-      });
-
+        </tr>
+      `).join('');
       calculateTotals();
     }
 
-    // Save current invoice
-    function saveCurrentInvoice() {
+    async function saveCurrentInvoice() {
       if (!currentInvoice) return;
-
-      // Get invoice data from form
       currentInvoice.number = $('#invoice-number').value || '';
       currentInvoice.date = $('#invoice-date').value || today();
       currentInvoice.client = $('#invoice-client').value || '';
       currentInvoice.notes = $('#invoice-notes').value || '';
 
-      // If it's a new invoice, add to the list
       if (!currentInvoice.id) {
-        currentInvoice.id = 'inv_' + Date.now().toString(36);
+        currentInvoice.id = generateId('inv');
         currentInvoice.createdAt = new Date().toISOString();
         currentInvoice.status = 'draft';
-        invoices.unshift(currentInvoice);
-      } else {
-        // Update existing invoice
-        const index = invoices.findIndex(inv => inv.id === currentInvoice.id);
-        if (index !== -1) {
-          invoices[index] = currentInvoice;
-        }
       }
 
-      saveInvoices();
-      renderInvoices();
+      // Add client if new
+      const clientName = currentInvoice.client.trim();
+      if (clientName && !clients.some(c => c.name === clientName)) {
+          const newClient = { id: generateId('client'), name: clientName };
+          await DB.put('clients', newClient);
+          clients.push(newClient);
+          await renderClients();
+      }
+
+      await DB.put('invoices', currentInvoice);
+      invoices = await DB.getAll('invoices');
       hideInvoiceEditor();
+      await renderAll();
       showNotification('Facture enregistrée avec succès!');
     }
 
-    // Show invoice editor
     function showInvoiceEditor(invoice = null) {
       if (invoice) {
-        currentInvoice = {...invoice};
+        currentInvoice = JSON.parse(JSON.stringify(invoice)); // Deep copy
         $('#invoice-editor-title').textContent = 'Modifier Facture';
       } else {
         currentInvoice = {
-          id: null,
-          number: '',
-          date: today(),
-          client: '',
-          notes: '',
-          status: 'draft',
-          lines: [{
-            product: '',
-            description: '',
-            unit: '',
-            quantity: 1,
-            price: 0,
-            tax: 0,
-            discount: 0
-          }],
-          subtotal: 0,
-          tax: 0,
-          discount: 0,
-          total: 0
+          id: null, number: '', date: today(), client: '', notes: '', status: 'draft',
+          lines: [{ productId: '', description: '', unit: 'pcs', quantity: 1, price: 0, tax: 19, discount: 0 }],
+          subtotal: 0, tax: 0, discount: 0, total: 0
         };
         $('#invoice-editor-title').textContent = 'Nouvelle Facture';
       }
-
-      // Set form values
       $('#invoice-number').value = currentInvoice.number;
       $('#invoice-date').value = currentInvoice.date;
       $('#invoice-client').value = currentInvoice.client;
       $('#invoice-notes').value = currentInvoice.notes;
-
       renderInvoiceEditor();
       $('#invoice-editor').style.display = 'block';
-
-      // Scroll to editor
-      document.querySelector('#invoice-editor').scrollIntoView({ behavior: 'smooth' });
+      $('#invoice-editor').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Hide invoice editor
     function hideInvoiceEditor() {
       $('#invoice-editor').style.display = 'none';
       currentInvoice = null;
     }
 
-    // Edit a product
-    function editProduct(id) {
-      const product = products.find(p => p.id === id);
-      if (!product) return;
+    // --- MODAL & CONFIRMATION DIALOGS ---
+    function showConfirmation(title, message, confirmCallback) {
+      const modal = $('#confirmation-modal');
+      $('#confirmation-title').textContent = title;
+      $('#confirmation-message').textContent = message;
 
-      // Show the product modal with the product data
-      showProductModal(product);
-    }
+      const confirmBtn = $('#confirm-action');
+      const cancelBtn = $('#cancel-action');
 
-    // Delete a product
-    function deleteProduct(id) {
-      showConfirmation('Supprimer ce produit?', 'Êtes-vous sûr de vouloir supprimer ce produit? Cette action est irréversible.', () => {
-        const index = products.findIndex(p => p.id === id);
-        if (index !== -1) {
-          products.splice(index, 1);
-          saveProducts();
-          renderProducts();
-          showNotification('Produit supprimé avec succès!');
-        }
+      const newConfirmBtn = confirmBtn.cloneNode(true);
+      confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+      newConfirmBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+        confirmCallback();
       });
+
+      cancelBtn.onclick = () => modal.classList.remove('active');
+      modal.classList.add('active');
     }
 
-    // Export products to Excel
-    function exportProductsToExcel() {
+    function showProductModal(product = null) {
+      const modal = $('#product-modal');
+      const title = $('#product-modal-title');
+      if (product) {
+        title.textContent = 'Modifier Produit';
+        $('#product-name').value = product.name;
+        $('#product-category-input').value = product.category || '';
+        $('#product-unit').value = product.unit || 'pcs';
+        $('#product-price').value = product.price;
+        $('#product-tax').value = product.tax || 19;
+        $('#product-description').value = product.description || '';
+        $('#save-product-btn').dataset.id = product.id;
+      } else {
+        title.textContent = 'Nouveau Produit';
+        $('#product-form').reset();
+        $('#product-tax').value = 19;
+        delete $('#save-product-btn').dataset.id;
+      }
+      modal.classList.add('active');
+    }
+
+    function showClientModal(client = null) {
+        const modal = $('#client-modal');
+        if (client) {
+            $('#client-modal-title').textContent = 'Modifier Client';
+            $('#client-name').value = client.name;
+            $('#client-contact').value = client.contact || '';
+            $('#client-address').value = client.address || '';
+            $('#save-client-btn').dataset.id = client.id;
+        } else {
+            $('#client-modal-title').textContent = 'Nouveau Client';
+            $('#client-form').reset();
+            delete $('#save-client-btn').dataset.id;
+        }
+        modal.classList.add('active');
+    }
+
+    // --- DATA MANIPULATION ---
+    async function saveProduct() {
+      const id = $('#save-product-btn').dataset.id;
+      const name = $('#product-name').value.trim();
+      if (!name) {
+        showNotification('Le nom du produit est requis!', 'error');
+        return;
+      }
+      const productData = {
+        id: id || generateId('prod'),
+        name: name,
+        category: $('#product-category-input').value,
+        unit: $('#product-unit').value,
+        price: parseFloat($('#product-price').value) || 0,
+        tax: parseFloat($('#product-tax').value) || 0,
+        description: $('#product-description').value.trim()
+      };
+      await DB.put('products', productData);
+      products = await DB.getAll('products');
+      await renderProducts();
+      $('#product-modal').classList.remove('active');
+      showNotification(`Produit ${id ? 'modifié' : 'ajouté'} avec succès!`);
+    }
+
+    async function saveClient() {
+        const id = $('#save-client-btn').dataset.id;
+        const name = $('#client-name').value.trim();
+        if (!name) {
+            showNotification('Le nom du client est requis!', 'error');
+            return;
+        }
+        const clientData = {
+            id: id || generateId('client'),
+            name: name,
+            contact: $('#client-contact').value.trim(),
+            address: $('#client-address').value.trim()
+        };
+        await DB.put('clients', clientData);
+        clients = await DB.getAll('clients');
+        await renderClients();
+        $('#client-modal').classList.remove('active');
+        showNotification(`Client ${id ? 'modifié' : 'ajouté'} avec succès!`);
+    }
+
+    // --- PRINT & EXPORT ---
+    function printInvoice(id) {
+        const invoice = invoices.find(inv => inv.id === id);
+        if (!invoice) return;
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <!DOCTYPE html><html><head><title>Facture ${invoice.number}</title><style>
+                body { font-family: Arial, sans-serif; margin: 20px; } .header { text-align: center; margin-bottom: 30px; }
+                .info-table, .items-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                .info-table td, .items-table th, .items-table td { padding: 8px; border: 1px solid #ddd; }
+                .items-table th { background-color: #f2f2f2; } .totals-table { float: right; width: 300px; }
+                .totals-table td { padding: 8px; } .totals-table td:first-child { text-align: right; font-weight: bold; }
+            </style></head><body>
+            <div class="header"><h1>FACTURE PROFORMA</h1></div>
+            <table class="info-table"><tr><td><strong>N°:</strong> ${esc(invoice.number)}<br><strong>Date:</strong> ${invoice.date}</td>
+            <td><strong>Client:</strong> ${esc(invoice.client)}</td></tr></table>
+            <table class="items-table"><thead><tr><th>Désignation</th><th>Qté</th><th>Prix U.</th><th>Total</th></tr></thead><tbody>
+            ${invoice.lines.map(line => `<tr><td>${esc(line.description)}</td><td>${line.quantity}</td><td>${num(line.price)} DA</td><td>${num(line.quantity * line.price)} DA</td></tr>`).join('')}
+            </tbody></table>
+            <table class="totals-table">
+                <tr><td>Sous-total:</td><td>${num(invoice.subtotal)} DA</td></tr>
+                <tr><td>TVA:</td><td>${num(invoice.tax)} DA</td></tr>
+                <tr><td>Remise:</td><td>-${num(invoice.discount)} DA</td></tr>
+                <tr><td><strong>TOTAL:</strong></td><td><strong>${num(invoice.total)} DA</strong></td></tr>
+            </table>
+            <script>window.onload = () => { window.print(); window.close(); }<\/script>
+            </body></html>
+        `);
+        printWindow.document.close();
+    }
+
+    function exportInvoiceToExcel(id) {
+        const invoice = invoices.find(inv => inv.id === id);
+        if (!invoice) return;
+
+        try {
+            const client = clients.find(c => c.name === invoice.client) || {};
+
+            const header = [
+                ["Facture Proforma"],
+                [],
+                ["Client:", invoice.client],
+                ["Contact:", client.contact || ''],
+                ["Adresse:", client.address || ''],
+                [],
+                ["N° Facture:", invoice.number],
+                ["Date:", invoice.date],
+            ];
+
+            const linesHeader = ["Désignation", "Unité", "Quantité", "Prix Unitaire HT", "TVA (%)", "Remise (%)", "Total HT"];
+            const lines = invoice.lines.map(line => [
+                line.description,
+                line.unit,
+                line.quantity,
+                line.price,
+                line.tax,
+                line.discount,
+                (line.quantity * line.price) * (1 - (line.discount / 100))
+            ]);
+
+            const totals = [
+                [],
+                [null, null, null, null, null, "Sous-total HT:", invoice.subtotal],
+                [null, null, null, null, null, "TVA:", invoice.tax],
+                [null, null, null, null, null, "Remise:", -invoice.discount],
+                [null, null, null, null, null, "Total TTC:", invoice.total],
+            ];
+
+            const notes = [
+                [],
+                ["Notes:", invoice.notes || '']
+            ];
+
+            const worksheet = XLSX.utils.aoa_to_sheet(header);
+            XLSX.utils.sheet_add_aoa(worksheet, [linesHeader], { origin: "A10" });
+            XLSX.utils.sheet_add_json(worksheet, lines, { origin: "A11", skipHeader: true });
+
+            const finalData = XLSX.utils.sheet_to_json(worksheet, {header:1});
+            const lastRow = finalData.length;
+
+            XLSX.utils.sheet_add_aoa(worksheet, totals, { origin: `G${lastRow + 2}` });
+            XLSX.utils.sheet_add_aoa(worksheet, notes, { origin: `A${lastRow + 7}` });
+
+            worksheet["A1"].s = { font: { sz: 16, bold: true } };
+            worksheet["!cols"] = [ {wch:40}, {wch:10}, {wch:10}, {wch:15}, {wch:10}, {wch:10}, {wch:15} ];
+
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, `Facture ${invoice.number}`);
+            XLSX.writeFile(workbook, `Facture_${invoice.number}.xlsx`);
+            showNotification('Facture exportée avec succès!');
+        } catch (e) {
+            showNotification('Erreur lors de l\'export: ' + e.message, 'error');
+        }
+    }
+
+
+    async function exportProductsToExcel() {
       try {
         const worksheet = XLSX.utils.json_to_sheet(products.map(p => ({
           'Nom': p.name,
@@ -2444,7 +2779,6 @@
           'TVA (%)': p.tax || 0,
           'Description': p.description || ''
         })));
-
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Produits');
         XLSX.writeFile(workbook, 'produits.xlsx');
@@ -2454,8 +2788,7 @@
       }
     }
 
-    // Export invoices to Excel
-    function exportInvoicesToExcel() {
+    async function exportInvoicesToExcel() {
       try {
         const worksheet = XLSX.utils.json_to_sheet(invoices.map(inv => ({
           'N° Facture': inv.number,
@@ -2464,7 +2797,6 @@
           'Montant': inv.total,
           'Statut': inv.status === 'paid' ? 'Payée' : inv.status === 'pending' ? 'En attente' : 'Brouillon'
         })));
-
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Factures');
         XLSX.writeFile(workbook, 'factures.xlsx');
@@ -2474,689 +2806,261 @@
       }
     }
 
-    // Export single invoice to Excel
-    function exportInvoiceToExcel(id) {
-      const invoice = invoices.find(inv => inv.id === id);
-      if (!invoice) return;
-
-      try {
-        // Create a more detailed and formatted worksheet
-        const header = [
-          ['Proforma Ma Cuisine'],
-          ['Facture Proforma'],
-          ['N°:', invoice.number],
-          ['Date:', invoice.date],
-          ['Client:', invoice.client],
-          ['Statut:', invoice.status === 'paid' ? 'Payée' : invoice.status === 'pending' ? 'En attente' : 'Brouillon'],
-          ['Notes:', invoice.notes || ''],
-          [''] // Empty row
-        ];
-
-        // Create invoice lines with better formatting
-        const lines = [
-          ['N°', 'Désignation', 'Unité', 'Quantité', 'Prix unitaire', 'TVA (%)', 'Remise (%)', 'Total HT', 'Total TTC']
-        ];
-
-        invoice.lines.forEach((line, idx) => {
-          const product = products.find(p => p.id === line.product) || {};
-          lines.push([
-            idx + 1,
-            line.description || product.name || '',
-            line.unit || product.unit || '',
-            line.quantity,
-            line.price,
-            line.tax,
-            line.discount,
-            line.quantity * line.price,
-            line.quantity * line.price * (1 + line.tax/100 - line.discount/100)
-          ]);
-        });
-
-        // Add totals with proper formatting
-        lines.push(['']);
-        lines.push(['', '', '', '', '', '', 'Sous-total:', invoice.subtotal]);
-        lines.push(['', '', '', '', '', '', 'TVA:', invoice.tax]);
-        lines.push(['', '', '', '', '', '', 'Remise:', invoice.discount]);
-        lines.push(['', '', '', '', '', '', 'TOTAL:', invoice.total]);
-
-        // Create worksheet with merged cells for header
-        const ws = XLSX.utils.aoa_to_sheet([...header, ...lines]);
-
-        // Apply styling through cell formatting
-        const range = XLSX.utils.decode_range(ws['!ref']);
-        for(let C = range.s.c; C <= range.e.c; ++C) {
-          const addr = XLSX.utils.encode_cell({c:C, r:0});
-          if(!ws[addr]) ws[addr] = {};
-          ws[addr].s = {font: {bold: true, sz: 16}};
-        }
-
-        // Merge header cells
-        ws['!merges'] = [
-          {s: {r:0, c:0}, e: {r:0, c:7}},  // "Proforma Ma Cuisine"
-          {s: {r:1, c:0}, e: {r:1, c:7}},  // "Facture Proforma"
-        ];
-
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, `Facture_${invoice.number}`);
-        XLSX.writeFile(wb, `facture_${invoice.number}_${invoice.date.replace(/-/g, '')}.xlsx`);
-        showNotification('Facture exportée avec succès!');
-      } catch (e) {
-        showNotification('Erreur lors de l\'export: ' + e.message, 'error');
-      }
-    }
-
-    // Print invoice
-    function printInvoice(id) {
-      const invoice = invoices.find(inv => inv.id === id);
-      if (!invoice) return;
-
-      const printWindow = window.open('', '_blank');
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Facture ${invoice.number}</title>
-          <style>
-            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-            .header { text-align: center; margin-bottom: 30px; }
-            .header h1 { margin: 0; font-size: 24px; }
-            .info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-            .info-table td { padding: 8px; vertical-align: top; }
-            .items-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-            .items-table th, .items-table td { border: 1px solid #000; padding: 8px; text-align: center; }
-            .totals-table { margin-left: auto; width: 300px; border-collapse: collapse; }
-            .totals-table td { padding: 8px; border-bottom: 1px solid #000; }
-            .totals-table tr:last-child td { border-bottom: none; font-weight: bold; }
-            .notes { margin-top: 30px; }
-            .footer { margin-top: 50px; text-align: center; font-size: 12px; }
-            @media print {
-              body { padding: 15mm; }
-              .no-print { display: none; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <h1>PROFORMA MA CUISINE</h1>
-            <h2>FACTURE PROFORMA</h2>
-          </div>
-
-          <table class="info-table">
-            <tr>
-              <td width="50%">
-                <strong>N° Facture:</strong> ${esc(invoice.number)}<br>
-                <strong>Date:</strong> ${invoice.date}
-              </td>
-              <td width="50%">
-                <strong>Client:</strong> ${esc(invoice.client)}<br>
-                <strong>Statut:</strong> ${invoice.status === 'paid' ? 'Payée' : invoice.status === 'pending' ? 'En attente' : 'Brouillon'}
-              </td>
-            </tr>
-          </table>
-
-          <table class="items-table">
-            <thead>
-              <tr>
-                <th width="5%">N°</th>
-                <th width="35%">Désignation</th>
-                <th width="10%">Unité</th>
-                <th width="10%">Quantité</th>
-                <th width="10%">Prix unitaire</th>
-                <th width="10%">TVA %</th>
-                <th width="10%">Remise %</th>
-                <th width="10%">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${invoice.lines.map((line, idx) => {
-                const product = products.find(p => p.id === line.product) || {};
-                return `
-                <tr>
-                  <td>${idx + 1}</td>
-                  <td>${esc(line.description || product.name || '')}</td>
-                  <td>${esc(line.unit || product.unit || '')}</td>
-                  <td>${line.quantity}</td>
-                  <td>${num(line.price)} DA</td>
-                  <td>${line.tax}</td>
-                  <td>${line.discount}</td>
-                  <td>${num(line.quantity * line.price * (1 + line.tax/100 - line.discount/100))} DA</td>
-                </tr>`;
-              }).join('')}
-            </tbody>
-          </table>
-
-          <table class="totals-table">
-            <tr>
-              <td>Sous-total:</td>
-              <td>${num(invoice.subtotal)} DA</td>
-            </tr>
-            <tr>
-              <td>TVA:</td>
-              <td>${num(invoice.tax)} DA</td>
-            </tr>
-            <tr>
-              <td>Remise:</td>
-              <td>${num(invoice.discount)} DA</td>
-            </tr>
-            <tr>
-              <td>TOTAL:</td>
-              <td>${num(invoice.total)} DA</td>
-            </tr>
-          </table>
-
-          <div class="notes">
-            <strong>Notes:</strong><br>
-            ${esc(invoice.notes || '')}
-          </div>
-
-          <div class="footer">
-            <p>Proforma Ma Cuisine - Tél: 0550 123 456 - Email: contact@proforma-macuisine.dz</p>
-            <p>Merci pour votre confiance!</p>
-          </div>
-
-          <div class="no-print" style="margin-top: 20px; text-align: center;">
-            <button onclick="window.print()">Imprimer</button>
-            <button onclick="window.close()">Fermer</button>
-          </div>
-        </body>
-        </html>
-      `);
-      printWindow.document.close();
-    }
-
-    // Export all data to JSON
-    function exportToJSON() {
-      const data = {
-        products,
-        invoices,
-        exportedAt: new Date().toISOString(),
-        version: '2.1.0'
-      };
-
-      const dataStr = JSON.stringify(data, null, 2);
-      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-
-      const exportFileDefaultName = `proforma_backup_${new Date().toISOString().slice(0,10)}.json`;
-
-      const linkElement = document.createElement('a');
-      linkElement.setAttribute('href', dataUri);
-      linkElement.setAttribute('download', exportFileDefaultName);
-      linkElement.click();
-
-      showNotification('Sauvegarde JSON exportée avec succès!');
-    }
-
-    // Import from JSON
-    function importFromJSON(file) {
-      showConfirmation('Importer des données?', 'Êtes-vous sûr de vouloir importer ces données? Cela écrasera vos données actuelles.', () => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          try {
-            const data = JSON.parse(e.target.result);
-
-            if (data.products && data.invoices) {
-              products = data.products;
-              invoices = data.invoices;
-
-              saveProducts();
-              saveInvoices();
-
-              renderProducts();
-              renderInvoices();
-
-              showNotification('Données importées avec succès!');
-            } else {
-              showNotification('Format de fichier invalide', 'error');
-            }
-          } catch (e) {
-            showNotification('Erreur lors de l\'import: ' + e.message, 'error');
-          }
+    async function exportToJSON() {
+        const data = {
+            products: await DB.getAll('products'),
+            invoices: await DB.getAll('invoices'),
+            clients: await DB.getAll('clients'),
+            exportedAt: new Date().toISOString(),
+            version: '3.0.0'
         };
-        reader.readAsText(file);
-      });
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `proforma_backup_${today()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showNotification('Données exportées en JSON avec succès!');
     }
 
-    // Reset to default data
-    function resetToDefaultData() {
-      showConfirmation('Réinitialiser les données?', 'Êtes-vous sûr de vouloir réinitialiser les données aux valeurs par défaut?', () => {
-        // Default products
-        products = [
-          { id: 'p_1', name: 'Caisson cuisine 60cm', category: 'Cuisine', unit: 'pcs', price: 18000 },
-          { id: 'p_2', name: 'Armoire 2 portes', category: 'Chambre', unit: 'pcs', price: 42000 },
-          { id: 'p_3', name: 'Meuble TV 140cm', category: 'Salon', unit: 'pcs', price: 32000 },
-          { id: 'p_4', name: 'Plan de travail (ml)', category: 'Cuisine', unit: 'ml', price: 9000 },
-          { id: 'p_5', name: 'Profilé aluminium 3m', category: 'Aluminium', unit: 'pcs', price: 4500 }
-        ];
-
-        // Default invoices
-        invoices = [
-          {
-            id: 'inv_1',
-            number: 'PF-2023-00125',
-            date: '2023-08-14',
-            client: 'Restaurant El Bahdja',
-            status: 'paid',
-            lines: [
-              { product: 'p_1', description: 'Caisson cuisine', unit: 'pcs', quantity: 4, price: 18000, tax: 19, discount: 0 },
-              { product: 'p_4', description: 'Plan de travail', unit: 'ml', quantity: 3.2, price: 9000, tax: 19, discount: 5 }
-            ],
-            subtotal: 97200,
-            tax: 18468,
-            discount: 1440,
-            total: 114228,
-            notes: 'Livraison prévue le 20/08/2023'
-          },
-          {
-            id: 'inv_2',
-            number: 'PF-2023-00124',
-            date: '2023-08-12',
-            client: 'Hôtel Mazafran',
-            status: 'pending',
-            lines: [
-              { product: 'p_2', description: 'Armoire 2 portes', unit: 'pcs', quantity: 2, price: 42000, tax: 19, discount: 0 },
-              { product: 'p_3', description: 'Meuble TV', unit: 'pcs', quantity: 1, price: 32000, tax: 19, discount: 10 }
-            ],
-            subtotal: 116000,
-            tax: 22040,
-            discount: 3200,
-            total: 134840,
-            notes: 'Paiement à réception'
-          }
-        ];
-
-        saveProducts();
-        saveInvoices();
-
-        renderProducts();
-        renderInvoices();
-
-        showNotification('Données réinitialisées avec succès!');
-      });
-    }
-
-    // Clear all data
-    function clearAllData() {
-      showConfirmation('Effacer toutes les données?', 'Êtes-vous sûr de vouloir effacer TOUTES vos données? Cette action est irréversible.', () => {
-        products = [];
-        invoices = [];
-
-        saveProducts();
-        saveInvoices();
-
-        renderProducts();
-        renderInvoices();
-
-        showNotification('Toutes les données ont été effacées!');
-      });
-    }
-
-    // Show confirmation dialog
-    function showConfirmation(title, message, confirmCallback) {
-      const modal = $('#confirmation-modal');
-      $('#confirmation-title').textContent = title;
-      $('#confirmation-message').textContent = message;
-      $('#progress-container').style.display = 'none';
-
-      const confirmAction = () => {
-        modal.classList.remove('active');
-        confirmCallback();
-      };
-
-      $('#confirm-action').onclick = confirmAction;
-      $('#cancel-action').onclick = () => modal.classList.remove('active');
-
-      modal.classList.add('active');
-    }
-
-    // Show product modal
-    function showProductModal(product = null) {
-      const modal = $('#product-modal');
-      const title = $('#product-modal-title');
-      const form = $('#product-form');
-
-      if (product) {
-        title.textContent = 'Modifier Produit';
-        $('#product-name').value = product.name;
-        $('#product-category-input').value = product.category || '';
-        $('#product-unit').value = product.unit || 'pcs';
-        $('#product-price').value = product.price;
-        $('#product-tax').value = product.tax || 19;
-        $('#product-description').value = product.description || '';
-        $('#save-product').dataset.id = product.id;
-      } else {
-        title.textContent = 'Nouveau Produit';
-        $('#product-name').value = '';
-        $('#product-category-input').value = '';
-        $('#product-unit').value = 'pcs';
-        $('#product-price').value = '';
-        $('#product-tax').value = 19;
-        $('#product-description').value = '';
-        delete $('#save-product').dataset.id;
-      }
-
-      modal.classList.add('active');
-    }
-
-    // Save product from modal
-    function saveProduct() {
-      const id = $('#save-product').dataset.id;
-      const name = $('#product-name').value.trim();
-      const category = $('#product-category-input').value;
-      const unit = $('#product-unit').value;
-      const price = parseFloat($('#product-price').value);
-      const tax = parseFloat($('#product-tax').value) || 0;
-      const description = $('#product-description').value.trim();
-
-      if (!name || isNaN(price)) {
-        showNotification('Nom et prix sont requis!', 'error');
-        return;
-      }
-
-      if (id) {
-        // Update existing product
-        const index = products.findIndex(p => p.id === id);
-        if (index !== -1) {
-          products[index] = {
-            ...products[index],
-            name,
-            category,
-            unit,
-            price,
-            tax,
-            description
-          };
-        }
-      } else {
-        // Add new product
-        const newProduct = ensureProductId({
-          name,
-          category,
-          unit,
-          price,
-          tax,
-          description
+    function importFromJSON(file) {
+        showConfirmation('Importer des données?', 'Cela écrasera vos données actuelles. Êtes-vous sûr?', async () => {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.products && data.invoices && data.clients) {
+                        await DB.clear('products');
+                        await DB.clear('invoices');
+                        await DB.clear('clients');
+                        for (const p of data.products) await DB.put('products', p);
+                        for (const i of data.invoices) await DB.put('invoices', i);
+                        for (const c of data.clients) await DB.put('clients', c);
+                        await loadInitialData();
+                        showNotification('Données importées avec succès!');
+                    } else {
+                        showNotification('Format de fichier invalide', 'error');
+                    }
+                } catch (err) {
+                    showNotification('Erreur lors de l\'importation: ' + err.message, 'error');
+                }
+            };
+            reader.readAsText(file);
         });
-        products.push(newProduct);
-      }
-
-      saveProducts();
-      renderProducts();
-      $('#product-modal').classList.remove('active');
-      showNotification(`Produit ${id ? 'modifié' : 'ajouté'} avec succès!`);
     }
 
-    // Setup event listeners
+    // --- INITIALIZATION & EVENT LISTENERS ---
     function setupEventListeners() {
       // Navigation
-      $$('.menu-item').forEach(item => {
+      $$('.menu-item, .view-all').forEach(item => {
         item.addEventListener('click', e => {
+          e.preventDefault();
           const page = item.dataset.page;
           if (!page) return;
-
-          // Update active states
           $$('.page').forEach(p => p.classList.remove('active'));
           $$('.menu-item').forEach(m => m.classList.remove('active'));
-
           $(`#${page}-page`).classList.add('active');
-          item.classList.add('active');
+          $(`.menu-item[data-page="${page}"]`).classList.add('active');
         });
       });
 
       // Quick actions
       $$('.action-card').forEach(card => {
         card.addEventListener('click', () => {
-          const page = card.dataset.page;
-          if (page) {
-            $$('.page').forEach(p => p.classList.remove('active'));
-            $$('.menu-item').forEach(m => m.classList.remove('active'));
-
-            $(`#${page}-page`).classList.add('active');
-            $(`.menu-item[data-page="${page}"]`).classList.add('active');
-          }
+          const action = card.dataset.action;
+          if (action === 'new-invoice') $('#new-invoice').click();
+          if (action === 'new-product') $('#add-product').click();
+          if (action === 'export-data') $('#export-json').click();
+          if (action === 'go-to-settings') $(`.menu-item[data-page="settings"]`).click();
         });
       });
 
-      // Theme toggle
-      $$('.theme-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const theme = btn.dataset.theme;
-          document.documentElement.setAttribute('data-theme', theme);
-          $$('.theme-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-        });
-      });
+      // Theme & Language
+      $$('.theme-btn').forEach(btn => btn.addEventListener('click', () => {
+        document.documentElement.setAttribute('data-theme', btn.dataset.theme);
+        $$('.theme-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }));
+      $$('.lang-btn').forEach(btn => btn.addEventListener('click', () => {
+        document.documentElement.setAttribute('dir', btn.dataset.lang === 'ar' ? 'rtl' : 'ltr');
+        $$('.lang-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }));
 
-      // Language toggle
-      $$('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const lang = btn.dataset.lang;
-          document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-          $$('.lang-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-        });
-      });
-
-      // Profile dropdown
-      $('.profile-btn').addEventListener('click', () => {
-        $('.dropdown').classList.toggle('show');
-      });
-
-      // Close dropdown when clicking outside
-      document.addEventListener('click', e => {
-        if (!e.target.closest('.profile-menu')) {
-          $('.dropdown').classList.remove('show');
-        }
-      });
-
-      // Modals
+      // Dropdown & Modals
+      $('.profile-btn').addEventListener('click', () => $('.dropdown').classList.toggle('show'));
+      document.addEventListener('click', e => { if (!e.target.closest('.profile-menu')) $('.dropdown').classList.remove('show'); });
       $('#open-guide').addEventListener('click', () => $('#guide-modal').classList.add('active'));
       $('#open-about').addEventListener('click', () => $('#about-modal').classList.add('active'));
-      $$('.modal-close').forEach(btn => {
-        btn.addEventListener('click', () => {
-          $$('.modal').forEach(m => m.classList.remove('active'));
-        });
-      });
+      $$('.modal-close').forEach(btn => btn.addEventListener('click', () => btn.closest('.modal').classList.remove('active')));
 
-      // Products page
+      // Products Page
       $('#add-product').addEventListener('click', () => showProductModal());
       $('#export-products').addEventListener('click', exportProductsToExcel);
-      $('#product-search').addEventListener('input', renderProducts);
-      $('#product-category').addEventListener('change', renderProducts);
-
-      // Products table actions (delegated)
+      $('#product-search, #product-category-filter').addEventListener('input', renderProducts);
       $('#products-table-body').addEventListener('click', e => {
         const editBtn = e.target.closest('.edit-product');
         const delBtn = e.target.closest('.delete-product');
-
-        if (editBtn) {
-          const id = editBtn.dataset.id;
-          editProduct(id);
-        }
-
-        if (delBtn) {
-          const id = delBtn.dataset.id;
-          deleteProduct(id);
-        }
+        if (editBtn) showProductModal(products.find(p => p.id === editBtn.dataset.id));
+        if (delBtn) showConfirmation('Supprimer ce produit?', 'Cette action est irréversible.', async () => {
+            await DB.delete('products', delBtn.dataset.id);
+            products = await DB.getAll('products');
+            await renderAll();
+            showNotification('Produit supprimé.');
+        });
       });
+      $('#save-product-btn').addEventListener('click', saveProduct);
+      $('#cancel-product').addEventListener('click', () => $('#product-modal').classList.remove('active'));
 
-      // Invoices page
+      // Invoices Page
       $('#new-invoice').addEventListener('click', () => showInvoiceEditor());
-      $('#cancel-invoice').addEventListener('click', hideInvoiceEditor);
-      $('#save-invoice').addEventListener('click', saveCurrentInvoice);
-      $('#add-line').addEventListener('click', addInvoiceLine);
       $('#export-invoices').addEventListener('click', exportInvoicesToExcel);
+      $('#invoice-search, #invoice-status-filter, #start-date, #end-date').addEventListener('input', renderInvoices);
       $('#clear-filters').addEventListener('click', () => {
-        $('#invoice-search').value = '';
-        $('#invoice-status-filter').value = '';
-        $('#start-date').value = '';
-        $('#end-date').value = '';
+        $('#invoice-search').value = ''; $('#invoice-status-filter').value = '';
+        $('#start-date').value = ''; $('#end-date').value = '';
         renderInvoices();
       });
-
-      // Invoice filters
-      $('#invoice-search').addEventListener('input', renderInvoices);
-      $('#invoice-status-filter').addEventListener('change', renderInvoices);
-      $('#start-date').addEventListener('change', renderInvoices);
-      $('#end-date').addEventListener('change', renderInvoices);
-
-      // Invoice editor events (delegated)
-      $('#invoice-lines').addEventListener('input', e => {
-        if (!currentInvoice) return;
-
-        const input = e.target;
-        const idx = parseInt(input.dataset.idx);
-        const field = input.className;
-        const value = input.value;
-
-        if (idx >= 0 && idx < currentInvoice.lines.length) {
-          if (field === 'product-select') {
-            const product = products.find(p => p.id === value);
-            if (product) {
-              currentInvoice.lines[idx].product = product.id;
-              currentInvoice.lines[idx].description = product.name;
-              currentInvoice.lines[idx].unit = product.unit;
-              currentInvoice.lines[idx].price = product.price;
-            }
-          } else {
-            currentInvoice.lines[idx][field] = value;
-          }
-
-          renderInvoiceEditor();
-        }
-      });
-
-      $('#invoice-lines').addEventListener('click', e => {
-        if (!currentInvoice) return;
-
-        const delBtn = e.target.closest('.delete-line');
-        if (delBtn) {
-          const idx = parseInt(delBtn.dataset.idx);
-          currentInvoice.lines.splice(idx, 1);
-          renderInvoiceEditor();
-        }
-      });
-
-      // Invoices table actions (delegated)
       $('#invoices-table-body').addEventListener('click', e => {
         const viewBtn = e.target.closest('.view-invoice');
         const editBtn = e.target.closest('.edit-invoice');
         const printBtn = e.target.closest('.print-invoice');
-        const exportBtn = e.target.closest('.export-invoice');
+        const delBtn = e.target.closest('.delete-invoice');
+        const exportBtn = e.target.closest('.export-invoice-excel');
 
-        if (viewBtn) {
-          const id = viewBtn.dataset.id;
-          const invoice = invoices.find(inv => inv.id === id);
-          if (invoice) {
-            showInvoiceEditor(invoice);
+        const id = (viewBtn || editBtn || printBtn || delBtn || exportBtn)?.dataset.id;
+        if (!id) return;
+
+        if (viewBtn || editBtn) showInvoiceEditor(invoices.find(inv => inv.id === id));
+        if (printBtn) printInvoice(id);
+        if (exportBtn) exportInvoiceToExcel(id);
+        if (delBtn) showConfirmation('Supprimer cette facture?', 'Cette action est irréversible.', async () => {
+            await DB.delete('invoices', id);
+            invoices = await DB.getAll('invoices');
+            await renderAll();
+            showNotification('Facture supprimée.');
+        });
+      });
+
+      // Invoice Editor
+      $('#cancel-invoice').addEventListener('click', hideInvoiceEditor);
+      $('#save-invoice').addEventListener('click', saveCurrentInvoice);
+      $('#add-line').addEventListener('click', () => {
+        if (!currentInvoice) return;
+        currentInvoice.lines.push({ productId: '', description: '', unit: 'pcs', quantity: 1, price: 0, tax: 19, discount: 0 });
+        renderInvoiceEditor();
+      });
+      $('#invoice-lines').addEventListener('input', e => {
+        if (!currentInvoice) return;
+        const input = e.target;
+        const idx = parseInt(input.dataset.idx);
+        const field = input.className;
+        if (field === 'product-select') {
+          const product = products.find(p => p.id === input.value);
+          if (product) {
+            currentInvoice.lines[idx].productId = product.id;
+            currentInvoice.lines[idx].description = product.name;
+            currentInvoice.lines[idx].unit = product.unit;
+            currentInvoice.lines[idx].price = product.price;
+            currentInvoice.lines[idx].tax = product.tax;
           }
+          renderInvoiceEditor();
+        } else {
+          currentInvoice.lines[idx][field] = input.type === 'number' ? parseFloat(input.value) : input.value;
+          calculateTotals();
         }
-
-        if (editBtn) {
-          const id = editBtn.dataset.id;
-          const invoice = invoices.find(inv => inv.id === id);
-          if (invoice) {
-            showInvoiceEditor(invoice);
-          }
-        }
-
-        if (printBtn) {
-          const id = printBtn.dataset.id;
-          printInvoice(id);
-        }
-
-        if (exportBtn) {
-          const id = exportBtn.dataset.id;
-          exportInvoiceToExcel(id);
+      });
+      $('#invoice-lines').addEventListener('click', e => {
+        const delBtn = e.target.closest('.delete-line');
+        if (delBtn && currentInvoice) {
+          currentInvoice.lines.splice(parseInt(delBtn.dataset.idx), 1);
+          renderInvoiceEditor();
         }
       });
 
-      // Settings page
+      // Clients Page
+      $('#add-client-btn').addEventListener('click', () => showClientModal());
+      $('#save-client-btn').addEventListener('click', saveClient);
+      $('#cancel-client-btn').addEventListener('click', () => $('#client-modal').classList.remove('active'));
+      $('#clients-table-body').addEventListener('click', e => {
+          const editBtn = e.target.closest('.edit-client');
+          const delBtn = e.target.closest('.delete-client');
+          if (editBtn) showClientModal(clients.find(c => c.id === editBtn.dataset.id));
+          if (delBtn) showConfirmation('Supprimer ce client?', 'Cette action est irréversible.', async () => {
+              await DB.delete('clients', delBtn.dataset.id);
+              clients = await DB.getAll('clients');
+              await renderAll();
+              showNotification('Client supprimé.');
+          });
+      });
+
+      // Settings Page
       $('#export-json').addEventListener('click', exportToJSON);
-      $('#import-json').addEventListener('click', () => $('#import-file').click());
-      $('#import-file').addEventListener('change', e => {
-        if (e.target.files.length > 0) {
-          importFromJSON(e.target.files[0]);
-          e.target.value = ''; // Reset file input
-        }
+      $('#import-json-btn').addEventListener('click', () => $('#import-file').click());
+      $('#import-file').addEventListener('change', e => { if (e.target.files.length) importFromJSON(e.target.files[0]); });
+      $('#clear-data').addEventListener('click', () => {
+        showConfirmation('Effacer toutes les données?', 'Cette action est irréversible.', async () => {
+            await DB.clear('products');
+            await DB.clear('invoices');
+            await DB.clear('clients');
+            await loadInitialData();
+            showNotification('Toutes les données ont été effacées!');
+        });
       });
-      $('#reset-data').addEventListener('click', resetToDefaultData);
-      $('#clear-data').addEventListener('click', clearAllData);
-      $('#export-data').addEventListener('click', () => {
-        $$('.menu-item').forEach(m => m.classList.remove('active'));
-        $('.menu-item[data-page="settings"]').classList.add('active');
-        $$('.page').forEach(p => p.classList.remove('active'));
-        $('#settings-page').classList.add('active');
+      $('#reset-data').addEventListener('click', () => {
+        showConfirmation('Réinitialiser les données?', 'Ceci restaurera les données de démonstration.', async () => {
+            await DB.clear('products');
+            await DB.clear('invoices');
+            await DB.clear('clients');
+            await addDefaultData();
+            await loadInitialData();
+            showNotification('Données réinitialisées avec succès!');
+        });
       });
-      
-      // Product modal events
-      $('#save-product').addEventListener('click', saveProduct);
-      $('#cancel-product').addEventListener('click', () => $('#product-modal').classList.remove('active'));
     }
 
-    // Initialize the application
-    function initApp() {
-      // Initialize default products if empty
-      if (products.length === 0) {
-        products = [
-          { name: 'Caisson cuisine 60cm', category: 'Cuisine', unit: 'pcs', price: 18000 },
-          { name: 'Armoire 2 portes', category: 'Chambre', unit: 'pcs', price: 42000 },
-          { name: 'Meuble TV 140cm', category: 'Salon', unit: 'pcs', price: 32000 },
-          { name: 'Plan de travail (ml)', category: 'Cuisine', unit: 'ml', price: 9000 },
-          { name: 'Profilé aluminium 3m', category: 'Aluminium', unit: 'pcs', price: 4500 }
-        ].map(ensureProductId);
-        saveProducts();
-      }
-
-      // Initialize default invoices if empty
-      if (invoices.length === 0) {
-        invoices = [
-          {
-            id: 'inv_1',
-            number: 'PF-2023-00125',
-            date: '2023-08-14',
-            client: 'Restaurant El Bahdja',
-            status: 'paid',
-            lines: [
-              { product: '', description: 'Caisson cuisine', unit: 'pcs', quantity: 4, price: 18000, tax: 19, discount: 0 },
-              { product: '', description: 'Plan de travail', unit: 'ml', quantity: 3.2, price: 9000, tax: 19, discount: 5 }
-            ],
-            subtotal: 97200,
-            tax: 18468,
-            discount: 1440,
-            total: 114228
-          },
-          {
-            id: 'inv_2',
-            number: 'PF-2023-00124',
-            date: '2023-08-12',
-            client: 'Hôtel Mazafran',
-            status: 'pending',
-            lines: [
-              { product: '', description: 'Armoire 2 portes', unit: 'pcs', quantity: 2, price: 42000, tax: 19, discount: 0 },
-              { product: '', description: 'Meuble TV', unit: 'pcs', quantity: 1, price: 32000, tax: 19, discount: 10 }
-            ],
-            subtotal: 116000,
-            tax: 22040,
-            discount: 3200,
-            total: 134840
-          }
+    async function addDefaultData() {
+        const defaultProducts = [
+          { id: 'p_1', name: 'Caisson cuisine 60cm', category: 'Cuisine', unit: 'pcs', price: 18000, tax: 19 },
+          { id: 'p_2', name: 'Armoire 2 portes', category: 'Chambre', unit: 'pcs', price: 42000, tax: 19 },
+          { id: 'p_3', name: 'Meuble TV 140cm', category: 'Salon', unit: 'pcs', price: 32000, tax: 19 },
         ];
-        saveInvoices();
-      }
-
-      // Render initial data
-      renderProducts();
-      renderInvoices();
-
-      // Set today's date in invoice form
-      $('#invoice-date').value = today();
-
-      // Setup event listeners
-      setupEventListeners();
+        const defaultInvoices = [
+          { id: 'inv_1', number: 'PF-2023-001', date: '2023-08-14', client: 'Restaurant El Bahdja', status: 'paid', lines: [{ productId: 'p_1', description: 'Caisson cuisine 60cm', unit: 'pcs', quantity: 4, price: 18000, tax: 19, discount: 0 }], subtotal: 72000, tax: 13680, discount: 0, total: 85680 },
+          { id: 'inv_2', number: 'PF-2023-002', date: '2023-08-12', client: 'Hôtel Mazafran', status: 'pending', lines: [{ productId: 'p_2', description: 'Armoire 2 portes', unit: 'pcs', quantity: 2, price: 42000, tax: 19, discount: 0 }], subtotal: 84000, tax: 15960, discount: 0, total: 99960 }
+        ];
+        const defaultClients = [
+            { id: 'c_1', name: 'Restaurant El Bahdja', contact: '0550123456', address: 'Alger Centre' },
+            { id: 'c_2', name: 'Hôtel Mazafran', contact: '021987654', address: 'Zeralda' }
+        ];
+        for (const p of defaultProducts) await DB.put('products', p);
+        for (const i of defaultInvoices) await DB.put('invoices', i);
+        for (const c of defaultClients) await DB.put('clients', c);
     }
 
-    // Start the app when DOM is loaded
-    document.addEventListener('DOMContentLoaded', initApp);
+    async function loadInitialData() {
+        [products, invoices, clients] = await Promise.all([
+            DB.getAll('products'),
+            DB.getAll('invoices'),
+            DB.getAll('clients')
+        ]);
+        if (products.length === 0 && invoices.length === 0) {
+            await addDefaultData();
+            [products, invoices, clients] = await Promise.all([
+                DB.getAll('products'),
+                DB.getAll('invoices'),
+                DB.getAll('clients')
+            ]);
+        }
+        await renderAll();
+    }
+
+    // Start the app
+    document.addEventListener('DOMContentLoaded', async () => {
+        setupEventListeners();
+        await loadInitialData();
+    });
   </script>
 </body>
-</html>
+</ht
