@@ -744,6 +744,16 @@
       color: var(--text-secondary);
     }
 
+    .status-delivered {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--primary);
+    }
+
+    .status-installed {
+      background: rgba(139, 92, 246, 0.15);
+      color: #8b5cf6;
+    }
+
     .page-header {
       display: flex;
       justify-content: space-between;
@@ -794,6 +804,15 @@
     .btn-danger {
       background-color: var(--danger);
       color: white;
+    }
+
+    .btn-info {
+      background-color: #8b5cf6;
+      color: white;
+    }
+
+    .btn-info:hover {
+      background-color: #7c3aed;
     }
 
     .btn-group {
@@ -1206,6 +1225,91 @@
       padding: 20px;
     }
 
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .detail-view {
+      background: var(--darker);
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .detail-view h3 {
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .detail-item {
+      display: flex;
+      margin-bottom: 10px;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      min-width: 120px;
+      color: var(--text-secondary);
+    }
+
+    .detail-value {
+      flex: 1;
+    }
+
+    .product-image {
+      width: 100px;
+      height: 100px;
+      background-color: var(--card-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+    }
+
+    .product-image i {
+      font-size: 2rem;
+      color: var(--text-secondary);
+    }
+
+    .product-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .product-info {
+      flex: 1;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin-right: 5px;
+      background-color: var(--card-border);
+      color: var(--text-secondary);
+    }
+
+    .tag.stock-high {
+      background-color: rgba(49, 162, 76, 0.15);
+      color: var(--success);
+    }
+
+    .tag.stock-low {
+      background-color: rgba(247, 185, 40, 0.15);
+      color: var(--warning);
+    }
+
+    .tag.stock-none {
+      background-color: rgba(240, 40, 73, 0.15);
+      color: var(--danger);
+    }
+
     @media (max-width: 992px) {
       .sidebar {
         transform: translateX(-100%);
@@ -1255,6 +1359,10 @@
 
       #product-modal .modal-content {
         width: 95%;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -1624,6 +1732,15 @@
               <option value="Aluminium">Aluminium</option>
             </select>
           </div>
+          <div class="filter-group">
+            <label>Statut stock</label>
+            <select id="product-stock-filter">
+              <option value="">Tous</option>
+              <option value="high">Stock élevé</option>
+              <option value="low">Stock faible</option>
+              <option value="none">Épuisé</option>
+            </select>
+          </div>
         </div>
 
         <div class="table-container">
@@ -1634,6 +1751,7 @@
                 <th>Catégorie</th>
                 <th>Prix unitaire</th>
                 <th>Unité</th>
+                <th>Stock</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -1677,6 +1795,8 @@
               <option value="paid">Payée</option>
               <option value="pending">En attente</option>
               <option value="draft">Brouillon</option>
+              <option value="delivered">Livrée</option>
+              <option value="installed">Installée</option>
             </select>
           </div>
           <div class="filter-group">
@@ -1717,9 +1837,41 @@
 
             <div class="form-group">
               <label>Client</label>
-              <input type="text" id="invoice-client" list="client-datalist" placeholder="Nom du client">
+              <div style="display: flex; gap: 5px;">
+                <input type="text" id="invoice-client" list="client-datalist" placeholder="Nom du client" style="flex: 1;">
+                <button type="button" class="btn" id="add-client-from-invoice" style="padding: 8px;">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
               <datalist id="client-datalist"></datalist>
             </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div class="form-group">
+              <label>Statut</label>
+              <select id="invoice-status">
+                <option value="draft">Brouillon</option>
+                <option value="pending">En attente</option>
+                <option value="paid">Payée</option>
+                <option value="delivered">Livrée</option>
+                <option value="installed">Installée</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Mode de paiement</label>
+              <select id="payment-method">
+                <option value="cash">Espèces</option>
+                <option value="check">Chèque</option>
+                <option value="bank">Virement</option>
+                <option value="card">Carte</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Description du projet</label>
+            <textarea id="project-description" rows="2" placeholder="Détails sur le projet de cuisine ou meuble..."></textarea>
           </div>
 
           <h3>Articles</h3>
@@ -1768,6 +1920,22 @@
             </table>
           </div>
 
+          <div class="form-row">
+            <div class="form-group">
+              <label>Date de livraison</label>
+              <input type="date" id="delivery-date">
+            </div>
+            <div class="form-group">
+              <label>Statut livraison</label>
+              <select id="delivery-status">
+                <option value="pending">En préparation</option>
+                <option value="shipped">Expédié</option>
+                <option value="delivered">Livré</option>
+                <option value="installed">Installé</option>
+              </select>
+            </div>
+          </div>
+
           <div class="form-group">
             <label>Notes</label>
             <textarea id="invoice-notes" rows="3"></textarea>
@@ -1807,15 +1975,37 @@
               <i class="fas fa-plus"></i>
               Ajouter Client
             </button>
+            <button class="btn btn-info" id="client-history-btn">
+              <i class="fas fa-history"></i>
+              Historique
+            </button>
           </div>
         </div>
+
+        <div class="filter-container">
+          <div class="filter-group">
+            <label>Recherche</label>
+            <input type="text" id="client-search" placeholder="Rechercher un client...">
+          </div>
+          <div class="filter-group">
+            <label>Type de client</label>
+            <select id="client-type-filter">
+              <option value="">Tous</option>
+              <option value="particulier">Particulier</option>
+              <option value="entreprise">Entreprise</option>
+              <option value="architecte">Architecte</option>
+            </select>
+          </div>
+        </div>
+
         <div class="table-container">
           <table class="table">
             <thead>
               <tr>
                 <th>Nom</th>
                 <th>Contact</th>
-                <th>Adresse</th>
+                <th>Type</th>
+                <th>Dernière commande</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -2056,6 +2246,18 @@
             </div>
           </div>
 
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+              <label>Stock initial</label>
+              <input type="number" id="product-stock" min="0" value="0">
+            </div>
+
+            <div class="form-group">
+              <label>Seuil d'alerte</label>
+              <input type="number" id="product-threshold" min="0" value="5">
+            </div>
+          </div>
+
           <div class="form-group">
             <label>Description</label>
             <textarea id="product-description" rows="3"></textarea>
@@ -2081,10 +2283,28 @@
                     <label>Nom du client*</label>
                     <input type="text" id="client-name" required>
                 </div>
-                <div class="form-group">
-                    <label>Contact (Tél, Email)</label>
-                    <input type="text" id="client-contact">
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Type de client</label>
+                    <select id="client-type">
+                      <option value="particulier">Particulier</option>
+                      <option value="entreprise">Entreprise</option>
+                      <option value="architecte">Architecte</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" id="client-phone">
+                  </div>
                 </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="client-email">
+                </div>
+
                 <div class="form-group">
                     <label>Adresse</label>
                     <textarea id="client-address" rows="3"></textarea>
@@ -2095,6 +2315,56 @@
             <button class="btn btn-secondary" id="cancel-client-btn">Annuler</button>
             <button class="btn" id="save-client-btn">Enregistrer</button>
         </div>
+    </div>
+  </div>
+
+  <div class="modal" id="client-history-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="client-history-title">Historique Client</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="client-header">
+          <div class="profile-img" style="width: 60px; height: 60px; margin-right: 15px;">
+            <i class="fas fa-user"></i>
+          </div>
+          <div>
+            <h3 id="client-history-name">Client Name</h3>
+            <p id="client-history-info">Contact info</p>
+          </div>
+        </div>
+
+        <div class="detail-view">
+          <h3>Informations client</h3>
+          <div class="detail-item">
+            <div class="detail-label">Type:</div>
+            <div class="detail-value" id="client-type-value">Particulier</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Téléphone:</div>
+            <div class="detail-value" id="client-phone-value">0550123456</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Email:</div>
+            <div class="detail-value" id="client-email-value">client@example.com</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Adresse:</div>
+            <div class="detail-value" id="client-address-value">Alger Centre</div>
+          </div>
+        </div>
+
+        <div class="detail-view">
+          <h3>Historique des commandes</h3>
+          <div id="client-orders-list">
+            <!-- Client orders will be listed here -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn modal-close">Fermer</button>
+      </div>
     </div>
   </div>
 
@@ -2144,14 +2414,19 @@
             if (!db.objectStoreNames.contains('products')) {
               const store = db.createObjectStore('products', { keyPath: 'id' });
               store.createIndex('name', 'name');
+              store.createIndex('category', 'category');
+              store.createIndex('stock', 'stock');
             }
             if (!db.objectStoreNames.contains('invoices')) {
               const store = db.createObjectStore('invoices', { keyPath: 'id' });
               store.createIndex('date', 'date');
+              store.createIndex('client', 'client');
+              store.createIndex('status', 'status');
             }
             if (!db.objectStoreNames.contains('clients')) {
               const store = db.createObjectStore('clients', { keyPath: 'id' });
               store.createIndex('name', 'name');
+              store.createIndex('type', 'type');
             }
           };
           request.onsuccess = e => {
@@ -2219,6 +2494,7 @@
     let clients = [];
     let currentInvoice = null;
     let salesChart = null;
+    let currentClientHistory = null;
 
     // --- DATA RENDERING FUNCTIONS ---
     async function renderAll() {
@@ -2236,25 +2512,48 @@
 
       const searchTerm = $('#product-search').value.toLowerCase();
       const categoryFilter = $('#product-category-filter').value;
+      const stockFilter = $('#product-stock-filter').value;
 
       let filteredProducts = products.filter(p => {
           const matchesSearch = !searchTerm || p.name.toLowerCase().includes(searchTerm) || (p.description || '').toLowerCase().includes(searchTerm);
           const matchesCategory = !categoryFilter || p.category === categoryFilter;
-          return matchesSearch && matchesCategory;
+
+          // Stock filter
+          let matchesStock = true;
+          if (stockFilter) {
+            if (stockFilter === 'high' && p.stock <= (p.stockThreshold || 5)) matchesStock = false;
+            if (stockFilter === 'low' && (p.stock > (p.stockThreshold || 5) || p.stock === 0)) matchesStock = false;
+            if (stockFilter === 'none' && p.stock > 0) matchesStock = false;
+          }
+
+          return matchesSearch && matchesCategory && matchesStock;
       });
 
-      tbody.innerHTML = filteredProducts.map(p => `
+      tbody.innerHTML = filteredProducts.map(p => {
+        // Determine stock status tag
+        let stockTag = '';
+        if (p.stock === 0) {
+          stockTag = '<span class="tag stock-none">Épuisé</span>';
+        } else if (p.stock <= (p.stockThreshold || 5)) {
+          stockTag = `<span class="tag stock-low">Faible (${p.stock})</span>`;
+        } else {
+          stockTag = `<span class="tag stock-high">Disponible (${p.stock})</span>`;
+        }
+
+        return `
         <tr>
           <td>${esc(p.name)}</td>
           <td>${esc(p.category || '')}</td>
           <td>${num(p.price)} DA</td>
           <td>${esc(p.unit || '')}</td>
+          <td>${stockTag}</td>
           <td class="action-cell">
             <div class="action-btn edit-product" data-id="${p.id}"><i class="fas fa-edit"></i></div>
             <div class="action-btn delete-product" data-id="${p.id}"><i class="fas fa-trash"></i></div>
           </td>
         </tr>
-      `).join('');
+        `;
+      }).join('');
     }
 
     async function renderInvoices() {
@@ -2278,7 +2577,9 @@
           const statusMap = {
               paid: { class: 'status-paid', text: 'Payée' },
               pending: { class: 'status-pending', text: 'En attente' },
-              draft: { class: 'status-draft', text: 'Brouillon' }
+              draft: { class: 'status-draft', text: 'Brouillon' },
+              delivered: { class: 'status-delivered', text: 'Livrée' },
+              installed: { class: 'status-installed', text: 'Installée' }
           };
           const status = statusMap[inv.status] || statusMap.draft;
           return `
@@ -2301,21 +2602,54 @@
     }
 
     async function renderClients() {
-        const tbody = $('#clients-table-body');
-        if (!tbody) return;
-        tbody.innerHTML = clients.map(c => `
-            <tr>
-                <td>${esc(c.name)}</td>
-                <td>${esc(c.contact || '')}</td>
-                <td>${esc(c.address || '')}</td>
-                <td class="action-cell">
-                    <div class="action-btn edit-client" data-id="${c.id}"><i class="fas fa-edit"></i></div>
-                    <div class="action-btn delete-client" data-id="${c.id}"><i class="fas fa-trash"></i></div>
-                </td>
-            </tr>
-        `).join('');
-        const datalist = $('#client-datalist');
-        datalist.innerHTML = clients.map(c => `<option value="${esc(c.name)}"></option>`).join('');
+      const tbody = $('#clients-table-body');
+      if (!tbody) return;
+
+      const searchTerm = $('#client-search').value.toLowerCase();
+      const typeFilter = $('#client-type-filter').value;
+
+      let filteredClients = clients.filter(c => {
+        const matchesSearch = !searchTerm || c.name.toLowerCase().includes(searchTerm) ||
+                             (c.contact || '').toLowerCase().includes(searchTerm) ||
+                             (c.email || '').toLowerCase().includes(searchTerm);
+        const matchesType = !typeFilter || c.type === typeFilter;
+        return matchesSearch && matchesType;
+      });
+
+      // Get last order date for each client
+      const clientLastOrder = {};
+      invoices.forEach(inv => {
+        if (!clientLastOrder[inv.client] || new Date(inv.date) > new Date(clientLastOrder[inv.client])) {
+          clientLastOrder[inv.client] = inv.date;
+        }
+      });
+
+      tbody.innerHTML = filteredClients.map(c => {
+        const typeMap = {
+          particulier: 'Particulier',
+          entreprise: 'Entreprise',
+          architecte: 'Architecte'
+        };
+
+        const lastOrder = clientLastOrder[c.name] || 'Aucune';
+
+        return `
+          <tr>
+            <td>${esc(c.name)}</td>
+            <td>${esc(c.phone || '')}</td>
+            <td>${typeMap[c.type] || c.type}</td>
+            <td>${lastOrder}</td>
+            <td class="action-cell">
+              <div class="action-btn view-client" data-id="${c.id}"><i class="fas fa-eye"></i></div>
+              <div class="action-btn edit-client" data-id="${c.id}"><i class="fas fa-edit"></i></div>
+              <div class="action-btn delete-client" data-id="${c.id}"><i class="fas fa-trash"></i></div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      const datalist = $('#client-datalist');
+      datalist.innerHTML = clients.map(c => `<option value="${esc(c.name)}"></option>`).join('');
     }
 
     // --- DASHBOARD & STATISTICS ---
@@ -2402,7 +2736,9 @@
                 const statusMap = {
                     paid: { class: 'status-paid', text: 'Payée' },
                     pending: { class: 'status-pending', text: 'En attente' },
-                    draft: { class: 'status-draft', text: 'Brouillon' }
+                    draft: { class: 'status-draft', text: 'Brouillon' },
+                    delivered: { class: 'status-delivered', text: 'Livrée' },
+                    installed: { class: 'status-installed', text: 'Installée' }
                 };
                 const status = statusMap[inv.status] || statusMap.draft;
                 return `
@@ -2521,6 +2857,11 @@
       currentInvoice.number = $('#invoice-number').value || '';
       currentInvoice.date = $('#invoice-date').value || today();
       currentInvoice.client = $('#invoice-client').value || '';
+      currentInvoice.status = $('#invoice-status').value || 'draft';
+      currentInvoice.paymentMethod = $('#payment-method').value || 'cash';
+      currentInvoice.projectDescription = $('#project-description').value || '';
+      currentInvoice.deliveryDate = $('#delivery-date').value || '';
+      currentInvoice.deliveryStatus = $('#delivery-status').value || 'pending';
       currentInvoice.notes = $('#invoice-notes').value || '';
 
       if (!currentInvoice.id) {
@@ -2532,7 +2873,11 @@
       // Add client if new
       const clientName = currentInvoice.client.trim();
       if (clientName && !clients.some(c => c.name === clientName)) {
-          const newClient = { id: generateId('client'), name: clientName };
+          const newClient = {
+            id: generateId('client'),
+            name: clientName,
+            type: 'particulier'
+          };
           await DB.put('clients', newClient);
           clients.push(newClient);
           await renderClients();
@@ -2552,6 +2897,8 @@
       } else {
         currentInvoice = {
           id: null, number: '', date: today(), client: '', notes: '', status: 'draft',
+          paymentMethod: 'cash', projectDescription: '',
+          deliveryDate: '', deliveryStatus: 'pending',
           lines: [{ productId: '', description: '', unit: 'pcs', quantity: 1, price: 0, tax: 19, discount: 0 }],
           subtotal: 0, tax: 0, discount: 0, total: 0
         };
@@ -2560,6 +2907,11 @@
       $('#invoice-number').value = currentInvoice.number;
       $('#invoice-date').value = currentInvoice.date;
       $('#invoice-client').value = currentInvoice.client;
+      $('#invoice-status').value = currentInvoice.status;
+      $('#payment-method').value = currentInvoice.paymentMethod || 'cash';
+      $('#project-description').value = currentInvoice.projectDescription || '';
+      $('#delivery-date').value = currentInvoice.deliveryDate || '';
+      $('#delivery-status').value = currentInvoice.deliveryStatus || 'pending';
       $('#invoice-notes').value = currentInvoice.notes;
       renderInvoiceEditor();
       $('#invoice-editor').style.display = 'block';
@@ -2569,6 +2921,75 @@
     function hideInvoiceEditor() {
       $('#invoice-editor').style.display = 'none';
       currentInvoice = null;
+    }
+
+    // --- CLIENT HISTORY VIEW ---
+    async function showClientHistory(id) {
+      const client = clients.find(c => c.id === id);
+      if (!client) return;
+
+      currentClientHistory = client;
+
+      // Set client details
+      $('#client-history-name').textContent = client.name;
+      $('#client-type-value').textContent = client.type === 'particulier' ? 'Particulier' :
+                                           client.type === 'entreprise' ? 'Entreprise' :
+                                           client.type === 'architecte' ? 'Architecte' : client.type;
+      $('#client-phone-value').textContent = client.phone || 'Non spécifié';
+      $('#client-email-value').textContent = client.email || 'Non spécifié';
+      $('#client-address-value').textContent = client.address || 'Non spécifié';
+
+      // Get client orders
+      const clientInvoices = invoices.filter(inv => inv.client === client.name)
+                                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // Update client info
+      let clientInfo = client.phone || '';
+      if (client.email) {
+        clientInfo += clientInfo ? ` | ${client.email}` : client.email;
+      }
+      $('#client-history-info').textContent = clientInfo;
+
+      // Render orders
+      const ordersList = $('#client-orders-list');
+      if (clientInvoices.length > 0) {
+        ordersList.innerHTML = `
+          <table class="table" style="width:100%">
+            <thead>
+              <tr>
+                <th>N° Facture</th>
+                <th>Date</th>
+                <th>Montant</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${clientInvoices.map(inv => {
+                const statusMap = {
+                  paid: { class: 'status-paid', text: 'Payée' },
+                  pending: { class: 'status-pending', text: 'En attente' },
+                  draft: { class: 'status-draft', text: 'Brouillon' },
+                  delivered: { class: 'status-delivered', text: 'Livrée' },
+                  installed: { class: 'status-installed', text: 'Installée' }
+                };
+                const status = statusMap[inv.status] || statusMap.draft;
+                return `
+                <tr>
+                  <td>${esc(inv.number)}</td>
+                  <td>${inv.date}</td>
+                  <td>${num(inv.total)} DA</td>
+                  <td><span class="invoice-status ${status.class}">${status.text}</span></td>
+                </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        `;
+      } else {
+        ordersList.innerHTML = '<p>Aucune commande pour ce client.</p>';
+      }
+
+      $('#client-history-modal').classList.add('active');
     }
 
     // --- MODAL & CONFIRMATION DIALOGS ---
@@ -2602,12 +3023,16 @@
         $('#product-unit').value = product.unit || 'pcs';
         $('#product-price').value = product.price;
         $('#product-tax').value = product.tax || 19;
+        $('#product-stock').value = product.stock || 0;
+        $('#product-threshold').value = product.stockThreshold || 5;
         $('#product-description').value = product.description || '';
         $('#save-product-btn').dataset.id = product.id;
       } else {
         title.textContent = 'Nouveau Produit';
         $('#product-form').reset();
         $('#product-tax').value = 19;
+        $('#product-stock').value = 0;
+        $('#product-threshold').value = 5;
         delete $('#save-product-btn').dataset.id;
       }
       modal.classList.add('active');
@@ -2618,7 +3043,9 @@
         if (client) {
             $('#client-modal-title').textContent = 'Modifier Client';
             $('#client-name').value = client.name;
-            $('#client-contact').value = client.contact || '';
+            $('#client-type').value = client.type || 'particulier';
+            $('#client-phone').value = client.phone || '';
+            $('#client-email').value = client.email || '';
             $('#client-address').value = client.address || '';
             $('#save-client-btn').dataset.id = client.id;
         } else {
@@ -2644,6 +3071,8 @@
         unit: $('#product-unit').value,
         price: parseFloat($('#product-price').value) || 0,
         tax: parseFloat($('#product-tax').value) || 0,
+        stock: parseInt($('#product-stock').value) || 0,
+        stockThreshold: parseInt($('#product-threshold').value) || 5,
         description: $('#product-description').value.trim()
       };
       await DB.put('products', productData);
@@ -2663,7 +3092,9 @@
         const clientData = {
             id: id || generateId('client'),
             name: name,
-            contact: $('#client-contact').value.trim(),
+            type: $('#client-type').value || 'particulier',
+            phone: $('#client-phone').value.trim(),
+            email: $('#client-email').value.trim(),
             address: $('#client-address').value.trim()
         };
         await DB.put('clients', clientData);
@@ -2685,10 +3116,14 @@
                 .info-table td, .items-table th, .items-table td { padding: 8px; border: 1px solid #ddd; }
                 .items-table th { background-color: #f2f2f2; } .totals-table { float: right; width: 300px; }
                 .totals-table td { padding: 8px; } .totals-table td:first-child { text-align: right; font-weight: bold; }
+                .project-desc { margin: 20px 0; padding: 10px; background: #f9f9f9; border-radius: 4px; }
             </style></head><body>
             <div class="header"><h1>FACTURE PROFORMA</h1></div>
             <table class="info-table"><tr><td><strong>N°:</strong> ${esc(invoice.number)}<br><strong>Date:</strong> ${invoice.date}</td>
-            <td><strong>Client:</strong> ${esc(invoice.client)}</td></tr></table>
+            <td><strong>Client:</strong> ${esc(invoice.client)}<br><strong>Mode paiement:</strong> ${invoice.paymentMethod === 'cash' ? 'Espèces' : invoice.paymentMethod === 'check' ? 'Chèque' : invoice.paymentMethod === 'bank' ? 'Virement' : 'Carte'}</td></tr></table>
+
+            ${invoice.projectDescription ? `<div class="project-desc"><strong>Description du projet:</strong><br>${esc(invoice.projectDescription)}</div>` : ''}
+
             <table class="items-table"><thead><tr><th>Désignation</th><th>Qté</th><th>Prix U.</th><th>Total</th></tr></thead><tbody>
             ${invoice.lines.map(line => `<tr><td>${esc(line.description)}</td><td>${line.quantity}</td><td>${num(line.price)} DA</td><td>${num(line.quantity * line.price)} DA</td></tr>`).join('')}
             </tbody></table>
@@ -2698,6 +3133,8 @@
                 <tr><td>Remise:</td><td>-${num(invoice.discount)} DA</td></tr>
                 <tr><td><strong>TOTAL:</strong></td><td><strong>${num(invoice.total)} DA</strong></td></tr>
             </table>
+            ${invoice.deliveryDate ? `<p><strong>Date de livraison prévue:</strong> ${invoice.deliveryDate}</p>` : ''}
+            ${invoice.notes ? `<p><strong>Notes:</strong> ${esc(invoice.notes)}</p>` : ''}
             <script>window.onload = () => { window.print(); window.close(); }<\/script>
             </body></html>
         `);
@@ -2715,11 +3152,12 @@
                 ["Facture Proforma"],
                 [],
                 ["Client:", invoice.client],
-                ["Contact:", client.contact || ''],
+                ["Contact:", client.phone || ''],
                 ["Adresse:", client.address || ''],
                 [],
                 ["N° Facture:", invoice.number],
                 ["Date:", invoice.date],
+                ["Description du projet:", invoice.projectDescription || '']
             ];
 
             const linesHeader = ["Désignation", "Unité", "Quantité", "Prix Unitaire HT", "TVA (%)", "Remise (%)", "Total HT"];
@@ -2741,20 +3179,30 @@
                 [null, null, null, null, null, "Total TTC:", invoice.total],
             ];
 
+            const deliveryInfo = [
+                [],
+                ["Date de livraison:", invoice.deliveryDate || 'Non spécifiée'],
+                ["Statut de livraison:", invoice.deliveryStatus === 'pending' ? 'En préparation' :
+                                        invoice.deliveryStatus === 'shipped' ? 'Expédié' :
+                                        invoice.deliveryStatus === 'delivered' ? 'Livré' :
+                                        invoice.deliveryStatus === 'installed' ? 'Installé' : invoice.deliveryStatus]
+            ];
+
             const notes = [
                 [],
                 ["Notes:", invoice.notes || '']
             ];
 
             const worksheet = XLSX.utils.aoa_to_sheet(header);
-            XLSX.utils.sheet_add_aoa(worksheet, [linesHeader], { origin: "A10" });
-            XLSX.utils.sheet_add_json(worksheet, lines, { origin: "A11", skipHeader: true });
+            XLSX.utils.sheet_add_aoa(worksheet, [linesHeader], { origin: "A12" });
+            XLSX.utils.sheet_add_json(worksheet, lines, { origin: "A13", skipHeader: true });
 
             const finalData = XLSX.utils.sheet_to_json(worksheet, {header:1});
             const lastRow = finalData.length;
 
             XLSX.utils.sheet_add_aoa(worksheet, totals, { origin: `G${lastRow + 2}` });
-            XLSX.utils.sheet_add_aoa(worksheet, notes, { origin: `A${lastRow + 7}` });
+            XLSX.utils.sheet_add_aoa(worksheet, deliveryInfo, { origin: `A${lastRow + 7}` });
+            XLSX.utils.sheet_add_aoa(worksheet, notes, { origin: `A${lastRow + 10}` });
 
             worksheet["A1"].s = { font: { sz: 16, bold: true } };
             worksheet["!cols"] = [ {wch:40}, {wch:10}, {wch:10}, {wch:15}, {wch:10}, {wch:10}, {wch:15} ];
@@ -2777,6 +3225,8 @@
           'Prix unitaire': p.price,
           'Unité': p.unit || '',
           'TVA (%)': p.tax || 0,
+          'Stock': p.stock || 0,
+          'Seuil alerte': p.stockThreshold || 5,
           'Description': p.description || ''
         })));
         const workbook = XLSX.utils.book_new();
@@ -2795,7 +3245,9 @@
           'Client': inv.client,
           'Date': inv.date,
           'Montant': inv.total,
-          'Statut': inv.status === 'paid' ? 'Payée' : inv.status === 'pending' ? 'En attente' : 'Brouillon'
+          'Statut': inv.status === 'paid' ? 'Payée' : inv.status === 'pending' ? 'En attente' : inv.status === 'draft' ? 'Brouillon' : inv.status === 'delivered' ? 'Livrée' : 'Installée',
+          'Mode paiement': inv.paymentMethod === 'cash' ? 'Espèces' : inv.paymentMethod === 'check' ? 'Chèque' : inv.paymentMethod === 'bank' ? 'Virement' : 'Carte',
+          'Description projet': inv.projectDescription || ''
         })));
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Factures');
@@ -2898,7 +3350,7 @@
       // Products Page
       $('#add-product').addEventListener('click', () => showProductModal());
       $('#export-products').addEventListener('click', exportProductsToExcel);
-      $('#product-search, #product-category-filter').addEventListener('input', renderProducts);
+      $('#product-search, #product-category-filter, #product-stock-filter').addEventListener('input', renderProducts);
       $('#products-table-body').addEventListener('click', e => {
         const editBtn = e.target.closest('.edit-product');
         const delBtn = e.target.closest('.delete-product');
@@ -2979,13 +3431,21 @@
         }
       });
 
+      // Add client from invoice editor
+      $('#add-client-from-invoice').addEventListener('click', () => {
+        showClientModal();
+      });
+
       // Clients Page
       $('#add-client-btn').addEventListener('click', () => showClientModal());
       $('#save-client-btn').addEventListener('click', saveClient);
       $('#cancel-client-btn').addEventListener('click', () => $('#client-modal').classList.remove('active'));
       $('#clients-table-body').addEventListener('click', e => {
+          const viewBtn = e.target.closest('.view-client');
           const editBtn = e.target.closest('.edit-client');
           const delBtn = e.target.closest('.delete-client');
+
+          if (viewBtn) showClientHistory(viewBtn.dataset.id);
           if (editBtn) showClientModal(clients.find(c => c.id === editBtn.dataset.id));
           if (delBtn) showConfirmation('Supprimer ce client?', 'Cette action est irréversible.', async () => {
               await DB.delete('clients', delBtn.dataset.id);
@@ -2993,6 +3453,15 @@
               await renderAll();
               showNotification('Client supprimé.');
           });
+      });
+
+      // Client history button
+      $('#client-history-btn').addEventListener('click', () => {
+        if (clients.length === 0) {
+          showNotification('Aucun client disponible', 'warning');
+          return;
+        }
+        showClientHistory(clients[0].id);
       });
 
       // Settings Page
@@ -3022,24 +3491,34 @@
 
     async function addDefaultData() {
         const defaultProducts = [
-          { id: 'p_1', name: 'Caisson cuisine 60cm', category: 'Cuisine', unit: 'pcs', price: 18000, tax: 19 },
-          { id: 'p_2', name: 'Armoire 2 portes', category: 'Chambre', unit: 'pcs', price: 42000, tax: 19 },
-          { id: 'p_3', name: 'Meuble TV 140cm', category: 'Salon', unit: 'pcs', price: 32000, tax: 19 },
+          { id: 'p_1', name: 'Caisson cuisine 60cm', category: 'Cuisine', unit: 'pcs', price: 18000, tax: 19, stock: 15, stockThreshold: 5 },
+          { id: 'p_2', name: 'Armoire 2 portes', category: 'Chambre', unit: 'pcs', price: 42000, tax: 19, stock: 8, stockThreshold: 3 },
+          { id: 'p_3', name: 'Meuble TV 140cm', category: 'Salon', unit: 'pcs', price: 32000, tax: 19, stock: 3, stockThreshold: 5 },
         ];
-        const defaultInvoices = [
-          { id: 'inv_1', number: 'PF-2023-001', date: '2023-08-14', client: 'Restaurant El Bahdja', status: 'paid', lines: [{ productId: 'p_1', description: 'Caisson cuisine 60cm', unit: 'pcs', quantity: 4, price: 18000, tax: 19, discount: 0 }], subtotal: 72000, tax: 13680, discount: 0, total: 85680 },
-          { id: 'inv_2', number: 'PF-2023-002', date: '2023-08-12', client: 'Hôtel Mazafran', status: 'pending', lines: [{ productId: 'p_2', description: 'Armoire 2 portes', unit: 'pcs', quantity: 2, price: 42000, tax: 19, discount: 0 }], subtotal: 84000, tax: 15960, discount: 0, total: 99960 }
-        ];
+
         const defaultClients = [
-            { id: 'c_1', name: 'Restaurant El Bahdja', contact: '0550123456', address: 'Alger Centre' },
-            { id: 'c_2', name: 'Hôtel Mazafran', contact: '021987654', address: 'Zeralda' }
+            { id: 'c_1', name: 'Restaurant El Bahdja', type: 'entreprise', phone: '0550123456', email: 'contact@elbahdja.com', address: 'Alger Centre' },
+            { id: 'c_2', name: 'Hôtel Mazafran', type: 'entreprise', phone: '021987654', email: 'info@hotelmazafran.dz', address: 'Zeralda' },
+            { id: 'c_3', name: 'M. Ahmed Benali', type: 'particulier', phone: '0770123456', address: 'Hussein Dey' }
         ];
+
+        const defaultInvoices = [
+          { id: 'inv_1', number: 'PF-2023-001', date: '2023-08-14', client: 'Restaurant El Bahdja', status: 'paid',
+            paymentMethod: 'bank', projectDescription: 'Cuisine professionnelle en aluminium avec îlot central',
+            lines: [{ productId: 'p_1', description: 'Caisson cuisine 60cm', unit: 'pcs', quantity: 4, price: 18000, tax: 19, discount: 0 }],
+            subtotal: 72000, tax: 13680, discount: 0, total: 85680 },
+          { id: 'inv_2', number: 'PF-2023-002', date: '2023-08-12', client: 'Hôtel Mazafran', status: 'delivered',
+            paymentMethod: 'check', projectDescription: 'Chambres équipées avec armoires et bureaux',
+            lines: [{ productId: 'p_2', description: 'Armoire 2 portes', unit: 'pcs', quantity: 2, price: 42000, tax: 19, discount: 0 }],
+            subtotal: 84000, tax: 15960, discount: 0, total: 99960 }
+        ];
+
         for (const p of defaultProducts) await DB.put('products', p);
-        for (const i of defaultInvoices) await DB.put('invoices', i);
         for (const c of defaultClients) await DB.put('clients', c);
+        for (const i of defaultInvoices) await DB.put('invoices', i);
     }
 
-    async function loadInitialData() {
+async function loadInitialData() {
         [products, invoices, clients] = await Promise.all([
             DB.getAll('products'),
             DB.getAll('invoices'),
